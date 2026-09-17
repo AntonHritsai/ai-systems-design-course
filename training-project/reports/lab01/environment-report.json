@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "host": {
+    "system": "darwin",
+    "release": "27.0.0",
+    "build": null
+  },
+  "preflight": "red",
+  "capabilities": {
+    "git": {
+      "status": "available",
+      "detail": "git version 2.54.0 (Apple Git-157)"
+    },
+    "github_cli": {
+      "status": "available",
+      "detail": "gh version 2.101.0 (2026-09-15)"
+    },
+    "uv": {
+      "status": "available",
+      "detail": "uv 0.12.15 (Homebrew 2026-09-15 aarch64-apple-darwin)"
+    },
+    "agy": {
+      "status": "unavailable",
+      "detail": "command unavailable"
+    },
+    "obsidian": {
+      "status": "available",
+      "detail": "application detected"
+    }
+  }
+}

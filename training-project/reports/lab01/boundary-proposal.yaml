@@ -1,0 +1,21 @@
+# Candidate for Laboratory 01: normally AI-generated; student-authored only on the documented no-agent fallback.
+# Replace the instructional values, but preserve every field and keep status proposed.
+schema_version: "1.0"
+proposal_id: lab01-learning-boundary-backend-api-design
+status: proposed
+personal_domain: Backend API design for educational projects.
+intended_learning_outcome: The student can trace a technical concept from the course theory to a registered source, explain the authority boundary for proposed changes, and preserve evidence showing which proposal was reviewed and approved.
+non_goals:
+  - Do not implement a full production knowledge platform, graph index, vector index, or automated concept-ingest workflow in Laboratory 01.
+  - Do not use the personal domain to ingest private data, make high-consequence decisions, or redefine the fixed learning knowledge system.
+governance:
+  ai_role: Propose bounded candidate descriptions from supplied evidence and expose uncertainty without approving or applying its own proposal.
+  deterministic_role: Validate candidate structure, bind decisions to the exact proposal digest, and apply only a matching approved decision.
+  human_role: Review the proposal's meaning against the supplied contracts and explicitly approve or reject it before any accepted state is written.
+usefulness_condition: The workflow is useful when the student can reproduce the environment, identify the exact source commit, validate the proposal, and show that the accepted contract was generated only after a digest-bound approval.
+material_risk: A structurally valid proposal may still misstate the system boundary, causing unsupported or overbroad knowledge changes to be treated as accepted design.
+non_ai_baseline: A simpler baseline is a manual Markdown source log plus Git commits and deterministic validation, which preserves provenance and evidence but does not help draft candidate interpretations.
+uncertainty: It is not yet established how well future AI-generated concept proposals will remain grounded in sources when the vault grows beyond the first registered theory file.
+required_evidence:
+  - Public Lab01 workflow tests, proposal validation, refused premature apply, approved decision, and regenerated accepted contract.
+  - Human semantic-review answers showing that the proposal preserves the supplied system brief, requirements baseline, vault boundary, and Module 01 theory.
