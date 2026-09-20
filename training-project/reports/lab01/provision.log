@@ -1,0 +1,21 @@
+Sanitized Laboratory 01 provisioning log.
+
+Host used for this evidence run:
+- macOS / Darwin. This is a red preflight host according to the Laboratory 01 instructions.
+
+Read-only preflight and observed tools:
+- `uname -s` -> `Darwin`
+- `cat /etc/os-release` -> `No such file or directory`
+- `git --version` -> `git version 2.54.0 (Apple Git-157)`
+- `gh --version` -> `gh version 2.101.0 (2026-09-15)`
+- `uv --version` -> `uv 0.12.15 (Homebrew 2026-09-15 aarch64-apple-darwin)`
+- `obsidian version` -> `1.13.7 (installer 1.13.7)`
+- `agy --help` -> `command not found`
+
+Provisioning notes:
+- The official Windows `winget configure` path was not applied on this host.
+- The supported Linux installation path was not applied on this host.
+- `learning-project doctor` records `preflight: red` because the host is macOS, even though Git,
+  GitHub CLI, uv, and Obsidian are available.
+- The Laboratory 01 repository workflow, proposal validation, refused premature apply, decision,
+  apply, and final verification commands were completed.
