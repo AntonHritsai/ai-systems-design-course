@@ -1,0 +1,21 @@
+# Candidate for Laboratory 01: normally AI-generated; student-authored only on the documented no-agent fallback.
+# Replace the instructional values, but preserve every field and keep status proposed.
+schema_version: "1.0"
+proposal_id: lab01-boundary-software-architecture
+status: proposed
+personal_domain: Software architecture patterns as a non-sensitive professional extension area for later course work.
+intended_learning_outcome: The student can register a course source, preserve provenance, review a bounded AI-assisted proposal, and explain why only an approved, digest-bound proposal may become accepted project state.
+non_goals:
+  - Building a production knowledge-management platform, search service, graph database, or vector index during Laboratory 01.
+  - Using AI output, personal notes, credentials, or private domain data as accepted knowledge without explicit student review and approval.
+governance:
+  ai_role: Propose a bounded system description and expose uncertainty without accepting changes.
+  deterministic_role: Validate the candidate, bind the decision to its digest, and apply only approved content.
+  human_role: Review meaning and explicitly approve or reject the proposal before application.
+usefulness_condition: The workflow is useful when a reviewer can trace the accepted boundary to the Module 01 source registration, the exact proposal digest, the recorded decision, and preserved command evidence without relying on chat memory.
+material_risk: A fluent proposal may preserve the YAML schema while overstating source support or expanding the system into unreviewed personal-data or production-decision territory.
+non_ai_baseline: The student can manually maintain Markdown source records and use deterministic CLI checks, Git history, and keyword search without asking an AI to propose interpretations.
+uncertainty: Later modules have not yet supplied the final relation vocabulary, richer vault schemas, or evidence thresholds for retrieval and grounded answers.
+required_evidence:
+  - Passing Lab 01 deterministic validation plus a refused premature apply before any decision exists.
+  - A written semantic review in REPORT.md that checks the proposal against the supplied system brief, requirements baseline, and vault-structure contract.

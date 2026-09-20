@@ -1,0 +1,273 @@
+test_a_recorded_decision_cannot_be_silently_overwritten (test_lab01_cli.Lab01CommandLineTests.test_a_recorded_decision_cannot_be_silently_overwritten) ... ok
+test_apply_refuses_a_proposal_that_was_never_decided (test_lab01_cli.Lab01CommandLineTests.test_apply_refuses_a_proposal_that_was_never_decided) ... ok
+test_apply_refuses_a_rejected_proposal (test_lab01_cli.Lab01CommandLineTests.test_apply_refuses_a_rejected_proposal) ... ok
+test_approved_proposal_becomes_the_accepted_contract (test_lab01_cli.Lab01CommandLineTests.test_approved_proposal_becomes_the_accepted_contract) ... ok
+test_decide_refuses_a_pending_decision_for_a_different_proposal (test_lab01_cli.Lab01CommandLineTests.test_decide_refuses_a_pending_decision_for_a_different_proposal) ... ok
+test_validate_accepts_a_well_formed_proposal (test_lab01_cli.Lab01CommandLineTests.test_validate_accepts_a_well_formed_proposal) ... ok
+test_validate_reports_every_error_of_an_invalid_proposal (test_lab01_cli.Lab01CommandLineTests.test_validate_reports_every_error_of_an_invalid_proposal) ... ok
+test_collect_reports_a_green_linux_environment (test_lab01_doctor.Lab01DoctorTests.test_collect_reports_a_green_linux_environment) ... ok
+test_collect_reports_a_green_windows_environment (test_lab01_doctor.Lab01DoctorTests.test_collect_reports_a_green_windows_environment) ... ok
+test_collect_reports_green_windows_without_agy (test_lab01_doctor.Lab01DoctorTests.test_collect_reports_green_windows_without_agy) ... ok
+test_collect_reports_macos_red_even_with_capabilities (test_lab01_doctor.Lab01DoctorTests.test_collect_reports_macos_red_even_with_capabilities) ... ok
+test_doctor_writes_machine_readable_report_and_fails_red (test_lab01_doctor.Lab01DoctorTests.test_doctor_writes_machine_readable_report_and_fails_red) ... ok
+test_approval_is_bound_to_the_exact_proposal_content (test_lab01_workflow.GovernedProposalWorkflowTests.test_approval_is_bound_to_the_exact_proposal_content) ... ok
+test_approved_decision_creates_accepted_contract (test_lab01_workflow.GovernedProposalWorkflowTests.test_approved_decision_creates_accepted_contract) ... ok
+test_incomplete_forged_decision_is_refused (test_lab01_workflow.GovernedProposalWorkflowTests.test_incomplete_forged_decision_is_refused) ... ok
+test_pending_decision_cannot_be_applied (test_lab01_workflow.GovernedProposalWorkflowTests.test_pending_decision_cannot_be_applied) ... ok
+test_proposal_requires_proposed_status_and_two_string_non_goals (test_lab01_workflow.GovernedProposalWorkflowTests.test_proposal_requires_proposed_status_and_two_string_non_goals) ... ok
+test_reapplying_the_same_approved_proposal_is_idempotent (test_lab01_workflow.GovernedProposalWorkflowTests.test_reapplying_the_same_approved_proposal_is_idempotent) ... ok
+test_agy_profile_extracts_only_the_structured_response_and_records_metadata (test_lab02_agy.Lab02AgyAdapterTests.test_agy_profile_extracts_only_the_structured_response_and_records_metadata) ... ok
+test_agy_profile_refuses_multiple_json_values_without_writing_partial_evidence (test_lab02_agy.Lab02AgyAdapterTests.test_agy_profile_refuses_multiple_json_values_without_writing_partial_evidence) ... ok
+test_run_agy_command_uses_the_selected_model_and_run_attribution (test_lab02_agy.Lab02AgyCommandTests.test_run_agy_command_uses_the_selected_model_and_run_attribution) ... ok
+test_check_fixtures_reports_three_offline_gates_without_changing_the_vault (test_lab02_cli.Lab02CommandLineTests.test_check_fixtures_reports_three_offline_gates_without_changing_the_vault) ... ERROR
+test_verify_returns_one_and_writes_a_report_when_checks_fail (test_lab02_cli.Lab02CommandLineTests.test_verify_returns_one_and_writes_a_report_when_checks_fail) ... ok
+test_verify_returns_two_when_inputs_cannot_be_read (test_lab02_cli.Lab02CommandLineTests.test_verify_returns_two_when_inputs_cannot_be_read) ... ok
+test_argv_digest_matches_bytes_for_special_paths (test_lab02_digest_commands.Lab02DigestCommandTests.test_argv_digest_matches_bytes_for_special_paths) ... ok
+test_argv_preserves_windows_paths_that_break_embedded_python_literals (test_lab02_digest_commands.Lab02DigestCommandTests.test_argv_preserves_windows_paths_that_break_embedded_python_literals) ... ok
+test_documented_digest_commands_pass_paths_through_argv (test_lab02_digest_commands.Lab02DigestCommandTests.test_documented_digest_commands_pass_paths_through_argv) ... ERROR
+test_posix_shell_quoting_preserves_argv_digest_paths (test_lab02_digest_commands.Lab02DigestCommandTests.test_posix_shell_quoting_preserves_argv_digest_paths) ... ok
+test_openrouter_profile_enforces_an_overall_deadline_without_writing_partial_evidence (test_lab02_openrouter.Lab02OpenRouterAdapterTests.test_openrouter_profile_enforces_an_overall_deadline_without_writing_partial_evidence) ... ok
+test_openrouter_profile_refuses_a_missing_api_key_before_network_or_writes (test_lab02_openrouter.Lab02OpenRouterAdapterTests.test_openrouter_profile_refuses_a_missing_api_key_before_network_or_writes) ... ok
+test_openrouter_profile_refuses_missing_attribution_before_network_or_partial_write (test_lab02_openrouter.Lab02OpenRouterAdapterTests.test_openrouter_profile_refuses_missing_attribution_before_network_or_partial_write) ... ok
+test_openrouter_profile_refuses_path_traversal_run_id_before_network (test_lab02_openrouter.Lab02OpenRouterAdapterTests.test_openrouter_profile_refuses_path_traversal_run_id_before_network) ... ok
+test_openrouter_profile_writes_only_message_content_and_bound_run_metadata (test_lab02_openrouter.Lab02OpenRouterAdapterTests.test_openrouter_profile_writes_only_message_content_and_bound_run_metadata) ... ok
+test_run_openrouter_command_reads_the_key_from_the_environment (test_lab02_openrouter.Lab02OpenRouterCommandTests.test_run_openrouter_command_reads_the_key_from_the_environment) ... ok
+test_candidate_json_schema_matches_the_closed_request_contract (test_lab02_source_and_import.Lab02RequestPreparationTests.test_candidate_json_schema_matches_the_closed_request_contract) ... ok
+test_import_response_creates_a_write_once_proposal_bound_to_raw_evidence (test_lab02_source_and_import.Lab02RequestPreparationTests.test_import_response_creates_a_write_once_proposal_bound_to_raw_evidence) ... ok
+test_prepare_request_embeds_the_exact_registered_fragment_and_output_contract (test_lab02_source_and_import.Lab02RequestPreparationTests.test_prepare_request_embeds_the_exact_registered_fragment_and_output_contract) ... ok
+test_prepare_request_refuses_to_overwrite_different_request_bytes (test_lab02_source_and_import.Lab02RequestPreparationTests.test_prepare_request_refuses_to_overwrite_different_request_bytes) ... ok
+test_prepare_request_writes_identical_request_bytes_for_two_runs (test_lab02_source_and_import.Lab02RequestPreparationTests.test_prepare_request_writes_identical_request_bytes_for_two_runs) ... ok
+test_register_source_is_a_no_op_for_the_same_source_content (test_lab02_source_and_import.Lab02SourceRegistrationTests.test_register_source_is_a_no_op_for_the_same_source_content) ... ok
+test_register_source_preserves_the_exact_section_before_further_reading (test_lab02_source_and_import.Lab02SourceRegistrationTests.test_register_source_preserves_the_exact_section_before_further_reading) ... FAIL
+test_register_source_refuses_a_vault_inside_the_course_clone (test_lab02_source_and_import.Lab02SourceRegistrationTests.test_register_source_refuses_a_vault_inside_the_course_clone) ... ok
+test_register_source_refuses_different_content_for_the_same_source_id (test_lab02_source_and_import.Lab02SourceRegistrationTests.test_register_source_refuses_different_content_for_the_same_source_id) ... ok
+test_committed_drift_cannot_be_hidden_by_staging_baseline_bytes (test_lab02_verify.Lab02FinalVerificationTests.test_committed_drift_cannot_be_hidden_by_staging_baseline_bytes) ... ok
+test_course_tree_drift_excludes_student_paths_but_reports_upstream_changes (test_lab02_verify.Lab02FinalVerificationTests.test_course_tree_drift_excludes_student_paths_but_reports_upstream_changes) ... ok
+test_course_tree_drift_reports_committed_staged_unstaged_and_untracked_upstream_changes (test_lab02_verify.Lab02FinalVerificationTests.test_course_tree_drift_reports_committed_staged_unstaged_and_untracked_upstream_changes) ... ok
+test_verify_accepts_rejection_then_a_human_revision_without_replacing_the_bound_review (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_rejection_then_a_human_revision_without_replacing_the_bound_review) ... ERROR
+test_verify_accepts_rejection_then_a_new_generation_without_replacing_the_bound_review (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_rejection_then_a_new_generation_without_replacing_the_bound_review) ... ERROR
+test_verify_accepts_the_second_live_candidate (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_the_second_live_candidate) ... ERROR
+test_verify_fails_for_committed_and_working_tree_upstream_drift (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_for_committed_and_working_tree_upstream_drift) ... ERROR
+test_verify_fails_when_a_canonical_record_gains_a_provider_field (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_when_a_canonical_record_gains_a_provider_field) ... ERROR
+test_verify_fails_when_the_registered_baseline_is_missing (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_when_the_registered_baseline_is_missing) ... ERROR
+test_verify_passes_a_complete_submission_without_changing_the_vault (test_lab02_verify.Lab02FinalVerificationTests.test_verify_passes_a_complete_submission_without_changing_the_vault) ... ERROR
+test_verify_passes_before_and_after_a_student_only_commit_in_a_real_git_repo (test_lab02_verify.Lab02FinalVerificationTests.test_verify_passes_before_and_after_a_student_only_commit_in_a_real_git_repo) ... ERROR
+test_apply_refuses_a_fixture_candidate_without_live_ancestry (test_lab02_workflow.Lab02DecisionAndApplicationTests.test_apply_refuses_a_fixture_candidate_without_live_ancestry) ... ok
+test_apply_refuses_changed_source_without_creating_accepted_records (test_lab02_workflow.Lab02DecisionAndApplicationTests.test_apply_refuses_changed_source_without_creating_accepted_records) ... ok
+test_apply_refuses_on_repeat_without_overwriting (test_lab02_workflow.Lab02DecisionAndApplicationTests.test_apply_refuses_on_repeat_without_overwriting) ... ok
+test_approved_review_creates_the_concept_and_operation_records (test_lab02_workflow.Lab02DecisionAndApplicationTests.test_approved_review_creates_the_concept_and_operation_records) ... ok
+test_confinement_rejects_path_traversal_in_proposal_id (test_lab02_workflow.Lab02DecisionAndApplicationTests.test_confinement_rejects_path_traversal_in_proposal_id) ... ok
+test_compare_live_runs_accepts_two_runs_with_identical_request_and_response_bytes (test_lab02_workflow.Lab02LiveComparisonTests.test_compare_live_runs_accepts_two_runs_with_identical_request_and_response_bytes) ... ok
+test_revision_creates_a_new_candidate_and_preserves_the_model_candidate (test_lab02_workflow.Lab02RevisionTests.test_revision_creates_a_new_candidate_and_preserves_the_model_candidate) ... ok
+test_validation_accepts_a_bound_candidate_with_three_exact_quotes (test_lab02_workflow.Lab02ValidationTests.test_validation_accepts_a_bound_candidate_with_three_exact_quotes) ... ok
+test_validation_accepts_a_descriptive_tag (test_lab02_workflow.Lab02ValidationTests.test_validation_accepts_a_descriptive_tag) ... ok
+test_validation_rejects_reusing_one_exact_quote_for_multiple_claims (test_lab02_workflow.Lab02ValidationTests.test_validation_rejects_reusing_one_exact_quote_for_multiple_claims) ... ok
+test_validation_rejects_wrong_claim_category_order (test_lab02_workflow.Lab02ValidationTests.test_validation_rejects_wrong_claim_category_order) ... ok
+
+======================================================================
+ERROR: test_check_fixtures_reports_three_offline_gates_without_changing_the_vault (test_lab02_cli.Lab02CommandLineTests.test_check_fixtures_reports_three_offline_gates_without_changing_the_vault)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_cli.py", line 30, in test_check_fixtures_reports_three_offline_gates_without_changing_the_vault
+    theory_path.write_bytes(REAL_THEORY.read_bytes())
+                            ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 782, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 776, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_documented_digest_commands_pass_paths_through_argv (test_lab02_digest_commands.Lab02DigestCommandTests.test_documented_digest_commands_pass_paths_through_argv)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_digest_commands.py", line 28, in test_documented_digest_commands_pass_paths_through_argv
+    text = LAB.read_text(encoding="utf-8")
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 792, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 776, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Lab.md'
+
+======================================================================
+ERROR: test_verify_accepts_rejection_then_a_human_revision_without_replacing_the_bound_review (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_rejection_then_a_human_revision_without_replacing_the_bound_review)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 612, in test_verify_accepts_rejection_then_a_human_revision_without_replacing_the_bound_review
+    vault, report_dir, fixture_dir, project_root = self._prepare_two_live_runs(root)
+                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 585, in _prepare_two_live_runs
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_accepts_rejection_then_a_new_generation_without_replacing_the_bound_review (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_rejection_then_a_new_generation_without_replacing_the_bound_review)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 533, in test_verify_accepts_rejection_then_a_new_generation_without_replacing_the_bound_review
+    vault, report_dir, fixture_dir, project_root = self._prepare_two_live_runs(root)
+                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 585, in _prepare_two_live_runs
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_accepts_the_second_live_candidate (test_lab02_verify.Lab02FinalVerificationTests.test_verify_accepts_the_second_live_candidate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 513, in test_verify_accepts_the_second_live_candidate
+    vault, report_dir, fixture_dir, project_root = self._build_submission(
+                                                   ~~~~~~~~~~~~~~~~~~~~~~^
+        root, selected_run_id="live-primary-02"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 270, in _build_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_fails_for_committed_and_working_tree_upstream_drift (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_for_committed_and_working_tree_upstream_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 435, in test_verify_fails_for_committed_and_working_tree_upstream_drift
+    vault, report_dir, fixture_dir, project_root, _baseline = self._build_git_submission(root)
+                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 350, in _build_git_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_fails_when_a_canonical_record_gains_a_provider_field (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_when_a_canonical_record_gains_a_provider_field)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 322, in test_verify_fails_when_a_canonical_record_gains_a_provider_field
+    vault, report_dir, fixture_dir, project_root = self._build_submission(root)
+                                                   ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 270, in _build_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_fails_when_the_registered_baseline_is_missing (test_lab02_verify.Lab02FinalVerificationTests.test_verify_fails_when_the_registered_baseline_is_missing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 489, in test_verify_fails_when_the_registered_baseline_is_missing
+    vault, report_dir, fixture_dir, project_root = self._build_submission(
+                                                   ~~~~~~~~~~~~~~~~~~~~~~^
+        root,
+        ^^^^^
+        course_layout="published",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        course_commit="deadbeef" * 5,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 270, in _build_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_passes_a_complete_submission_without_changing_the_vault (test_lab02_verify.Lab02FinalVerificationTests.test_verify_passes_a_complete_submission_without_changing_the_vault)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 300, in test_verify_passes_a_complete_submission_without_changing_the_vault
+    vault, report_dir, fixture_dir, project_root = self._build_submission(root)
+                                                   ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 270, in _build_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+ERROR: test_verify_passes_before_and_after_a_student_only_commit_in_a_real_git_repo (test_lab02_verify.Lab02FinalVerificationTests.test_verify_passes_before_and_after_a_student_only_commit_in_a_real_git_repo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 372, in test_verify_passes_before_and_after_a_student_only_commit_in_a_real_git_repo
+    vault, report_dir, fixture_dir, project_root, baseline = self._build_git_submission(root)
+                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_verify.py", line 350, in _build_git_submission
+    shutil.copy2(REAL_THEORY, theory_path)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 529, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py", line 313, in copyfile
+    with open(src, 'rb') as fsrc:
+         ~~~~^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/modules/02_Foundation_Models_and_AI_Application_Architecture/02_Foundation_Models_and_AI_Application_Architecture_Theory.md'
+
+======================================================================
+FAIL: test_register_source_preserves_the_exact_section_before_further_reading (test_lab02_source_and_import.Lab02SourceRegistrationTests.test_register_source_preserves_the_exact_section_before_further_reading)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/antonygritsai/Desktop/Sobol/ai-systems-design-course/training-project/tests/public/test_lab02_source_and_import.py", line 96, in test_register_source_preserves_the_exact_section_before_further_reading
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        source_path,
+        ^^^^^^^^^^^^
+        vault / f"sources/{SOURCE_ID}.md",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+AssertionError: PosixPath('/private/var/folders/qw/902x6z_s0sj5vxhtyt[100 chars].md') != PosixPath('/var/folders/qw/902x6z_s0sj5vxhtyt_jl9vh00[92 chars].md')
+
+----------------------------------------------------------------------
+Ran 65 tests in 0.855s
+
+FAILED (failures=1, errors=10)
+Wrote the environment report to /var/folders/qw/902x6z_s0sj5vxhtyt_jl9vh0000gn/T/tmpndqiop01/environment-report.json.
+Recorded an AGY live response using model gemini-3.8-flash-low for run live-primary-01.
+exit_code=1

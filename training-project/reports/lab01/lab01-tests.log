@@ -1,0 +1,25 @@
+test_a_recorded_decision_cannot_be_silently_overwritten (tests.public.test_lab01_cli.Lab01CommandLineTests.test_a_recorded_decision_cannot_be_silently_overwritten) ... ok
+test_apply_refuses_a_proposal_that_was_never_decided (tests.public.test_lab01_cli.Lab01CommandLineTests.test_apply_refuses_a_proposal_that_was_never_decided) ... ok
+test_apply_refuses_a_rejected_proposal (tests.public.test_lab01_cli.Lab01CommandLineTests.test_apply_refuses_a_rejected_proposal) ... ok
+test_approved_proposal_becomes_the_accepted_contract (tests.public.test_lab01_cli.Lab01CommandLineTests.test_approved_proposal_becomes_the_accepted_contract) ... ok
+test_decide_refuses_a_pending_decision_for_a_different_proposal (tests.public.test_lab01_cli.Lab01CommandLineTests.test_decide_refuses_a_pending_decision_for_a_different_proposal) ... ok
+test_validate_accepts_a_well_formed_proposal (tests.public.test_lab01_cli.Lab01CommandLineTests.test_validate_accepts_a_well_formed_proposal) ... ok
+test_validate_reports_every_error_of_an_invalid_proposal (tests.public.test_lab01_cli.Lab01CommandLineTests.test_validate_reports_every_error_of_an_invalid_proposal) ... ok
+test_collect_reports_a_green_linux_environment (tests.public.test_lab01_doctor.Lab01DoctorTests.test_collect_reports_a_green_linux_environment) ... ok
+test_collect_reports_a_green_windows_environment (tests.public.test_lab01_doctor.Lab01DoctorTests.test_collect_reports_a_green_windows_environment) ... ok
+test_collect_reports_green_windows_without_agy (tests.public.test_lab01_doctor.Lab01DoctorTests.test_collect_reports_green_windows_without_agy) ... ok
+test_collect_reports_macos_red_even_with_capabilities (tests.public.test_lab01_doctor.Lab01DoctorTests.test_collect_reports_macos_red_even_with_capabilities) ... ok
+test_doctor_writes_machine_readable_report_and_fails_red (tests.public.test_lab01_doctor.Lab01DoctorTests.test_doctor_writes_machine_readable_report_and_fails_red) ... ok
+test_approval_is_bound_to_the_exact_proposal_content (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_approval_is_bound_to_the_exact_proposal_content) ... ok
+test_approved_decision_creates_accepted_contract (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_approved_decision_creates_accepted_contract) ... ok
+test_incomplete_forged_decision_is_refused (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_incomplete_forged_decision_is_refused) ... ok
+test_pending_decision_cannot_be_applied (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_pending_decision_cannot_be_applied) ... ok
+test_proposal_requires_proposed_status_and_two_string_non_goals (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_proposal_requires_proposed_status_and_two_string_non_goals) ... ok
+test_reapplying_the_same_approved_proposal_is_idempotent (tests.public.test_lab01_workflow.GovernedProposalWorkflowTests.test_reapplying_the_same_approved_proposal_is_idempotent) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.041s
+
+OK
+Wrote the environment report to /var/folders/qw/902x6z_s0sj5vxhtyt_jl9vh0000gn/T/tmpb61qwzem/environment-report.json.
+exit_code=0

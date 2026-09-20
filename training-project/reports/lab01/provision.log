@@ -1,0 +1,11 @@
+^DDarwin
+ProductName:		macOS
+ProductVersion:		27.0
+BuildVersion:		26A428
+git version 2.54.0 (Apple Git-157)
+gh version 2.101.0 (2026-09-15)
+https://github.com/cli/cli/releases/tag/v2.101.0
+uv 0.12.15 (d35f1f270 2026-09-15 aarch64-apple-darwin)
+obsidian: unavailable
+agy: unavailable
+uv 0.12.15 (d35f1f270 2026-09-15 aarch64-apple-darwin)
