@@ -1048,8 +1048,10 @@ def _verify_approved_fixtures(vault: Path, report_dir: Path, fixture_dir: Path) 
         "malformed-response.txt",
         "semantic-unsupported-response.json",
     }
+    allowed_support_files = {"REPORT.md"}
+    actual = {path.name for path in fixture_dir.iterdir() if path.is_file()}
     _require(
-        expected == {path.name for path in fixture_dir.iterdir() if path.is_file()},
+        expected.issubset(actual) and actual <= expected | allowed_support_files,
         "Approved Laboratory 02 fixture set is incomplete or contains unexpected files.",
     )
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -1455,11 +1457,21 @@ def verify_lab02(
             "06-final-result.png",
         )
         report_text = (report_dir / "REPORT.md").read_text(encoding="utf-8")
+        _require(
+            "data:image/" not in report_text,
+            "Source REPORT.md must keep relative image links instead of embedded data URIs.",
+        )
         for name in names:
             screenshot = report_dir / "screenshots" / name
             _require(screenshot.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), f"{name} is not PNG.")
-            _require(name in report_text, f"REPORT.md does not reference {name}.")
-        return "REPORT.md references all six required PNG screenshots"
+            relative_link = re.compile(
+                rf"!\[[^\]\r\n]*\]\(screenshots/{re.escape(name)}\)"
+            )
+            _require(
+                relative_link.search(report_text) is not None,
+                f"REPORT.md must reference {name} with a relative Markdown image link.",
+            )
+        return "REPORT.md uses relative Markdown image links for all six required PNG screenshots"
 
     check("submission-files", verify_submission_files)
 
