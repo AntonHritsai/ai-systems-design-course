@@ -1,126 +1,163 @@
-# Laboratory 01 Report
+# Лабораторна робота 01
 
-## Summary
+## Ідентифікація подання
 
-This Laboratory 01 run establishes the governed AI system boundary artifacts in the
-student-owned project paths `reports/lab01/` and `student/design/`.
+- URL форку: `https://github.com/AntonHritsai/ai-systems-design-course`
+- Назва гілки: `lab01/anton-hritsai`
+- Повний хеш коміту на момент оновлення звіту після merge `upstream/main`: `d23b4ec4c6118a8c20084d181c2c0f5c4f812876`
 
-Important limitation: the evidence host is macOS / Darwin. The lab instructions classify macOS
-as a red preflight host, so this is a complete repository workflow run but not a green supported
-Windows/Linux workstation run.
+Роботу виконано в особистому форку репозиторію курсу. `origin` вказує на форк студента, а
+`upstream` - на репозиторій викладача `sobol-mo/ai-systems-design-course`. Після оновлення
+матеріалів викладача локальна гілка містить нові правила подання, оновлену перевірку
+середовища та команду `learning-project prepare-report`.
 
-## Repository And Branch
+## Середовище
 
-- Fork URL: `https://github.com/AntonHritsai/ai-systems-design-course`
-- `origin`: `https://github.com/AntonHritsai/ai-systems-design-course.git`
-- `upstream`: `https://github.com/sobol-mo/ai-systems-design-course.git`
-- Branch: `lab01/anton-hritsai`
-- Student-owned committed paths: `training-project/reports/lab01/` and
-  `training-project/student/design/`
+Робоча станція - macOS/Darwin. У попередній версії лабораторної роботи такий хост був
+класифікований як червоний тільки через назву ОС. Після оновлення правил хост оцінюється за
+можливостями. Новий `learning-project doctor` записав `preflight: green`, тому що доступні Git,
+GitHub CLI, `uv` та Obsidian. Antigravity CLI залишився недоступним, але він не входить до
+обов'язкових чотирьох можливостей робочої станції; ця недоступність пояснює ручний запасний
+шлях пропонувача.
 
-## Workstation Evidence
+Повторна перевірка версій показала незмінні Git `2.54.0`, GitHub CLI `2.101.0` та `uv 0.12.15`.
+Окремий очищений журнал збережено у `reports/lab01/provision.log`, а машинозчитуваний звіт -
+у `reports/lab01/environment-report.json`.
 
-The current workstation evidence is preserved in `environment-report.json`, `provision.log`, and
-the screenshots under `screenshots/`.
+![можливості робочої станції](screenshots/02-workstation-capabilities.png)
 
-Observed tools:
+Рисунок 1 - `02-workstation-capabilities.png`
 
-- Git: `git version 2.54.0 (Apple Git-157)`
-- GitHub CLI: `gh version 2.101.0 (2026-09-15)`
-- uv: `uv 0.12.15 (Homebrew 2026-09-15 aarch64-apple-darwin)`
-- Obsidian: `1.13.7`
-- Antigravity CLI: unavailable (`agy: command not found`)
+## Власність репозиторію
 
-The second supported Windows `winget configure` convergence run was not performed because this
-evidence run is on macOS. The closest local evidence is the repeated tool capability checks and
-the final `learning-project doctor` report, which remains red because the host is unsupported.
+Клон має два віддалені репозиторії. `origin` є студентським форком
+`AntonHritsai/ai-systems-design-course`, а `upstream` є публічним репозиторієм курсу
+`sobol-mo/ai-systems-design-course`. Студентські результати виконуються в окремій гілці
+`lab01/anton-hritsai`, а зміни надсилаються тільки до `origin`. Оновлення викладача було отримано
+з `upstream/main` і злито в лабораторну гілку без конфліктів.
 
-## External Vault
+![віддалені репозиторії Git](screenshots/01-git-remotes.png)
 
-External vault path: `/Users/antonygritsai/Desktop/Sobol/ai-systems-learning-vault`
+Рисунок 2 - `01-git-remotes.png`
 
-The vault is outside the Git repository and contains:
+## Зовнішнє сховище Markdown-файлів
 
-- `README.md`
-- `sources/module-01-ai-engineering-foundations.md`
+Зовнішнє сховище розташовано поза Git-репозиторієм:
+`/Users/antonygritsai/Desktop/Sobol/ai-systems-learning-vault`. Воно містить нейтральний
+`README.md` і запис джерела `sources/module-01-ai-engineering-foundations.md`. У записі видно
+`record_type: source`, `source_id`, `course_path` і `course_commit`. Значення `course_commit`
+прив'язує джерело до конкретної версії теорії модуля 01, а не до фінального коміту студентської
+роботи.
 
-The source record uses course commit `e4fb5c6bbb2cb150c6000ed1406dff10b6854690` and course path
-`modules/01_AI_Engineering_Foundations/01_AI_Engineering_Foundations_Theory.md`.
-The external vault is shown in `screenshots/17-vault-in-obsidian.png`, and the raw YAML front
-matter is shown in `screenshots/18-vault-yaml-source.png`.
+Сховище не входить до Git і не подається як частина репозиторію. Окрема копія поза пристроєм у
+межах цієї роботи не підтверджена; це зафіксоване обмеження відновлення зовнішнього стану.
 
-Off-device backup/sync was not verified on this Mac run. For a supported final workstation run,
-the vault should be placed in OneDrive or another existing off-device backup/sync location.
+![зовнішнє сховище](screenshots/05-external-vault.png)
 
-## Proposer Path
+Рисунок 3 - `05-external-vault.png`
 
-Antigravity CLI was not available on this host. The proposal was completed by the student through
-the documented no-agent/manual fallback. This fallback does not claim live separation between an
-AI proposer and the student reviewer. The planned ordinary governance boundary remains: AI may
-propose, deterministic workflow validates and applies only approved content, and the student keeps
-semantic approval authority.
+## Шлях пропонувача
 
-## Personal Domain Boundary
+Типовий пропонувач Antigravity CLI був недоступний: команда `agy` не знайдена в цьому
+середовищі. Тому використано задокументований ручний запасний шлях без агента. Пропозицію
+заповнено студентом у текстовому редакторі без вигаданого сеансу ШІ та без претензії, що модель
+була автором кандидата.
 
-The selected `personal_domain` is `Backend API design for educational projects`. It is only a
-non-sensitive possible later extension. It does not redefine the fixed course system, which remains
-a workstation-local AI-assisted learning knowledge system for technical concepts.
+Запланована межа повноважень не змінюється: у звичайному процесі ШІ може пропонувати кандидат,
+детермінований код перевіряє структуру й застосовує лише затверджене рішення, а студент
+зберігає повноваження змістовного схвалення. Ручний шлях лише замінює недоступний сеанс
+пропонувача, але не надає пропозиції статусу прийнятого контракту.
 
-## Usefulness, Baseline, And Trade-Off
+![запасний шлях без агента](screenshots/04-manual-fallback.png)
 
-AI can be useful because it can draft bounded candidate interpretations and expose uncertainty
-from supplied evidence. The simpler non-AI baseline is a manual Markdown source log plus Git
-commits and deterministic validation. That baseline preserves provenance and audit evidence, but
-it does not help draft candidate interpretations.
+Рисунок 4 - `04-manual-fallback.png`
 
-The main design trade-off is speed versus authority control. Requiring human review and a
-digest-bound decision slows down accepted changes, but it reduces the risk that a fluent but
-unsupported proposal becomes accepted state.
+## Семантичний розгляд
 
-## Semantic Review For Step 8
+1. Так. Пропозиція зберігає надану навчальну систему знань; особиста предметна сфера є лише
+   можливим пізнішим розширенням.
+2. Так. Запланований результат описує спостережувану здатність студента: простежити концепт до
+   джерела, пояснити межу повноважень і зберегти свідчення розгляду та затвердження.
+3. Так. Нецілі виключають промислову платформу знань, графові й векторні індекси, завантаження
+   приватних даних, високоризикові рішення та перевизначення ідентичності системи.
+4. Так. Поля `governance` відокремлюють роль ШІ-пропонувача, детермінованого коду й людини.
+5. Так. Умова корисності перевіряється через середовище, точне джерело, валідацію, відмову
+   передчасного застосування, рішення та прийнятий контракт.
+6. Так. Суттєвий ризик правдоподібний: структурно правильна, але змістовно надмірна пропозиція
+   може бути помилково сприйнята як добрий дизайн.
+7. Так. Базова лінія без ШІ простіша: ручний Markdown-журнал джерел, Git-коміти та
+   детермінована валідація.
+8. Так. Потрібні свідчення поєднують детерміновані результати й людський змістовний розгляд.
+9. Так. Невизначеність чесно зазначає, що якість майбутнього обґрунтування пропозицій після
+   розширення сховища ще не встановлена.
 
-1. Yes. The proposal preserves the supplied learning knowledge system; the personal domain is only a bounded future extension.
-2. Yes. The learning outcome describes an observable student capability: tracing a concept to a source, explaining authority boundaries, and preserving review/approval evidence.
-3. Yes. The non-goals exclude production knowledge-platform implementation, graph/vector indexes, private-data ingestion, high-consequence decisions, and redefining the system identity.
-4. Yes. The governance fields limit AI to proposing, assign structural checks and digest binding to deterministic commands, and leave semantic approval to the student.
-5. Yes. The usefulness condition can be checked through preserved evidence: environment setup, source commit, validation, refused premature apply, decision, and accepted contract.
-6. Yes. The material risk is plausible: a structurally valid but semantically overbroad proposal could be mistaken for a good design.
-7. Yes. The baseline is simpler: manual Markdown logging plus Git and validation. It covers provenance and evidence without AI-assisted drafting.
-8. Yes. Required evidence includes deterministic results and human semantic review/source grounding.
-9. Yes. The uncertainty states that future grounding quality is not yet established once the vault grows beyond the first source.
+Висновок: пропозиція може бути схвалена після успішної детермінованої перевірки, але сама
+структурна валідація не дорівнює змістовному прийняттю.
 
-Conclusion: the proposal is acceptable for approval after successful deterministic validation.
+## Розподіл повноважень
 
-## Verification Summary
+У звичайній системі ШІ має право тільки пропонувати зміни. Він не може затверджувати власний
+вихід і не може самостійно записувати прийнятий стан. Команда `validate` перевіряє структуру
+кандидата, команда `decide` записує людське рішення з дайджестом точного вмісту, а команда
+`apply` створює прийнятий контракт лише для відповідного затвердженого рішення.
 
-- `uv sync` completed successfully.
-- Lab01-specific public tests passed: `Ran 18 tests`, `OK`.
-- Full `unittest discover -s tests/public -v` reaches Lab02 tests that reference Module 02 files
-  not present in this published tree; no upstream-owned files were added or modified to hide that.
-- Starter proposal validation succeeded in Step 6.
-- Premature `apply` before `boundary-decision.json` failed as expected.
-- Final proposal validation succeeded for `lab01-learning-boundary-backend-api-design`.
-- `boundary-decision.json` records `approved` and proposal digest
-  `d36cb7f76acdf8360eda32307d3d4ba98957326cf9aae681132cc5fda3f6f7ab`.
-- `student/design/learning-system-boundary.yaml` records `status: approved` and the same proposal
-  digest in its `accepted` section.
-- Final verification reran Lab01 tests, `doctor`, `validate`, `apply`, JSON parsing, remotes,
-  branch, `git diff --check`, and clean status.
+На ручному запасному шляху студент написав кандидат самостійно, тому цей запуск не демонструє
+живого розділення між агентом і студентом. Проте ті самі шлюзи `validate`, `decide` і `apply`
+залишаються незмінними, а прийнятий стан усе одно виникає тільки після явного рішення.
 
-## Recovery Plan
+## Корисність і базова лінія без ШІ
 
-- Reproducible environment: rerun the supported Windows/Linux provisioning path and `uv sync`.
-- Git-backed project artifacts: restore from the submitted fork, branch, and commit.
-- External Markdown vault: restore from the off-device synchronized or backed-up vault location.
+ШІ може бути корисним для чернеток обмежених інтерпретацій, зіставлення пропозиції з джерелами
+та виявлення невизначеності. Простіша базова лінія без ШІ вже забезпечує походження й аудит:
+Markdown-запис джерел, Git-історію, структурну валідацію та ручний семантичний розгляд. Вона
+повільніша для підготовки кандидатів, але простіша, дешевша й менш залежна від зовнішнього
+агентного сервісу.
 
-## Screenshot Evidence
+## Особиста предметна сфера як пізніше розширення
 
-The screenshot set is stored under `reports/lab01/screenshots/`. See
-`reports/lab01/screenshots/README.md` for the filename-to-evidence mapping.
+Обрана сфера `Backend API design for educational projects` є не новою системою, а можливим
+пізнішим навчальним розширенням. Фіксована система залишається навчальною системою знань для
+технічних концептів. Запланований результат зберігає цю межу: студент має вміти простежити
+концепт до зареєстрованого джерела, пояснити повноваження для змін і показати, яку пропозицію
+було розглянуто та затверджено.
 
-## Why Schema Validation Is Not Enough
+## Проєктний компроміс
 
-Schema validation checks required fields, simple formats, and workflow invariants. It cannot prove
-that the proposal preserves the intended system identity, uses the personal domain correctly,
-states a meaningful usefulness condition, or identifies the right risk. Those judgments require
-human semantic review against the supplied theory and project contracts.
+Основний компроміс - швидкість проти контролю повноважень. Окремий семантичний розгляд і
+digest-bound approval додають ручний крок, але зменшують ризик того, що грамотно сформульована,
+проте необґрунтована пропозиція стане прийнятим станом системи. Відмова від графового індексу,
+векторного індексу й автоматичного завантаження концептів також зменшує складність першої
+лабораторної роботи.
+
+## Детерміновані перевірки
+
+Публічні тести Lab01 після оновлення матеріалів проходять разом із новими тестами
+`prepare-report`: `Ran 27 tests`, `OK`. Пропозиція проходить `learning-project validate`.
+Передчасне `apply` без рішення раніше завершилося помилкою, що підтверджує відокремлення
+структурної коректності від затвердження. Після `decide --approve` команда `apply` створила
+`student/design/learning-system-boundary.yaml` зі `status: approved`.
+
+Успішний валідатор схеми не доводить, що пропозиція є добрим проєктом системи. Він перевіряє
+наявність і форму полів, але не встановлює, чи правильна межа системи, чи достатня умова
+корисності, чи обґрунтований ризик. Для цього потрібний людський змістовний розгляд.
+
+![публічні тести](screenshots/03-public-tests.png)
+
+Рисунок 5 - `03-public-tests.png`
+
+![відмова передчасного apply](screenshots/06-premature-apply-refused.png)
+
+Рисунок 6 - `06-premature-apply-refused.png`
+
+![прийнятий контракт](screenshots/07-accepted-contract.png)
+
+Рисунок 7 - `07-accepted-contract.png`
+
+## Відновлення
+
+Відтворюване середовище відновлюється через актуальні інструкції лабораторної роботи, повторну
+перевірку Git, GitHub CLI, `uv` та Obsidian і запуск `learning-project doctor`. Артефакти
+проєкту відновлюються з Git-форку, гілки `lab01/anton-hritsai` і поданого коміту. Зовнішнє
+Markdown-сховище не є частиною Git, тому для нього потрібне окреме резервне копіювання або
+синхронізація. У цьому запуску така копія поза пристроєм не підтверджена, тому це залишається
+відомим обмеженням.

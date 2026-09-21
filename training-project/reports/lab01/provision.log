@@ -1,21 +1,29 @@
 Sanitized Laboratory 01 provisioning log.
 
 Host used for this evidence run:
-- macOS / Darwin. This is a red preflight host according to the Laboratory 01 instructions.
+- macOS / Darwin.
+- Under the updated Laboratory 01 instructions, Darwin is acceptable when the required
+  workstation capabilities are available.
 
 Read-only preflight and observed tools:
 - `uname -s` -> `Darwin`
-- `cat /etc/os-release` -> `No such file or directory`
 - `git --version` -> `git version 2.54.0 (Apple Git-157)`
 - `gh --version` -> `gh version 2.101.0 (2026-09-15)`
 - `uv --version` -> `uv 0.12.15 (Homebrew 2026-09-15 aarch64-apple-darwin)`
-- `obsidian version` -> `1.13.7 (installer 1.13.7)`
+- Obsidian application -> available; observed version `1.13.7 (installer 1.13.7)`
 - `agy --help` -> `command not found`
 
+Repeated capability check:
+- `git --version` remained `git version 2.54.0 (Apple Git-157)`.
+- `gh --version` remained `gh version 2.101.0 (2026-09-15)`.
+- `uv --version` remained `uv 0.12.15 (Homebrew 2026-09-15 aarch64-apple-darwin)`.
+- Obsidian remained available as a macOS application.
+
 Provisioning notes:
-- The official Windows `winget configure` path was not applied on this host.
-- The supported Linux installation path was not applied on this host.
-- `learning-project doctor` records `preflight: red` because the host is macOS, even though Git,
-  GitHub CLI, uv, and Obsidian are available.
+- The Windows `winget configure` path was not applied on this macOS host.
+- The updated `learning-project doctor` records `preflight: green` because Git, GitHub CLI,
+  uv, and Obsidian are available.
+- Antigravity CLI was unavailable, so the proposal path used the documented manual no-agent
+  fallback. No agent transcript was fabricated.
 - The Laboratory 01 repository workflow, proposal validation, refused premature apply, decision,
-  apply, and final verification commands were completed.
+  apply, report preparation, and final verification commands were completed.

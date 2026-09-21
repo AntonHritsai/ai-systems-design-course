@@ -5,7 +5,7 @@
     "release": "27.0.0",
     "build": null
   },
-  "preflight": "red",
+  "preflight": "green",
   "capabilities": {
     "git": {
       "status": "available",
