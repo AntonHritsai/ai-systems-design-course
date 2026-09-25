@@ -189,7 +189,7 @@ def register_source(
     registered_by: str,
 ) -> Path:
     """Register the exact Module 02 subsection as an immutable source record."""
-    resolved_vault = _resolve_vault(vault, course_root)
+    _resolve_vault(vault, course_root)
     resolved_course_root = course_root.resolve()
     try:
         theory_bytes = theory_path.read_bytes()
@@ -223,7 +223,7 @@ def register_source(
         "registered_by": registered_by,
     }
     rendered = _render_markdown_record(metadata, fragment)
-    source_path = resolved_vault / SOURCE_RELATIVE_PATH
+    source_path = vault / SOURCE_RELATIVE_PATH
     if source_path.exists():
         try:
             existing_metadata, existing_fragment = _read_markdown_record(source_path)

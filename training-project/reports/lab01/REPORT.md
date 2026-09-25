@@ -4,7 +4,8 @@
 
 - URL форку: `https://github.com/AntonHritsai/ai-systems-design-course`
 - Назва гілки: `lab01/anton-hritsai`
-- Повний хеш коміту на момент оновлення звіту після merge `upstream/main`: `d23b4ec4c6118a8c20084d181c2c0f5c4f812876`
+- Повний хеш коміту після останнього merge `upstream/main`, на якому виконано фінальну
+  перевірку: `9297a63fc0042d53941cd2e70a9922a5a6c1ad4a`
 
 Роботу виконано в особистому форку репозиторію курсу. `origin` вказує на форк студента, а
 `upstream` - на репозиторій викладача `sobol-mo/ai-systems-design-course`. Після оновлення
@@ -131,8 +132,8 @@ digest-bound approval додають ручний крок, але зменшу�
 
 ## Детерміновані перевірки
 
-Публічні тести Lab01 після оновлення матеріалів проходять разом із новими тестами
-`prepare-report`: `Ran 27 tests`, `OK`. Пропозиція проходить `learning-project validate`.
+Публічні тести після останнього оновлення матеріалів проходять повністю: `Ran 76 tests`,
+`OK`. Пропозиція проходить `learning-project validate`.
 Передчасне `apply` без рішення раніше завершилося помилкою, що підтверджує відокремлення
 структурної коректності від затвердження. Після `decide --approve` команда `apply` створила
 `student/design/learning-system-boundary.yaml` зі `status: approved`.
