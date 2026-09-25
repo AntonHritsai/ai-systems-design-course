@@ -132,8 +132,9 @@ digest-bound approval додають ручний крок, але зменшу�
 
 ## Детерміновані перевірки
 
-Публічні тести після останнього оновлення матеріалів проходять повністю: `Ran 76 tests`,
-`OK`. Пропозиція проходить `learning-project validate`.
+Знімок `03-public-tests.png` фіксує Lab01-specific public tests: `Ran 18 tests`, `OK`.
+Після останнього оновлення матеріалів додатково повторено повний public suite локально:
+`Ran 76 tests`, `OK`. Пропозиція проходить `learning-project validate`.
 Передчасне `apply` без рішення раніше завершилося помилкою, що підтверджує відокремлення
 структурної коректності від затвердження. Після `decide --approve` команда `apply` створила
 `student/design/learning-system-boundary.yaml` зі `status: approved`.
