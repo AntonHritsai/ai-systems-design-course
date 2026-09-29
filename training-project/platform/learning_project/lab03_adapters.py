@@ -99,16 +99,28 @@ def runner_for(adapter: str, model_id: str) -> Callable[[dict], str]:
     return factory(model_id)
 
 
-def instructions_for(report_dir: Path, course_root: Path) -> dict[str, str]:
-    """Load Variant A from course material and Variant B from the student report."""
+def instructions_for(
+    report_dir: Path,
+    course_root: Path,
+    *,
+    required_variants: set[str] | None = None,
+) -> dict[str, str]:
+    """Load only the instruction variants required by the current position."""
+    variants = required_variants or {"a", "b"}
+    unknown = variants - {"a", "b"}
+    if unknown:
+        raise ValueError(f"Unknown instruction variants: {sorted(unknown)}")
     variant_a_path = course_root / "instructions" / "lab03" / "variant-a.txt"
     variant_b_path = report_dir / "development" / "variant-b.txt"
     try:
-        variant_a = variant_a_path.read_text(encoding="utf-8")
-        variant_b = variant_b_path.read_text(encoding="utf-8")
+        instructions = {}
+        if "a" in variants:
+            instructions["a"] = variant_a_path.read_text(encoding="utf-8")
+        if "b" in variants:
+            instructions["b"] = variant_b_path.read_text(encoding="utf-8")
     except OSError as exc:
         raise RuntimeError(f"Instruction variant cannot be read: {exc}") from exc
-    return {"a": variant_a, "b": variant_b}
+    return instructions
 
 
 def cases_for(comparison_dir: Path, training_project: Path, report_dir: Path) -> dict[str, dict]:

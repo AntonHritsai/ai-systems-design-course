@@ -18,7 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -90,13 +90,28 @@ def _read_json(path: Path, label: str) -> tuple[dict, bytes]:
     return value, data
 
 
-def _write_json_once(path: Path, payload: dict) -> Path:
-    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+def _write_bytes_once(path: Path, data: bytes) -> Path:
     if path.exists():
         raise WorkflowError(f"The immutable artifact already exists: {path.name}")
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(rendered, encoding="utf-8")
+    path.write_bytes(data)
     return path
+
+
+def _write_json_once(path: Path, payload: dict) -> Path:
+    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    return _write_bytes_once(path, rendered.encode("utf-8"))
+
+
+def _file_sha256(path: Path, label: str) -> str:
+    try:
+        return _sha256_bytes(path.read_bytes())
+    except OSError as exc:
+        raise WorkflowError(f"{label} cannot be read: {path}: {exc}") from exc
+
+
+def _join_map_path(comparison_dir: Path) -> Path:
+    return comparison_dir / "scoring" / "_join-map.json"
 
 
 def _dump_yaml(payload: dict) -> str:
@@ -210,13 +225,18 @@ def check_near_duplicates(families: Iterable[dict]) -> None:
 
 
 def load_variant_a(instructions_dir: Path) -> tuple[str, str]:
+    data, digest = load_variant_a_bytes(instructions_dir)
+    return data.decode("utf-8"), digest
+
+
+def load_variant_a_bytes(instructions_dir: Path) -> tuple[bytes, str]:
     variant_path = instructions_dir / "variant-a.txt"
     try:
-        text = variant_path.read_text(encoding="utf-8")
+        data = variant_path.read_bytes()
     except OSError as exc:
         raise WorkflowError(f"Course Variant A instruction cannot be read: {exc}") from exc
-    _require(bool(text.strip()), "Variant A instruction must not be empty.")
-    return text, _sha256_bytes(text.encode("utf-8"))
+    _require(bool(data.strip()), "Variant A instruction must not be empty.")
+    return data, _sha256_bytes(data)
 
 
 # ---------------------------------------------------------------------------
@@ -407,8 +427,7 @@ def record_variant_b(*, report_dir: Path, variant_b_text: str, change_declaratio
         "The change declaration must declare exactly one intended factor.",
     )
     dev_dir = report_dir / "development"
-    (dev_dir / "variant-b.txt").parent.mkdir(parents=True, exist_ok=True)
-    (dev_dir / "variant-b.txt").write_text(variant_b_text, encoding="utf-8")
+    _write_bytes_once(dev_dir / "variant-b.txt", variant_b_text.encode("utf-8"))
     return _write_yaml_once(
         dev_dir / "change-declaration.yaml",
         {
@@ -480,6 +499,17 @@ def build_positions(*, comparison_dir: Path, family: dict, kind: str, cases: lis
                     "state": "unstarted",
                 })
         _require(len(positions) == DEVELOPMENT_POSITIONS, "Development schedule must contain eight positions.")
+        a_ids = [p["position_id"] for p in positions if p["variant"] == "a"]
+        b_ids = [p["position_id"] for p in positions if p["variant"] == "b"]
+        schedule = {
+            "schema_version": SCHEMA_VERSION,
+            "kind": kind,
+            "family_id": f"dev-{kind}",
+            "order": a_ids + b_ids,
+            "positions": positions,
+        }
+        _write_json_once(comparison_dir / "schedule.json", schedule)
+        return positions
     schedule = {
         "schema_version": SCHEMA_VERSION,
         "kind": kind,
@@ -510,7 +540,130 @@ def _request_payload(case: dict, instruction_text: str) -> dict:
 def classify_failure(message: str) -> str:
     """Classify an execution failure as position-specific or route-wide."""
     lowered = str(message).lower()
+    if "timeout" in lowered or "timed out" in lowered:
+        return "position-specific"
     return "route-wide" if any(marker in lowered for marker in ROUTE_WIDE_MARKERS) else "position-specific"
+
+
+def _next_unstarted_id(schedule: dict) -> str | None:
+    by_id = {p["position_id"]: p for p in schedule["positions"]}
+    order = schedule.get("order") or [p["position_id"] for p in schedule["positions"]]
+    for position_id in order:
+        if by_id[position_id]["state"] == "unstarted":
+            return position_id
+    return None
+
+
+def _resume_deadline(manifest: dict) -> datetime | None:
+    window = manifest.get("resume_window")
+    frozen_at = manifest.get("frozen_at")
+    if not isinstance(window, str) or not isinstance(frozen_at, str):
+        return None
+    try:
+        start = datetime.fromisoformat(frozen_at)
+    except ValueError:
+        return None
+    if window.endswith("h") and window[:-1].isdigit():
+        return start + timedelta(hours=int(window[:-1]))
+    return None
+
+
+def _enforce_frozen_route(comparison_dir: Path, adapter: str, model_id: str) -> dict | None:
+    manifest_path = comparison_dir / "freeze-manifest.json"
+    if not manifest_path.exists():
+        return None
+    manifest, _ = _read_json(manifest_path, "Freeze manifest")
+    route = manifest.get("route")
+    if isinstance(route, dict):
+        _require(adapter == route.get("adapter"), "Held-out run adapter does not match the frozen route.")
+        _require(model_id == route.get("model_id"), "Held-out run model_id does not match the frozen route.")
+    return manifest
+
+
+def _enforce_instruction_digests(comparison_dir: Path, instructions: dict[str, str], manifest: dict) -> None:
+    for variant in instructions:
+        digest_key = f"variant_{variant}_sha256"
+        expected = manifest.get(digest_key)
+        if not expected:
+            continue
+        actual = _sha256_bytes(instructions[variant].encode("utf-8"))
+        _require(actual == expected, f"Instruction digest drift for variant {variant}.")
+
+
+def load_frozen_instructions(comparison_dir: Path) -> dict[str, str]:
+    """Load freeze snapshots and refuse digest drift against the freeze manifest."""
+    manifest, _ = _read_json(comparison_dir / "freeze-manifest.json", "Freeze manifest")
+    instructions: dict[str, str] = {}
+    for variant in VARIANTS:
+        snap = comparison_dir / "snapshots" / f"variant-{variant}.txt"
+        try:
+            data = snap.read_bytes()
+        except OSError as exc:
+            raise WorkflowError(f"Frozen variant {variant} snapshot cannot be read: {exc}") from exc
+        expected = manifest.get(f"variant_{variant}_sha256")
+        _require(expected == _sha256_bytes(data), f"Frozen variant {variant} snapshot digest drift.")
+        instructions[variant] = data.decode("utf-8")
+    return instructions
+
+
+def _apply_route_stop(*, comparison_dir: Path, schedule: dict, resume_probe: bool) -> None:
+    stop_path = comparison_dir / "route-stop.json"
+    if not stop_path.exists():
+        _require(not resume_probe, "No route-wide stop requires a resume probe.")
+        return
+    stop, _ = _read_json(stop_path, "Route stop")
+    if resume_probe:
+        _require(not stop.get("resume_probe_used"), "The one permitted resume probe has already been used.")
+        manifest_path = comparison_dir / "freeze-manifest.json"
+        if manifest_path.exists():
+            manifest, _ = _read_json(manifest_path, "Freeze manifest")
+            deadline = _resume_deadline(manifest)
+            if deadline is not None:
+                _require(datetime.now(timezone.utc) <= deadline, "The frozen resume window has lapsed.")
+        return
+    if stop.get("resume_succeeded"):
+        return
+    if stop.get("resume_probe_used"):
+        raise WorkflowError("Route-wide failure already consumed the one permitted resume probe.")
+    raise WorkflowError("Route-wide failure stopped dispatch; use an explicit resume probe.")
+
+
+def _record_route_stop(*, comparison_dir: Path, position_id: str, resume_probe: bool, failure_class: str) -> None:
+    stop_path = comparison_dir / "route-stop.json"
+    if failure_class != "route-wide" and not resume_probe:
+        return
+    if resume_probe:
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "triggering_position_id": position_id,
+            "failure_class": failure_class,
+            "resume_probe_used": True,
+            "resume_succeeded": failure_class != "route-wide",
+            "recorded_at": _now(),
+        }
+        stop_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        return
+    if failure_class == "route-wide" and not stop_path.exists():
+        _write_json_once(stop_path, {
+            "schema_version": SCHEMA_VERSION,
+            "triggering_position_id": position_id,
+            "failure_class": failure_class,
+            "resume_probe_used": False,
+            "resume_succeeded": False,
+            "recorded_at": _now(),
+        })
+        return
+    if failure_class == "route-wide" and stop_path.exists():
+        previous, _ = _read_json(stop_path, "Route stop")
+        if previous.get("resume_probe_used") and previous.get("resume_succeeded"):
+            stop_path.write_text(json.dumps({
+                "schema_version": SCHEMA_VERSION,
+                "triggering_position_id": position_id,
+                "failure_class": failure_class,
+                "resume_probe_used": True,
+                "resume_succeeded": False,
+                "recorded_at": _now(),
+            }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def run_position(
@@ -524,6 +677,7 @@ def run_position(
     adapter: str,
     model_id: str,
     recorded_by: str,
+    resume_probe: bool = False,
 ) -> dict:
     """Execute one scheduled position through the injected provider-neutral runner.
 
@@ -534,6 +688,23 @@ def run_position(
     _require(position_id in positions, f"Unknown position {position_id}.")
     position = positions[position_id]
     _require(position["state"] == "unstarted", f"Position {position_id} is not unstarted and cannot be rerun.")
+    next_id = _next_unstarted_id(schedule)
+    _require(next_id == position_id, f"Run must use the next scheduled position {next_id}, not {position_id}.")
+    if schedule.get("kind") == "development" and position["variant"] == "b":
+        a_terminal = all(
+            item["state"] in {"returned", "failed"}
+            for item in schedule["positions"]
+            if item["variant"] == "a"
+        )
+        _require(a_terminal, "Variant B cannot run until every Variant A development position is terminal.")
+        _require(
+            (comparison_dir / "variant-b.txt").exists(),
+            "Variant B cannot run until Variant B exists.",
+        )
+    manifest = _enforce_frozen_route(comparison_dir, adapter, model_id)
+    if manifest is not None:
+        _enforce_instruction_digests(comparison_dir, instructions, manifest)
+    _apply_route_stop(comparison_dir=comparison_dir, schedule=schedule, resume_probe=resume_probe)
     case = cases_by_id[position["case_id"]]
     request = _request_payload(case, instructions[position["variant"]])
     attempt_dir = comparison_dir / "attempts" / position_id
@@ -560,6 +731,12 @@ def run_position(
         })
         position["state"] = "failed"
         _rewrite_schedule(comparison_dir, schedule)
+        _record_route_stop(
+            comparison_dir=comparison_dir,
+            position_id=position_id,
+            resume_probe=resume_probe,
+            failure_class=failure_class,
+        )
         return {"position_id": position_id, "outcome": "failed", "failure_class": failure_class}
     raw_path = attempt_dir / "raw-response.txt"
     if raw_path.exists():
@@ -576,6 +753,12 @@ def run_position(
     })
     position["state"] = "returned"
     _rewrite_schedule(comparison_dir, schedule)
+    _record_route_stop(
+        comparison_dir=comparison_dir,
+        position_id=position_id,
+        resume_probe=resume_probe,
+        failure_class="position-specific",
+    )
     return {"position_id": position_id, "outcome": "returned"}
 
 
@@ -619,6 +802,45 @@ def structural_check(*, comparison_dir: Path, position_id: str) -> dict:
     return result
 
 
+def record_interrupted_position(
+    *, comparison_dir: Path, position_id: str, reason: str, student: str
+) -> dict:
+    """Close a dispatched position whose process ended before durable terminal evidence."""
+    schedule, _ = _read_json(comparison_dir / "schedule.json", "Schedule")
+    positions = {item["position_id"]: item for item in schedule["positions"]}
+    _require(position_id in positions, f"Unknown position {position_id}.")
+    position = positions[position_id]
+    _require(position["state"] == "unstarted", "Only a non-terminal position can be recorded interrupted.")
+    attempt_dir = comparison_dir / "attempts" / position_id
+    _require((attempt_dir / "request.json").exists(), "Interrupted position has no durable dispatch request.")
+    _require(
+        not (attempt_dir / "raw-response.txt").exists()
+        and not (attempt_dir / "error.json").exists(),
+        "Interrupted position already has terminal response or error evidence.",
+    )
+    _require(isinstance(reason, str) and reason.strip(), "Interrupted position needs a reason.")
+    error = {
+        "schema_version": SCHEMA_VERSION,
+        "position_id": position_id,
+        "failure_class": "position-specific",
+        "error": reason.strip(),
+        "interrupted_after_dispatch": True,
+    }
+    _write_json_once(attempt_dir / "error.json", error)
+    _write_json_once(attempt_dir / "run-metadata.json", {
+        "position_id": position_id,
+        "adapter": "unknown-after-interruption",
+        "model_id": "unknown-after-interruption",
+        "started_at": None,
+        "finished_at": _now(),
+        "recorded_by": student,
+        "interrupted_after_dispatch": True,
+    })
+    position["state"] = "failed"
+    _rewrite_schedule(comparison_dir, schedule)
+    return error
+
+
 def _position_case_id(comparison_dir: Path, position_id: str) -> str:
     schedule, _ = _read_json(comparison_dir / "schedule.json", "Schedule")
     for position in schedule["positions"]:
@@ -643,43 +865,128 @@ def freeze_protocol(
     """Bind immutable identities for the frozen comparison and write the manifest."""
     required = {
         "engineering_decision", "hypothesis", "semantic_acceptance", "blocking_failures",
+        "operational_acceptance", "tradeoff_rule", "recommendation_precedence",
         "attempt_budget", "order_rule", "timing_boundary", "resume_window", "route",
     }
     _require(required <= set(protocol), "Protocol draft is missing required fields.")
-    variant_a_text, variant_a_sha = load_variant_a(
-        reserves_dir.parent.parent.parent / "instructions" / "lab03"
+    for field in ("operational_acceptance", "tradeoff_rule"):
+        _require(
+            isinstance(protocol[field], str) and protocol[field].strip(),
+            f"Protocol {field} must be non-empty.",
+        )
+    resume_window = protocol["resume_window"]
+    _require(
+        isinstance(resume_window, str)
+        and resume_window.endswith("h")
+        and resume_window[:-1].isdigit()
+        and int(resume_window[:-1]) > 0,
+        "Protocol resume_window must use a positive integer-hour form such as 48h.",
     )
+    precedence = protocol["recommendation_precedence"]
+    _require(
+        isinstance(precedence, dict)
+        and {
+            "decisive_rejection",
+            "uncertainty",
+            "positive_selection",
+            "no_justified_change",
+        } <= set(precedence)
+        and all(isinstance(value, str) and value.strip() for value in precedence.values()),
+        "Protocol recommendation_precedence must define four non-empty decision rules.",
+    )
+    _require(protocol.get("attempt_budget") == SCHEDULED_POSITIONS, "Attempt budget must be the fixed sixteen positions.")
+    route = protocol["route"]
+    _require(isinstance(route, dict), "Protocol route must be an object with adapter and model_id.")
+    _require(
+        route.get("adapter") in {"offline-fixture", "openrouter"},
+        "Protocol route adapter is not supported.",
+    )
+    _require(isinstance(route.get("model_id"), str) and route["model_id"].strip(), "Protocol route needs model_id.")
+    training_project = reserves_dir.parent.parent.parent
+    instructions_dir = training_project / "instructions" / "lab03"
+    variant_a_bytes, variant_a_sha = load_variant_a_bytes(instructions_dir)
     variant_b_path = report_dir / "development" / "variant-b.txt"
     try:
-        variant_b_text = variant_b_path.read_text(encoding="utf-8")
+        variant_b_bytes = variant_b_path.read_bytes()
     except OSError as exc:
         raise WorkflowError(f"Variant B cannot be read: {exc}") from exc
-    _require(variant_b_text != variant_a_text, "Variant A and Variant B are identical; freeze refused.")
+    variant_b_text = variant_b_bytes.decode("utf-8")
+    _require(variant_b_bytes != variant_a_bytes, "Variant A and Variant B are identical; freeze refused.")
     change_path = report_dir / "development" / "change-declaration.yaml"
     try:
         change = yaml.safe_load(change_path.read_text(encoding="utf-8"))
+        change_bytes = change_path.read_bytes()
     except (OSError, yaml.YAMLError) as exc:
         raise WorkflowError(f"Change declaration cannot be read: {exc}") from exc
     _require(isinstance(change, dict) and change.get("declared_factors") == [change.get("changed_property")],
              "Change declaration must declare exactly one factor.")
+    dev_schedule_path = report_dir / "development" / "schedule.json"
+    dev_schedule, dev_schedule_bytes = _read_json(dev_schedule_path, "Development schedule")
+    _require(dev_schedule.get("kind") == "development", "Development schedule kind must be development.")
+    _require(
+        len(dev_schedule.get("positions", [])) == DEVELOPMENT_POSITIONS,
+        "Freeze requires eight development positions.",
+    )
+    for position in dev_schedule["positions"]:
+        _require(
+            position.get("state") in {"returned", "failed"},
+            f"Development position {position.get('position_id')} is not terminal.",
+        )
+    order = dev_schedule.get("order") or []
+    by_id = {p["position_id"]: p for p in dev_schedule["positions"]}
+    ordered_variants = [by_id[pid]["variant"] for pid in order if pid in by_id]
+    _require(
+        ordered_variants == ["a"] * 4 + ["b"] * 4,
+        "Development schedule must run four A positions then four B positions.",
+    )
     eligible = eligible_families(reserves_dir, ledger, freeze_at=None)
-    _require(bool(eligible), "No eligible reserve family remains; curator recovery is required.")
-    freeze_id = f"cmp-{_sha256_bytes((variant_a_sha + _sha256_bytes(variant_b_text.encode('utf-8')) + _now()).encode('utf-8'))[:12]}"
+    _require(
+        bool(eligible) or protocol.get("curator_recovery") is True,
+        "No eligible reserve family remains; set curator_recovery: true for post-freeze recovery.",
+    )
+    freeze_id = f"cmp-{_sha256_bytes((variant_a_sha + _sha256_bytes(variant_b_bytes) + _now()).encode('utf-8'))[:12]}"
     comparison_dir = report_dir / "comparisons" / freeze_id
+    snapshot_dir = comparison_dir / "snapshots"
+    _write_bytes_once(snapshot_dir / "variant-a.txt", variant_a_bytes)
+    _write_bytes_once(snapshot_dir / "variant-b.txt", variant_b_bytes)
+    if ledger.path.exists():
+        ledger_digest = _file_sha256(ledger.path, "Exposure ledger")
+    else:
+        empty_ledger = json.dumps(
+            {"schema_version": SCHEMA_VERSION, "lab_id": LAB_ID, "events": []},
+            indent=2,
+            ensure_ascii=False,
+        ) + "\n"
+        ledger_digest = _sha256_bytes(empty_ledger.encode("utf-8"))
+    bindings = {
+        "output_schema_sha256": _file_sha256(
+            training_project / "schemas" / "lab03-envelope.schema.json", "Output schema"
+        ),
+        "case_family_contract_sha256": _file_sha256(
+            training_project / "cases" / "lab03" / "case-family-contract.yaml", "Case-family contract"
+        ),
+        "validator_module_sha256": _file_sha256(Path(__file__), "Validator module"),
+        "validator_schema_version": SCHEMA_VERSION,
+        "development_schedule_sha256": _sha256_bytes(dev_schedule_bytes),
+        "change_declaration_sha256": _sha256_bytes(change_bytes),
+        "exposure_ledger_sha256": ledger_digest,
+    }
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "freeze_id": freeze_id,
         "comparison_dir": str(comparison_dir),
-        "protocol": {**protocol, "attempt_budget": SCHEDULED_POSITIONS},
+        "protocol": dict(protocol),
         "variant_a_sha256": variant_a_sha,
-        "variant_b_sha256": _sha256_bytes(variant_b_text.encode("utf-8")),
+        "variant_b_sha256": _sha256_bytes(variant_b_bytes),
         "change_declaration": {
             "changed_property": change["changed_property"],
             "mechanism": change.get("mechanism"),
             "declared_factors": change["declared_factors"],
         },
-        "route": protocol["route"],
+        "route": {"adapter": route["adapter"], "model_id": route["model_id"]},
         "resume_window": protocol["resume_window"],
+        "eligible_reserve_count_at_freeze": len(eligible),
+        "bindings": bindings,
         "frozen_at": _now(),
         "frozen_by": student,
     }
@@ -715,7 +1022,7 @@ def select_family(
 ) -> dict:
     """Select one eligible family after freeze; record selection before reveal."""
     eligible = eligible_families(reserves_dir, ledger, freeze_at=freeze_manifest["frozen_at"])
-    _require(bool(eligible), "All prepared reserve families are ineligible; curator recovery begins.")
+    _require(bool(eligible), "All prepared reserve families are ineligible.")
     family_id = eligible[0]
     ledger.append({
         "event": "revealed-after-freeze",
@@ -727,12 +1034,17 @@ def select_family(
     family_path = reserves_dir / family_id / "family.json"
     family = load_family(family_path)
     comparison_dir = Path(freeze_manifest["comparison_dir"])
+    public_family = {key: value for key, value in family.items() if key != "expected_behaviors"}
     _write_json_once(comparison_dir / "revealed-family.json", {
-        "family": family,
+        "family": public_family,
         "family_sha256": _sha256_bytes(family_path.read_bytes()),
         "eligible_at_selection": eligible,
         "selected_at": _now(),
         "selected_by": student,
+    })
+    _write_json_once(comparison_dir / "_internal" / "held-out-references.json", {
+        "family_id": family["family_id"],
+        "expected_behaviors": family["expected_behaviors"],
     })
     return family
 
@@ -785,6 +1097,7 @@ def ingest_curator_candidate(
     candidate_family: dict,
     curator_input: dict,
     curator_session: str,
+    attempt: int = 1,
     deterministic_runner: Callable[[dict], list[str]] | None = None,
 ) -> dict:
     """Validate one curator proposal: provenance, contract checks, near-duplicates.
@@ -793,6 +1106,12 @@ def ingest_curator_candidate(
     provide an offline authored-family generator); it is not required when the
     candidate was produced by another isolated route.
     """
+    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
+    if attempt == 2:
+        _require(
+            (comparison_dir / "curator" / "attempts" / "attempt-1").exists(),
+            "Curator attempt 1 must be preserved before attempt 2.",
+        )
     _require(isinstance(candidate_family, dict), "Curator candidate must be a mapping.")
     candidate_family = {
         **candidate_family,
@@ -803,10 +1122,24 @@ def ingest_curator_candidate(
             "inputs_sha256": _sha256_bytes(json.dumps(curator_input, sort_keys=True).encode("utf-8")),
         },
     }
-    family_path = comparison_dir / "curator" / "candidate.json"
-    family_path.parent.mkdir(parents=True, exist_ok=True)
-    family_path.write_text(json.dumps(candidate_family, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    family = load_family(family_path)  # deterministic contract checks
+    attempt_dir = comparison_dir / "curator" / "attempts" / f"attempt-{attempt}"
+    family_path = attempt_dir / "candidate.json"
+    _write_bytes_once(
+        family_path,
+        (json.dumps(candidate_family, indent=2, ensure_ascii=False) + "\n").encode("utf-8"),
+    )
+    try:
+        family = load_family(family_path)  # deterministic contract checks
+    except WorkflowError as exc:
+        _write_yaml_once(attempt_dir / "result.yaml", {
+            "schema_version": SCHEMA_VERSION,
+            "attempt": attempt,
+            "outcome": "invalid-candidate",
+            "curator_session": curator_session,
+            "detail": str(exc),
+            "recorded_at": _now(),
+        })
+        raise
     prior_families: list[dict] = []
     for prior in curator_input["prior_families"]:
         prior_families.append({
@@ -839,8 +1172,43 @@ def ingest_curator_candidate(
         "passed": True,
         "checked_at": _now(),
     }
-    _write_json_once(comparison_dir / "curator" / "deterministic-check.json", check)
+    _write_json_once(attempt_dir / "deterministic-check.json", check)
+    _write_yaml_once(attempt_dir / "result.yaml", {
+        "schema_version": SCHEMA_VERSION,
+        "attempt": attempt,
+        "outcome": "candidate-returned",
+        "curator_session": curator_session,
+        "recorded_at": _now(),
+    })
     return family
+
+
+def record_curator_attempt_failure(
+    *, comparison_dir: Path, attempt: int, outcome: str, detail: str, student: str
+) -> Path:
+    """Preserve a consumed curator attempt that produced no ingestible candidate."""
+    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
+    _require(
+        outcome in {"launch-failed", "route-unavailable", "quota-unavailable", "empty-result", "invalid-candidate"},
+        "Unknown curator failure outcome.",
+    )
+    _require(isinstance(detail, str) and detail.strip(), "Curator attempt failure needs detail.")
+    if attempt == 2:
+        _require(
+            (comparison_dir / "curator" / "attempts" / "attempt-1").exists(),
+            "Curator attempt 1 must be preserved before attempt 2.",
+        )
+    return _write_yaml_once(
+        comparison_dir / "curator" / "attempts" / f"attempt-{attempt}" / "result.yaml",
+        {
+            "schema_version": SCHEMA_VERSION,
+            "attempt": attempt,
+            "outcome": outcome,
+            "detail": detail.strip(),
+            "recorded_by": student,
+            "recorded_at": _now(),
+        },
+    )
 
 
 def record_human_case_review(
@@ -850,11 +1218,13 @@ def record_human_case_review(
     decision: str,
     reasons: str,
     student: str,
+    attempt: int = 1,
 ) -> Path:
     """Record the student's post-freeze human semantic review of a curator family."""
     _require(decision in {"approved", "rejected"}, "Case review decision must be approved or rejected.")
     _require(isinstance(reasons, str) and reasons.strip(), "Case review needs reasons.")
-    return _write_yaml_once(comparison_dir / "curator" / "human-case-review.yaml", {
+    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
+    return _write_yaml_once(comparison_dir / "curator" / "attempts" / f"attempt-{attempt}" / "human-case-review.yaml", {
         "schema_version": SCHEMA_VERSION,
         "family_id": family["family_id"],
         "decision": decision,
@@ -879,8 +1249,15 @@ def build_blinded_index(*, comparison_dir: Path, family: dict) -> dict:
     terminal = all(p["state"] in {"returned", "failed", "closed-unstarted"} for p in schedule["positions"])
     _require(terminal, "Blinding requires every position to be terminal or explicitly closed.")
     cases_by_id = {c["case_id"]: c for c in family["cases"]}
-    behaviors = {b["case_id"]: b for b in family["expected_behaviors"]}
+    behaviors_list = family.get("expected_behaviors")
+    if not behaviors_list:
+        refs, _ = _read_json(
+            comparison_dir / "_internal" / "held-out-references.json", "Held-out references"
+        )
+        behaviors_list = refs["expected_behaviors"]
+    behaviors = {b["case_id"]: b for b in behaviors_list}
     entries = []
+    public_items = []
     counter = 0
     for position in schedule["positions"]:
         if position["state"] != "returned":
@@ -892,6 +1269,9 @@ def build_blinded_index(*, comparison_dir: Path, family: dict) -> dict:
         structural, _ = _read_json(structural_path, "Structural result")
         if not structural["valid"]:
             continue
+        raw = (attempt_dir / "raw-response.txt").read_text(encoding="utf-8")
+        envelope = json.loads(raw)
+        proposed_text = envelope["proposed_text"]
         counter += 1
         blind_id = f"blind-{counter:03d}"
         entries.append({
@@ -902,26 +1282,23 @@ def build_blinded_index(*, comparison_dir: Path, family: dict) -> dict:
             "expected_behavior": behaviors[position["case_id"]]["expected_behavior"],
             "expected_category": behaviors[position["case_id"]]["expected_category"],
         })
+        public_items.append({
+            "blind_id": blind_id,
+            "case_task": cases_by_id[position["case_id"]]["task"],
+            "supplied_source": cases_by_id[position["case_id"]]["supplied_source"],
+            "expected_behavior": behaviors[position["case_id"]]["expected_behavior"],
+            "proposed_text": proposed_text,
+        })
     index_payload = {
         "schema_version": SCHEMA_VERSION,
         "entries": entries,
         "built_at": _now(),
     }
-    _write_json_once(comparison_dir / "scoring" / "blinded-index.json", index_payload)
+    _write_json_once(_join_map_path(comparison_dir), index_payload)
     public_view = {
         "schema_version": SCHEMA_VERSION,
         "note": "Scoring view: variant identity, order, and split labels are joined only after judgments are frozen.",
-        "items": [
-            {
-                "blind_id": e["blind_id"],
-                "case_task": e["case_task"],
-                "supplied_source": e["supplied_source"],
-                "expected_behavior": e["expected_behavior"],
-                "proposed_text": (comparison_dir / "attempts" / e["position_id"] / "raw-response.txt")
-                .read_text(encoding="utf-8"),
-            }
-            for e in entries
-        ],
+        "items": public_items,
     }
     _write_json_once(comparison_dir / "scoring" / "scoring-view.json", public_view)
     return index_payload
@@ -929,7 +1306,7 @@ def build_blinded_index(*, comparison_dir: Path, family: dict) -> dict:
 
 def record_assessment(*, comparison_dir: Path, blind_id: str, assessment: dict) -> Path:
     """Store one human rubric judgment over a blind identifier."""
-    index, _ = _read_json(comparison_dir / "scoring" / "blinded-index.json", "Blinded index")
+    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
     known = {e["blind_id"] for e in index["entries"]}
     _require(blind_id in known, f"Unknown blind identifier {blind_id}.")
     _require(isinstance(assessment, dict), "Assessment must be a mapping.")
@@ -955,7 +1332,7 @@ def record_assessment(*, comparison_dir: Path, blind_id: str, assessment: dict) 
 def aggregate(*, comparison_dir: Path) -> dict:
     """Join variant identities after judgments and compute nested counts and slices."""
     schedule, _ = _read_json(comparison_dir / "schedule.json", "Schedule")
-    index, _ = _read_json(comparison_dir / "scoring" / "blinded-index.json", "Blinded index")
+    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
     by_position = {e["position_id"]: e for e in index["entries"]}
     assessments: dict[str, dict] = {}
     disputes: list[dict] = []
@@ -992,7 +1369,7 @@ def aggregate(*, comparison_dir: Path) -> dict:
         stat = variants_stat[variant]
         stat["scheduled"] += 1
         state = position["state"]
-        if state == "unstarted":
+        if state in {"unstarted", "closed-unstarted"}:
             stat["unstarted"] += 1
             continue
         stat["started"] += 1
@@ -1015,9 +1392,11 @@ def aggregate(*, comparison_dir: Path) -> dict:
             if assessment is not None and entry["blind_id"] in disputed:
                 slice_stat["disputed"] += 1
             continue
+        if assessment["category"] == "X":
+            continue
         stat["assessable"] += 1
         slice_stat["assessable"] += 1
-        acceptable = assessment["category"] == entry["expected_category"]
+        acceptable = assessment["category"] in {"S", "Q"}
         if acceptable:
             stat["rubric_acceptable"] += 1
             slice_stat["rubric_acceptable"] += 1
@@ -1036,6 +1415,28 @@ def aggregate(*, comparison_dir: Path) -> dict:
                 "differs_within_a": len(set(variant_map["a"])) > 1,
                 "differs_within_b": len(set(variant_map["b"])) > 1,
             })
+    observed_latency: dict[str, list[dict]] = {"a": [], "b": []}
+    for position in schedule["positions"]:
+        if position["state"] in {"unstarted", "closed-unstarted"}:
+            continue
+        meta_path = comparison_dir / "attempts" / position["position_id"] / "run-metadata.json"
+        if not meta_path.exists():
+            continue
+        meta, _ = _read_json(meta_path, "Run metadata")
+        started = meta.get("started_at")
+        finished = meta.get("finished_at")
+        seconds = None
+        if isinstance(started, str) and isinstance(finished, str):
+            try:
+                seconds = (datetime.fromisoformat(finished) - datetime.fromisoformat(started)).total_seconds()
+            except ValueError:
+                seconds = None
+        observed_latency[position["variant"]].append({
+            "position_id": position["position_id"],
+            "started_at": started,
+            "finished_at": finished,
+            "seconds": seconds,
+        })
     aggregate_payload = {
         "schema_version": SCHEMA_VERSION,
         "comparison_id": comparison_dir.name,
@@ -1043,9 +1444,11 @@ def aggregate(*, comparison_dir: Path) -> dict:
         "slices": slices,
         "repeated_attempt_differences": repeated_diffs,
         "disputed_blind_ids": sorted(disputed),
+        "observed_latency": observed_latency,
         "unknown_values": {
             "monetary_cost": "unknown",
             "quota_usage": "unknown",
+            "token_usage": "unknown",
         },
         "generated_at": _now(),
     }
@@ -1081,6 +1484,31 @@ def close_unstarted_positions(*, comparison_dir: Path, reason: str, student: str
     return closure
 
 
+def record_dispute(*, comparison_dir: Path, blind_id: str, reason: str, student: str) -> Path:
+    """Record an unresolved human-reference dispute against a blinded assessment."""
+    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
+    known = {entry["blind_id"] for entry in index["entries"]}
+    _require(blind_id in known, f"Unknown blind identifier {blind_id}.")
+    _require(isinstance(reason, str) and reason.strip(), "Dispute needs a reason.")
+    path = comparison_dir / "scoring" / "disputes.yaml"
+    items: list[dict] = []
+    if path.exists():
+        try:
+            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError) as exc:
+            raise WorkflowError(f"Disputes record cannot be read: {exc}") from exc
+        items = list(raw.get("items", [])) if isinstance(raw, dict) else []
+    items.append({
+        "blind_id": blind_id,
+        "reason": reason.strip(),
+        "recorded_by": student,
+        "recorded_at": _now(),
+    })
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(_dump_yaml({"schema_version": SCHEMA_VERSION, "items": items}), encoding="utf-8")
+    return path
+
+
 def record_selected_comparison(*, report_dir: Path, comparison_id: str, student: str) -> Path:
     """Record which comparison is submitted for evaluation after all runs are terminal."""
     _slug(comparison_id, "comparison_id")
@@ -1103,20 +1531,56 @@ def record_selected_comparison(*, report_dir: Path, comparison_id: str, student:
 # ---------------------------------------------------------------------------
 
 
+def record_evaluator_amendment(*, comparison_dir: Path, amendment_id: str, defect: str,
+                               confirmed_by: str) -> Path:
+    """Append-only record of a confirmed rubric or reference defect, forcing seek-more-evidence."""
+    _slug(amendment_id, "amendment_id")
+    _require(isinstance(defect, str) and defect.strip(), "Evaluator amendment needs a defect description.")
+    _require(isinstance(confirmed_by, str) and confirmed_by.strip(), "Evaluator amendment needs a confirmer.")
+    return _write_yaml_once(
+        comparison_dir / "scoring" / "evaluator-amendments" / f"{amendment_id}.yaml",
+        {
+            "schema_version": SCHEMA_VERSION,
+            "amendment_id": amendment_id,
+            "defect": defect.strip(),
+            "confirmed_by": confirmed_by.strip(),
+            "recorded_at": _now(),
+        },
+    )
+
+
 def record_recommendation(*, comparison_dir: Path, outcome: str, rationale: str, limitations: list[str],
                           student: str) -> Path:
     """Record the bounded recommendation traceable to the frozen protocol."""
     _require(outcome in OUTCOMES, "Outcome must be one of the four permitted recommendations.")
     _require(isinstance(rationale, str) and rationale.strip(), "Recommendation needs a rationale.")
     _require(isinstance(limitations, list) and limitations, "Recommendation must state limitations.")
+    join, _ = _read_json(_join_map_path(comparison_dir), "Join map")
+    for entry in join["entries"]:
+        assessment_path = comparison_dir / "scoring" / "assessments" / f"{entry['blind_id']}.yaml"
+        _require(assessment_path.exists(), f"Missing assessment coverage for {entry['blind_id']}.")
     aggregate, _ = _read_json(comparison_dir / "scoring" / "aggregate.json", "Aggregate")
     manifest, _ = _read_json(comparison_dir / "freeze-manifest.json", "Freeze manifest")
+    _require(
+        comparison_dir.name == manifest.get("freeze_id"),
+        "Recommendation protocol identity does not match this comparison.",
+    )
+    blocking = manifest.get("protocol", {}).get("blocking_failures")
+    _require(
+        (isinstance(blocking, str) and blocking.strip()) or (isinstance(blocking, list) and blocking),
+        "Frozen protocol is missing blocking_failures.",
+    )
+    amendment_root = comparison_dir / "scoring" / "evaluator-amendments"
+    if amendment_root.exists() and any(amendment_root.iterdir()):
+        _require(outcome == "seek-more-evidence", "An evaluator amendment requires seek-more-evidence.")
     payload = {
         "schema_version": SCHEMA_VERSION,
         "comparison_id": comparison_dir.name,
         "outcome": outcome,
         "rationale": rationale.strip(),
         "limitations": limitations,
+        "blocking_failures": blocking,
+        "recommendation_precedence": manifest["protocol"]["recommendation_precedence"],
         "nested_counts": aggregate["nested_counts"],
         "protocol_freeze_id": manifest["freeze_id"],
         "recorded_by": student,

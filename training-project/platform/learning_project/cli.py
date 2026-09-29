@@ -14,6 +14,7 @@ copy of a Markdown report:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -46,9 +47,14 @@ from .lab03 import (
     freeze_protocol,
     ingest_curator_candidate,
     load_family,
+    load_frozen_instructions,
     record_assessment,
     record_completion_status,
+    record_curator_attempt_failure,
+    record_dispute,
+    record_evaluator_amendment,
     record_human_case_review,
+    record_interrupted_position,
     record_premature_exposure,
     record_recommendation,
     record_regression,
@@ -257,6 +263,22 @@ def _build_parser() -> argparse.ArgumentParser:
                          help="Model id; defaults to 'offline-fixture' for the offline adapter.")
     dev_run.add_argument("--by", required=True)
 
+    dev_struct_check = lab03_commands.add_parser(
+        "dev-structural-check",
+        help="Validate one returned development response against the envelope contract.",
+    )
+    dev_struct_check.add_argument("--report-dir", type=Path, required=True)
+    dev_struct_check.add_argument("--position-id", required=True)
+
+    dev_interrupted = lab03_commands.add_parser(
+        "dev-record-interrupted",
+        help="Close a dispatched development position whose process ended before terminal evidence.",
+    )
+    dev_interrupted.add_argument("--report-dir", type=Path, required=True)
+    dev_interrupted.add_argument("--position-id", required=True)
+    dev_interrupted.add_argument("--reason", required=True)
+    dev_interrupted.add_argument("--by", required=True)
+
     freeze = lab03_commands.add_parser("freeze", help="Freeze the comparison protocol.")
     freeze.add_argument("--report-dir", type=Path, required=True)
     freeze.add_argument("--protocol", type=Path, required=True)
@@ -267,6 +289,57 @@ def _build_parser() -> argparse.ArgumentParser:
     select.add_argument("--freeze-id", required=True)
     select.add_argument("--by", required=True)
 
+    premature = lab03_commands.add_parser(
+        "record-premature-exposure",
+        help="Record honest premature family exposure before freeze.",
+    )
+    premature.add_argument("--report-dir", type=Path, required=True)
+    premature.add_argument("--family-id", required=True)
+    premature.add_argument("--by", required=True)
+
+    curator_prepare = lab03_commands.add_parser(
+        "curator-prepare",
+        help="Write isolated curator input from prior family manifests.",
+    )
+    curator_prepare.add_argument("--report-dir", type=Path, required=True)
+    curator_prepare.add_argument("--freeze-id", required=True)
+
+    curator_ingest = lab03_commands.add_parser(
+        "curator-ingest",
+        help="Validate one isolated curator candidate family.",
+    )
+    curator_ingest.add_argument("--report-dir", type=Path, required=True)
+    curator_ingest.add_argument("--freeze-id", required=True)
+    curator_ingest.add_argument("--candidate", type=Path, required=True)
+    curator_ingest.add_argument("--session", required=True)
+    curator_ingest.add_argument("--attempt", type=int, required=True, choices=(1, 2))
+
+    curator_attempt = lab03_commands.add_parser(
+        "curator-attempt-failed",
+        help="Record a consumed curator attempt that produced no ingestible candidate.",
+    )
+    curator_attempt.add_argument("--report-dir", type=Path, required=True)
+    curator_attempt.add_argument("--freeze-id", required=True)
+    curator_attempt.add_argument("--attempt", type=int, required=True, choices=(1, 2))
+    curator_attempt.add_argument(
+        "--outcome",
+        required=True,
+        choices=("launch-failed", "route-unavailable", "quota-unavailable", "empty-result", "invalid-candidate"),
+    )
+    curator_attempt.add_argument("--detail", required=True)
+    curator_attempt.add_argument("--by", required=True)
+
+    curator_review = lab03_commands.add_parser(
+        "curator-review",
+        help="Record the post-freeze human case review of a curator family.",
+    )
+    curator_review.add_argument("--report-dir", type=Path, required=True)
+    curator_review.add_argument("--freeze-id", required=True)
+    curator_review.add_argument("--decision", required=True, choices=("approved", "rejected"))
+    curator_review.add_argument("--attempt", type=int, required=True, choices=(1, 2))
+    curator_review.add_argument("--reasons", required=True)
+    curator_review.add_argument("--by", required=True)
+
     run_cmd = lab03_commands.add_parser("run", help="Run one held-out position through an adapter.")
     run_cmd.add_argument("--report-dir", type=Path, required=True)
     run_cmd.add_argument("--freeze-id", required=True)
@@ -275,6 +348,11 @@ def _build_parser() -> argparse.ArgumentParser:
     run_cmd.add_argument("--model-id", default="offline-fixture",
                          help="Model id; defaults to 'offline-fixture' for the offline adapter.")
     run_cmd.add_argument("--by", required=True)
+    run_cmd.add_argument(
+        "--resume-probe",
+        action="store_true",
+        help="Exactly one explicit resume after a route-wide stop, before the frozen deadline.",
+    )
 
     list_pos = lab03_commands.add_parser("list-positions", help="List the scheduled position ids for a comparison.")
     list_pos.add_argument("--report-dir", type=Path, required=True)
@@ -284,6 +362,16 @@ def _build_parser() -> argparse.ArgumentParser:
     struct_check.add_argument("--report-dir", type=Path, required=True)
     struct_check.add_argument("--freeze-id", required=True)
     struct_check.add_argument("--position-id", required=True)
+
+    interrupted = lab03_commands.add_parser(
+        "record-interrupted",
+        help="Close a dispatched position whose process ended before terminal evidence was recorded.",
+    )
+    interrupted.add_argument("--report-dir", type=Path, required=True)
+    interrupted.add_argument("--freeze-id", required=True)
+    interrupted.add_argument("--position-id", required=True)
+    interrupted.add_argument("--reason", required=True)
+    interrupted.add_argument("--by", required=True)
 
     close_cmd = lab03_commands.add_parser("close-unstarted", help="Close remaining unstarted positions honestly.")
     close_cmd.add_argument("--report-dir", type=Path, required=True)
@@ -304,6 +392,23 @@ def _build_parser() -> argparse.ArgumentParser:
     assess.add_argument("--rationale", required=True)
     assess.add_argument("--shares-rationale-with")
     assess.add_argument("--by", required=True)
+
+    dispute = lab03_commands.add_parser("record-dispute", help="Record an unresolved human-reference dispute.")
+    dispute.add_argument("--report-dir", type=Path, required=True)
+    dispute.add_argument("--freeze-id", required=True)
+    dispute.add_argument("--blind-id", required=True)
+    dispute.add_argument("--reason", required=True)
+    dispute.add_argument("--by", required=True)
+
+    amendment = lab03_commands.add_parser(
+        "record-amendment",
+        help="Record a confirmed rubric or reference defect (append-only).",
+    )
+    amendment.add_argument("--report-dir", type=Path, required=True)
+    amendment.add_argument("--freeze-id", required=True)
+    amendment.add_argument("--amendment-id", required=True)
+    amendment.add_argument("--defect", required=True)
+    amendment.add_argument("--by", required=True)
 
     agg = lab03_commands.add_parser("aggregate", help="Join identities and compute nested counts.")
     agg.add_argument("--report-dir", type=Path, required=True)
@@ -624,7 +729,17 @@ def _run_lab03(args: argparse.Namespace) -> int:
                 cases=dev_cases,
             )
         schedule = json.loads(dev_schedule_path.read_text(encoding="utf-8"))
-        instructions = instructions_for(report_dir, training_project)
+        position = next(
+            (item for item in schedule["positions"] if item["position_id"] == args.position_id),
+            None,
+        )
+        if position is None:
+            raise WorkflowError(f"Unknown position {args.position_id}.")
+        instructions = instructions_for(
+            report_dir,
+            training_project,
+            required_variants={position["variant"]},
+        )
         cases = cases_for(dev_dir, training_project, report_dir)
         result = run_position(
             comparison_dir=dev_dir,
@@ -639,6 +754,27 @@ def _run_lab03(args: argparse.Namespace) -> int:
         )
         print(f"Development position {args.position_id}: {result['outcome']}.")
         return 0
+    if command == "dev-structural-check":
+        result = structural_check(
+            comparison_dir=report_dir / "development",
+            position_id=args.position_id,
+        )
+        print(
+            f"Development structural check for {args.position_id}: "
+            f"{'valid' if result['valid'] else 'invalid'}."
+        )
+        for error in result["errors"]:
+            print(f"  - {error}")
+        return 0 if result["valid"] else 1
+    if command == "dev-record-interrupted":
+        record_interrupted_position(
+            comparison_dir=report_dir / "development",
+            position_id=args.position_id,
+            reason=args.reason,
+            student=args.by,
+        )
+        print(f"Recorded interrupted development position {args.position_id} as failed.")
+        return 0
     if command == "freeze":
         protocol = yaml.safe_load(args.protocol.read_text(encoding="utf-8"))
         ledger = ExposureLedger(report_dir / "exposure-ledger.json")
@@ -649,7 +785,10 @@ def _run_lab03(args: argparse.Namespace) -> int:
             ledger=ledger,
             student=args.by,
         )
-        print(f"Froze comparison {manifest['freeze_id']}.")
+        print(
+            f"Froze comparison {manifest['freeze_id']}; "
+            f"eligible reserve families: {manifest['eligible_reserve_count_at_freeze']}."
+        )
         return 0
     if command == "select-family":
         manifest = json.loads(
@@ -676,12 +815,121 @@ def _run_lab03(args: argparse.Namespace) -> int:
         })
         print(f"Selected family {family['family_id']} and scheduled {len(positions)} positions.")
         return 0
+    if command == "record-premature-exposure":
+        ledger = ExposureLedger(report_dir / "exposure-ledger.json")
+        record_premature_exposure(ledger=ledger, family_id=args.family_id, student=args.by)
+        print(f"Recorded premature exposure of family {args.family_id}.")
+        return 0
+    if command == "curator-prepare":
+        payload = build_curator_input(
+            reserves_dir=training_project / "cases" / "lab03" / "reserves",
+            contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
+        )
+        path = comparison_dir(args.freeze_id) / "curator" / "input.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            raise WorkflowError(f"The immutable artifact already exists: {path.name}")
+        path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"Wrote curator input to {path}.")
+        return 0
+    if command == "curator-ingest":
+        candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
+        cmp_dir = comparison_dir(args.freeze_id)
+        input_path = cmp_dir / "curator" / "input.json"
+        if input_path.exists():
+            curator_input = json.loads(input_path.read_text(encoding="utf-8"))
+        else:
+            curator_input = build_curator_input(
+                reserves_dir=training_project / "cases" / "lab03" / "reserves",
+                contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
+            )
+        family = ingest_curator_candidate(
+            comparison_dir=cmp_dir,
+            candidate_family=candidate,
+            curator_input=curator_input,
+            curator_session=args.session,
+            attempt=args.attempt,
+        )
+        print(f"Ingested curator candidate {family['family_id']} for attempt {args.attempt}.")
+        return 0
+    if command == "curator-attempt-failed":
+        path = record_curator_attempt_failure(
+            comparison_dir=comparison_dir(args.freeze_id),
+            attempt=args.attempt,
+            outcome=args.outcome,
+            detail=args.detail,
+            student=args.by,
+        )
+        print(f"Recorded failed curator attempt {args.attempt} at {path}.")
+        return 0
+    if command == "curator-review":
+        cmp_dir = comparison_dir(args.freeze_id)
+        candidate = json.loads(
+            (cmp_dir / "curator" / "attempts" / f"attempt-{args.attempt}" / "candidate.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        path = record_human_case_review(
+            comparison_dir=cmp_dir,
+            family=candidate,
+            decision=args.decision,
+            reasons=args.reasons,
+            student=args.by,
+            attempt=args.attempt,
+        )
+        if args.decision == "approved":
+            public_family = {key: value for key, value in candidate.items() if key != "expected_behaviors"}
+            revealed_path = cmp_dir / "revealed-family.json"
+            if revealed_path.exists():
+                raise WorkflowError("A family is already revealed for this comparison.")
+            revealed_path.write_text(
+                json.dumps(
+                    {
+                        "family": public_family,
+                        "family_sha256": hashlib.sha256(
+                            json.dumps(candidate, sort_keys=True).encode("utf-8")
+                        ).hexdigest(),
+                        "eligible_at_selection": [candidate["family_id"]],
+                        "selected_at": _now(),
+                        "selected_by": args.by,
+                        "curator_recovery": True,
+                    },
+                    indent=2,
+                    ensure_ascii=False,
+                ) + "\n",
+                encoding="utf-8",
+            )
+            internal = cmp_dir / "_internal" / "held-out-references.json"
+            internal.parent.mkdir(parents=True, exist_ok=True)
+            internal.write_text(
+                json.dumps(
+                    {
+                        "family_id": candidate["family_id"],
+                        "expected_behaviors": candidate["expected_behaviors"],
+                    },
+                    indent=2,
+                    ensure_ascii=False,
+                ) + "\n",
+                encoding="utf-8",
+            )
+            build_positions(comparison_dir=cmp_dir, family=candidate, kind="held-out")
+            ledger = ExposureLedger(report_dir / "exposure-ledger.json")
+            ledger.append({
+                "event": "used-in-comparison",
+                "family_id": candidate["family_id"],
+                "freeze_id": args.freeze_id,
+                "actor": args.by,
+                "recorded_at": _now(),
+                "curator_recovery": True,
+            })
+        print(f"Recorded curator case review {args.decision} at {path}.")
+        return 0
     if command == "run":
         cmp_dir = comparison_dir(args.freeze_id)
         schedule = json.loads((cmp_dir / "schedule.json").read_text(encoding="utf-8"))
         revealed = json.loads((cmp_dir / "revealed-family.json").read_text(encoding="utf-8"))
         cases_by_id = {c["case_id"]: c for c in revealed["family"]["cases"]}
-        instructions = instructions_for(report_dir, training_project)
+        instructions = load_frozen_instructions(cmp_dir)
         result = run_position(
             comparison_dir=cmp_dir,
             schedule=schedule,
@@ -692,6 +940,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
             adapter=args.adapter,
             model_id=args.model_id,
             recorded_by=args.by,
+            resume_probe=args.resume_probe,
         )
         print(f"Position {args.position_id}: {result['outcome']}"
               + (f" ({result['failure_class']})" if "failure_class" in result else "") + ".")
@@ -699,8 +948,9 @@ def _run_lab03(args: argparse.Namespace) -> int:
     if command == "list-positions":
         cmp_dir = comparison_dir(args.freeze_id)
         schedule = json.loads((cmp_dir / "schedule.json").read_text(encoding="utf-8"))
-        for position in schedule["positions"]:
-            print(f"{position['position_id']}\t{position['state']}")
+        by_id = {position["position_id"]: position for position in schedule["positions"]}
+        for position_id in schedule["order"]:
+            print(f"{position_id}\t{by_id[position_id]['state']}")
         return 0
     if command == "structural-check":
         result = structural_check(
@@ -710,6 +960,15 @@ def _run_lab03(args: argparse.Namespace) -> int:
         for error in result["errors"]:
             print(f"  - {error}")
         return 0 if result["valid"] else 1
+    if command == "record-interrupted":
+        record_interrupted_position(
+            comparison_dir=comparison_dir(args.freeze_id),
+            position_id=args.position_id,
+            reason=args.reason,
+            student=args.by,
+        )
+        print(f"Recorded interrupted position {args.position_id} as failed.")
+        return 0
     if command == "close-unstarted":
         closure = close_unstarted_positions(
             comparison_dir=comparison_dir(args.freeze_id),
@@ -739,6 +998,24 @@ def _run_lab03(args: argparse.Namespace) -> int:
             assessment=assessment,
         )
         print(f"Recorded the assessment to {path}.")
+        return 0
+    if command == "record-dispute":
+        path = record_dispute(
+            comparison_dir=comparison_dir(args.freeze_id),
+            blind_id=args.blind_id,
+            reason=args.reason,
+            student=args.by,
+        )
+        print(f"Recorded the dispute to {path}.")
+        return 0
+    if command == "record-amendment":
+        path = record_evaluator_amendment(
+            comparison_dir=comparison_dir(args.freeze_id),
+            amendment_id=args.amendment_id,
+            defect=args.defect,
+            confirmed_by=args.by,
+        )
+        print(f"Recorded the evaluator amendment to {path}.")
         return 0
     if command == "aggregate":
         result = aggregate_lab03(comparison_dir=comparison_dir(args.freeze_id))
