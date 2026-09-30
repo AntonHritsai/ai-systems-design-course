@@ -1115,12 +1115,31 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
             checked = validate_completion_detail(good)
             self.assertEqual(checked["stopped_at_step"], "Step 4")
             record_completion_status(report_dir=report_dir, status="honest-partial",
-                                     detail=validate_completion_detail(good))
+                                     detail={**good, "recorded_by": STUDENT})
             status = yaml.safe_load((report_dir / "completion-status.yaml").read_text(encoding="utf-8"))
             self.assertEqual(status["status"], "honest-partial")
             for bad in ({}, {"stopped_at_step": "Step 4"}, {**good, "extra": 1}):
                 with self.assertRaises(WorkflowError):
                     validate_completion_detail(bad)
+
+    def test_resumed_completion_supersedes_status_append_only(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            detail = {"stopped_at_step": "Step 4", "limitation": "route unavailable",
+                      "preserved_evidence": "reports/lab03/development/"}
+            record_completion_status(report_dir=report_dir, status="honest-partial",
+                                     detail={**detail, "recorded_by": STUDENT})
+            resume_detail = {"stopped_at_step": "Step 13", "limitation": "none; resumed run completed",
+                             "preserved_evidence": "reports/lab03/comparisons/"}
+            record_completion_status(report_dir=report_dir, status="complete",
+                                     detail={**resume_detail, "recorded_by": STUDENT})
+            events = yaml.safe_load((report_dir / "completion-events.yaml").read_text(encoding="utf-8"))
+            self.assertEqual(len(events["events"]), 2)
+            self.assertEqual(events["events"][0]["status"], "honest-partial")
+            self.assertEqual(events["events"][1]["status"], "complete")
+            status = yaml.safe_load((report_dir / "completion-status.yaml").read_text(encoding="utf-8"))
+            self.assertEqual(status["status"], "complete")
+            self.assertEqual(status["event_count"], 2)
 
     def test_post_freeze_premature_exposure_removes_eligibility(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

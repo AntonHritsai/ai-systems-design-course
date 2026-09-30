@@ -1893,15 +1893,62 @@ def lab03_status(*, report_dir: Path) -> dict:
     }
 
 
+COMPLETION_EVENTS_FILE = "completion-events.yaml"
+
+
+def _append_completion_event(report_dir: Path, entry: dict) -> list[dict]:
+    """Append one event to the append-only completion log and project the status."""
+    path = report_dir / COMPLETION_EVENTS_FILE
+    events: list[dict] = []
+    if path.exists():
+        try:
+            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError) as exc:
+            raise WorkflowError(f"Completion log cannot be read: {exc}") from exc
+        if isinstance(raw, dict):
+            events = list(raw.get("events", []))
+    events.append(entry)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(_dump_yaml({"schema_version": SCHEMA_VERSION, "events": events}), encoding="utf-8")
+    return events
+
+
 def record_completion_status(*, report_dir: Path, status: str, detail: dict) -> Path:
-    """Record complete or honest-partial completion with stopping evidence."""
+    """Record complete or honest-partial completion with stopping evidence.
+
+    Completion history is append-only: every recording appends one event to
+    ``completion-events.yaml``, and ``completion-status.yaml`` is rewritten as
+    the projection of the newest event. An early ``honest-partial`` stop is a
+    preserved historical fact, never deleted; a later resumed run that reaches
+    a fuller state records a later event, and the newest event is the current
+    status. The verifier reads the projected status, and the full event log
+    keeps the earlier stop visible as evidence.
+    """
     _require(status in {"complete", "honest-partial"}, "Completion status must be complete or honest-partial.")
-    return _write_yaml_once(report_dir / "completion-status.yaml", {
-        "schema_version": SCHEMA_VERSION,
+    checked = {k: v for k, v in detail.items() if k in COMPLETION_DETAIL_FIELDS}
+    entry = {
+        "event": "completion-recorded",
         "status": status,
-        **detail,
+        **checked,
+        "recorded_by": detail.get("recorded_by", ""),
         "recorded_at": _now(),
-    })
+    }
+    events = _append_completion_event(report_dir, entry)
+    latest = events[-1]
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "status": latest["status"],
+        **{k: latest[k] for k in COMPLETION_DETAIL_FIELDS if k in latest},
+        "recorded_by": latest.get("recorded_by", ""),
+        "recorded_at": latest["recorded_at"],
+        "event_count": len(events),
+    }
+    status_path = report_dir / "completion-status.yaml"
+    if status_path.exists():
+        status_path.write_text(_dump_yaml(payload), encoding="utf-8")
+    else:
+        _write_yaml_once(status_path, payload)
+    return status_path
 
 
 def verify_lab03(*, report_dir: Path, final_commit: str) -> dict:
