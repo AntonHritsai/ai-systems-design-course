@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable, Iterable, cast
@@ -42,6 +43,15 @@ VARIANTS = ("a", "b")
 SCHEDULED_POSITIONS = HELDOUT_CASES * ATTEMPTS_PER_CASE * len(VARIANTS)
 DEVELOPMENT_INPUTS = 4
 DEVELOPMENT_POSITIONS = DEVELOPMENT_INPUTS * len(VARIANTS)
+REPORT_SCREENSHOTS = (
+    "01-calibration.png",
+    "02-development.png",
+    "03-freeze.png",
+    "04-held-out-execution.png",
+    "05-scoring-recommendation.png",
+    "06-regression.png",
+    "07-final-verification.png",
+)
 
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1974,6 +1984,69 @@ def verify_lab03(*, report_dir: Path, final_commit: str) -> dict:
     def check_completion_status() -> str:
         return f"completion status recorded as {status['status']}"
 
+    def check_final_commit() -> str:
+        _require(
+            re.fullmatch(r"[0-9a-f]{40}", final_commit.strip()) is not None,
+            "Final student commit must be a full lowercase 40-character Git hash.",
+        )
+        try:
+            root_result = subprocess.run(
+                ["git", "-C", str(report_dir), "rev-parse", "--show-toplevel"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            git_root = Path(root_result.stdout.strip()).resolve()
+            resolved = subprocess.run(
+                ["git", "-C", str(git_root), "rev-parse", "--verify", f"{final_commit}^{{commit}}"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            head = subprocess.run(
+                ["git", "-C", str(git_root), "rev-parse", "HEAD"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+        except (OSError, subprocess.CalledProcessError) as exc:
+            raise WorkflowError("Final student commit is missing or unresolvable in the report repository.") from exc
+        _require(resolved == final_commit.strip(), "Final student commit did not resolve to the exact supplied hash.")
+        _require(resolved == head, "Final student commit must be the current branch head.")
+        try:
+            report_relative = report_dir.resolve().relative_to(git_root).as_posix()
+        except ValueError as exc:
+            raise WorkflowError("Laboratory 03 report directory is outside the final commit repository.") from exc
+        training_project = report_dir.resolve().parents[1]
+        student_dir = training_project / "student" / LAB_ID
+        scopes = [report_relative]
+        if student_dir.exists():
+            scopes.append(student_dir.relative_to(git_root).as_posix())
+        changed = subprocess.run(
+            ["git", "-C", str(git_root), "diff", "--name-only", resolved, "--", *scopes],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.splitlines()
+        untracked = subprocess.run(
+            ["git", "-C", str(git_root), "ls-files", "--others", "--exclude-standard", "--", *scopes],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.splitlines()
+        generated_after_commit = {
+            f"{report_relative}/verification-report.json",
+            f"{report_relative}/screenshots/07-final-verification.png",
+            f"{report_relative}/submission/REPORT.md",
+        }
+        drift = sorted({*changed, *untracked} - generated_after_commit)
+        _require(
+            not drift,
+            "Laboratory 03 evidence changed after the final commit: " + ", ".join(drift),
+        )
+        return f"exact final commit {resolved} resolves in {git_root}"
+
+    check("final-commit", check_final_commit)
     check("completion-status", check_completion_status)
 
     def check_exposure_ledger() -> str:
@@ -2041,10 +2114,29 @@ def verify_lab03(*, report_dir: Path, final_commit: str) -> dict:
     def check_report() -> str:
         report = report_dir / "REPORT.md"
         _require(report.exists(), "REPORT.md is required.")
-        if status["status"] == "honest-partial":
-            text = report.read_text(encoding="utf-8")
-            _require("partial" in text.lower(), "Honest-partial report must state partial completion.")
-        return "report present and matches completion status"
+        text = report.read_text(encoding="utf-8")
+        _require("data:image/" not in text, "Source REPORT.md must keep relative screenshot links.")
+        if status["status"] == "complete":
+            for screenshot_name in REPORT_SCREENSHOTS:
+                target = f"](screenshots/{screenshot_name})"
+                _require(target in text, f"REPORT.md is missing the relative link for {screenshot_name}.")
+            for screenshot_name in REPORT_SCREENSHOTS[:-1]:
+                _require(
+                    (report_dir / "screenshots" / screenshot_name).is_file(),
+                    f"Complete evidence is missing committed screenshot {screenshot_name}.",
+                )
+            return "complete source report has seven relative links and six committed screenshots"
+        _require("honest-partial" in text, "Honest-partial report must state status honest-partial.")
+        final_target = f"](screenshots/{REPORT_SCREENSHOTS[-1]})"
+        _require(final_target in text, "Honest-partial REPORT.md must link the post-commit verification screenshot.")
+        for screenshot_name in REPORT_SCREENSHOTS[:-1]:
+            target = f"](screenshots/{screenshot_name})"
+            exists = (report_dir / "screenshots" / screenshot_name).is_file()
+            _require(
+                (target in text) == exists,
+                f"Honest-partial screenshot applicability is inconsistent for {screenshot_name}.",
+            )
+        return "honest-partial source report links only applicable evidence plus final verification"
 
     check("report", check_report)
 

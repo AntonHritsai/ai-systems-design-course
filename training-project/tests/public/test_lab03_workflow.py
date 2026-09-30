@@ -1,4 +1,5 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -48,6 +49,22 @@ CALIBRATION = CASES / "calibration"
 AUTHORED_FAILURE = CASES / "authored-failure" / "authored-failure.json"
 
 STUDENT = "student-01"
+REPORT_SCREENSHOTS = (
+    "01-calibration.png",
+    "02-development.png",
+    "03-freeze.png",
+    "04-held-out-execution.png",
+    "05-scoring-recommendation.png",
+    "06-regression.png",
+    "07-final-verification.png",
+)
+
+
+def report_markdown(*, partial: bool) -> str:
+    status = "Completion status: honest-partial." if partial else "Complete laboratory report."
+    screenshot_names = (REPORT_SCREENSHOTS[-1],) if partial else REPORT_SCREENSHOTS
+    links = "\n".join(f"![evidence](screenshots/{name})" for name in screenshot_names)
+    return f"# Report\n\n{status}\n\n{links}\n"
 
 
 def fixture_runner(request: dict) -> str:
@@ -128,6 +145,30 @@ class Lab03CalibrationTests(unittest.TestCase):
 
 
 class Lab03WorkflowTests(unittest.TestCase):
+    def _write_report_evidence(self, report_dir: Path, *, partial: bool) -> None:
+        (report_dir / "REPORT.md").write_text(report_markdown(partial=partial), encoding="utf-8")
+        if not partial:
+            screenshot_dir = report_dir / "screenshots"
+            screenshot_dir.mkdir(parents=True, exist_ok=True)
+            for screenshot_name in REPORT_SCREENSHOTS[:6]:
+                (screenshot_dir / screenshot_name).write_bytes(b"committed screenshot fixture")
+
+    def _commit_report(self, report_dir: Path) -> str:
+        subprocess.run(["git", "init", "-q", str(report_dir)], check=True)
+        subprocess.run(["git", "-C", str(report_dir), "config", "user.name", "Test Student"], check=True)
+        subprocess.run(
+            ["git", "-C", str(report_dir), "config", "user.email", "student@example.invalid"],
+            check=True,
+        )
+        subprocess.run(["git", "-C", str(report_dir), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(report_dir), "commit", "-q", "-m", "final evidence"], check=True)
+        return subprocess.run(
+            ["git", "-C", str(report_dir), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
     def _prepare_development(self, report_dir: Path) -> None:
         record_transfer_case(
             report_dir=report_dir,
@@ -286,13 +327,19 @@ class Lab03WorkflowTests(unittest.TestCase):
                     "reviewed_by": STUDENT,
                 },
             )
-            (report_dir / "REPORT.md").write_text("# Report\n", encoding="utf-8")
+            self._write_report_evidence(report_dir, partial=False)
             record_completion_status(
                 report_dir=report_dir,
                 status="complete",
-                detail={"executed_positions": 16},
+                detail={
+                    "stopped_at_step": "Step 15",
+                    "limitation": "none",
+                    "preserved_evidence": "reports/lab03/",
+                    "recorded_by": STUDENT,
+                },
             )
-            verification = verify_lab03(report_dir=report_dir, final_commit="a" * 40)
+            final_commit = self._commit_report(report_dir)
+            verification = verify_lab03(report_dir=report_dir, final_commit=final_commit)
             self.assertEqual(verification["outcome"], "passed-complete")
 
     def test_route_wide_failure_and_honest_partial_completion(self) -> None:
@@ -351,13 +398,19 @@ class Lab03WorkflowTests(unittest.TestCase):
                 comparison_dir=comparison_dir, reason="route unavailable", student=STUDENT
             )
             self.assertEqual(len(closure["closed_positions"]), 15)
-            (report_dir / "REPORT.md").write_text("Partial completion report.\n", encoding="utf-8")
+            self._write_report_evidence(report_dir, partial=True)
             record_completion_status(
                 report_dir=report_dir,
                 status="honest-partial",
-                detail={"executed_positions": 1, "closed_unstarted": 15},
+                detail={
+                    "stopped_at_step": "Step 9",
+                    "limitation": "route unavailable",
+                    "preserved_evidence": "reports/lab03/comparisons/",
+                    "recorded_by": STUDENT,
+                },
             )
-            verification = verify_lab03(report_dir=report_dir, final_commit="b" * 40)
+            final_commit = self._commit_report(report_dir)
+            verification = verify_lab03(report_dir=report_dir, final_commit=final_commit)
             self.assertEqual(verification["outcome"], "passed-partial")
 
     def test_premature_exposure_removes_family_from_selection(self) -> None:
@@ -1140,6 +1193,174 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
             status = yaml.safe_load((report_dir / "completion-status.yaml").read_text(encoding="utf-8"))
             self.assertEqual(status["status"], "complete")
             self.assertEqual(status["event_count"], 2)
+
+    def test_verifier_rejects_an_unresolvable_final_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            detail = {
+                "stopped_at_step": "Step 4",
+                "limitation": "route unavailable",
+                "preserved_evidence": "reports/lab03/development/",
+            }
+            record_completion_status(
+                report_dir=report_dir,
+                status="honest-partial",
+                detail={**detail, "recorded_by": STUDENT},
+            )
+            (report_dir / "REPORT.md").write_text("Partial completion report.\n", encoding="utf-8")
+
+            verification = verify_lab03(report_dir=report_dir, final_commit="a" * 40)
+
+            self.assertEqual(verification["outcome"], "failed")
+            commit_check = next(
+                item for item in verification["checks"] if item["check_id"] == "final-commit"
+            )
+            self.assertEqual(commit_check["status"], "failed")
+
+    def test_verifier_rejects_report_evidence_changed_after_final_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            report_dir = root / "training-project" / "reports" / "lab03"
+            report_dir.mkdir(parents=True)
+            detail = {
+                "stopped_at_step": "Step 4",
+                "limitation": "route unavailable",
+                "preserved_evidence": "reports/lab03/development/",
+            }
+            record_completion_status(
+                report_dir=report_dir,
+                status="honest-partial",
+                detail={**detail, "recorded_by": STUDENT},
+            )
+            report = report_dir / "REPORT.md"
+            report.write_text("Partial completion report.\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Test Student"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "student@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", "final evidence"], check=True)
+            final_commit = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            report.write_text("Partial completion report changed after commit.\n", encoding="utf-8")
+
+            verification = verify_lab03(report_dir=report_dir, final_commit=final_commit)
+
+            self.assertEqual(verification["outcome"], "failed")
+            commit_check = next(
+                item for item in verification["checks"] if item["check_id"] == "final-commit"
+            )
+            self.assertEqual(commit_check["status"], "failed")
+            self.assertIn("changed after", commit_check["message"])
+
+    def test_verifier_allows_only_declared_post_commit_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            report_dir = root / "training-project" / "reports" / "lab03"
+            report_dir.mkdir(parents=True)
+            detail = {
+                "stopped_at_step": "Step 4",
+                "limitation": "route unavailable",
+                "preserved_evidence": "reports/lab03/development/",
+            }
+            record_completion_status(
+                report_dir=report_dir,
+                status="honest-partial",
+                detail={**detail, "recorded_by": STUDENT},
+            )
+            (report_dir / "REPORT.md").write_text(report_markdown(partial=True), encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Test Student"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "student@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", "final evidence"], check=True)
+            final_commit = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            screenshot = report_dir / "screenshots" / "07-final-verification.png"
+            screenshot.parent.mkdir()
+            screenshot.write_bytes(b"post-commit screenshot")
+            submission = report_dir / "submission" / "REPORT.md"
+            submission.parent.mkdir()
+            submission.write_text("post-commit Teams copy\n", encoding="utf-8")
+
+            verification = verify_lab03(report_dir=report_dir, final_commit=final_commit)
+
+            self.assertEqual(verification["outcome"], "passed-partial")
+            self.assertTrue((report_dir / "verification-report.json").exists())
+
+    def test_verifier_rejects_an_ancestor_instead_of_branch_head(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            report_dir = root / "training-project" / "reports" / "lab03"
+            report_dir.mkdir(parents=True)
+            detail = {
+                "stopped_at_step": "Step 4",
+                "limitation": "route unavailable",
+                "preserved_evidence": "reports/lab03/development/",
+            }
+            record_completion_status(
+                report_dir=report_dir,
+                status="honest-partial",
+                detail={**detail, "recorded_by": STUDENT},
+            )
+            (report_dir / "REPORT.md").write_text("Partial completion report.\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Test Student"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "student@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", "evidence"], check=True)
+            ancestor = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+            ).stdout.strip()
+            (root / "unrelated.txt").write_text("later commit\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(root), "add", "unrelated.txt"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", "later"], check=True)
+
+            verification = verify_lab03(report_dir=report_dir, final_commit=ancestor)
+
+            self.assertEqual(verification["outcome"], "failed")
+            commit_check = next(
+                item for item in verification["checks"] if item["check_id"] == "final-commit"
+            )
+            self.assertIn("current branch head", commit_check["message"])
+
+    def test_complete_verifier_requires_six_committed_screenshots_and_seven_report_links(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            report_dir = root / "training-project" / "reports" / "lab03"
+            report_dir.mkdir(parents=True)
+            record_completion_status(
+                report_dir=report_dir,
+                status="complete",
+                detail={
+                    "stopped_at_step": "Step 15",
+                    "limitation": "none",
+                    "preserved_evidence": "reports/lab03/",
+                    "recorded_by": STUDENT,
+                },
+            )
+            (report_dir / "REPORT.md").write_text("# Report\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Test Student"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email", "student@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", "incomplete report"], check=True)
+            final_commit = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+            ).stdout.strip()
+
+            verification = verify_lab03(report_dir=report_dir, final_commit=final_commit)
+
+            report_check = next(item for item in verification["checks"] if item["check_id"] == "report")
+            self.assertEqual(report_check["status"], "failed")
+            self.assertIn("01-calibration.png", report_check["message"])
 
     def test_post_freeze_premature_exposure_removes_eligibility(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
