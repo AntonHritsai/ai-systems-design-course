@@ -20,10 +20,11 @@ import json
 import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, cast
 
 import yaml
 
+from .lab03_adapters import RunnerResult
 from .workflow import WorkflowError
 
 LAB_ID = "lab03"
@@ -277,6 +278,13 @@ class ExposureLedger:
             if freeze_at is None or not isinstance(recorded, str) or recorded < freeze_at:
                 return True
         return False
+
+    def family_ever_exposed(self, family_id: str) -> bool:
+        """Any recorded premature exposure counts, before or after freeze."""
+        return any(
+            event.get("family_id") == family_id and event.get("event") == "premature-exposure"
+            for event in self.events
+        )
 
     def families_used_in_comparisons(self) -> set[str]:
         return {
@@ -701,6 +709,11 @@ def run_position(
             (comparison_dir / "variant-b.txt").exists(),
             "Variant B cannot run until Variant B exists.",
         )
+        _require(
+            any(item["state"] == "returned" for item in schedule["positions"] if item["variant"] == "a"),
+            "Every Variant A development position failed; a semantic diagnosis is impossible. "
+            "Preserve the failures and record honest-partial completion before protocol freeze.",
+        )
     manifest = _enforce_frozen_route(comparison_dir, adapter, model_id)
     if manifest is not None:
         _enforce_instruction_digests(comparison_dir, instructions, manifest)
@@ -710,8 +723,14 @@ def run_position(
     attempt_dir = comparison_dir / "attempts" / position_id
     _write_json_once(attempt_dir / "request.json", request)
     started_at = _now()
+    observed_model: str | None = None
     try:
-        content = runner(request)
+        result = runner(request)
+        if isinstance(result, RunnerResult):
+            content = result.content
+            observed_model = result.observed_model
+        else:
+            content = result
     except Exception as exc:  # noqa: BLE001 — every failure mode is preserved evidence
         failure_class = classify_failure(str(exc))
         error = {
@@ -743,14 +762,17 @@ def run_position(
         raise WorkflowError("Position evidence is write-once and already exists.")
     attempt_dir.mkdir(parents=True, exist_ok=True)
     raw_path.write_text(content, encoding="utf-8")
-    _write_json_once(attempt_dir / "run-metadata.json", {
+    run_metadata = {
         "position_id": position_id,
         "adapter": adapter,
         "model_id": model_id,
         "started_at": started_at,
         "finished_at": _now(),
         "recorded_by": recorded_by,
-    })
+    }
+    if observed_model is not None:
+        run_metadata["observed_model"] = observed_model
+    _write_json_once(attempt_dir / "run-metadata.json", run_metadata)
     position["state"] = "returned"
     _rewrite_schedule(comparison_dir, schedule)
     _record_route_stop(
@@ -995,7 +1017,12 @@ def freeze_protocol(
 
 
 def eligible_families(reserves_dir: Path, ledger: ExposureLedger, freeze_at: str | None) -> list[str]:
-    """Reserve families that are structurally valid, not exposed before freeze, and unused."""
+    """Reserve families that are structurally valid, never exposed, and unused.
+
+    Any recorded ``premature-exposure`` event removes eligibility regardless of
+    when it was recorded relative to the freeze, so a family seen after freeze
+    but before selection is equally ineligible when ``select-family`` runs.
+    """
     eligible: list[str] = []
     families: list[dict] = []
     for family_path in sorted(reserves_dir.glob("*/family.json")):
@@ -1007,7 +1034,7 @@ def eligible_families(reserves_dir: Path, ledger: ExposureLedger, freeze_at: str
         family_id = family["family_id"]
         if family_id in used:
             continue
-        if ledger.family_exposed_before_freeze(family_id, freeze_at):
+        if ledger.family_ever_exposed(family_id):
             continue
         eligible.append(family_id)
     return eligible
@@ -1076,6 +1103,14 @@ def build_curator_input(*, reserves_dir: Path, contract_path: Path) -> dict:
         "schema_version": SCHEMA_VERSION,
         "case_family_contract": yaml.safe_load(contract_path.read_text(encoding="utf-8")),
         "required_evidence_situations": list(EVIDENCE_SITUATIONS),
+        "permitted_source_rule": (
+            "Every case supplied_source must be a short, bounded, public or non-sensitive passage "
+            "with a verifiable provenance pointer (a public URL or a standard citation) recorded in "
+            "its source_pointers. The curator must not reuse the student's personal transfer-case "
+            "source and must not paraphrase any prior family case below. The independent reviewer "
+            "verifies each provenance pointer against the public source rather than trusting the "
+            "curator's own supplied_source wording."
+        ),
         "prior_families": [
             {
                 "family_id": f["family_id"],
@@ -1088,6 +1123,91 @@ def build_curator_input(*, reserves_dir: Path, contract_path: Path) -> dict:
             }
             for f in families
         ],
+    }
+
+
+CURATOR_SYSTEM_PROMPT = (
+    "You are an isolated case curator. You receive exactly one input file: the case-family "
+    "contract, the four required evidence situations, and prior family manifests used for "
+    "near-duplicate avoidance. You see neither instruction variant, no generated responses, "
+    "no assessments, no aggregates, and no preferred conclusion. Return exactly one JSON "
+    "family conforming to the supplied case-family contract."
+)
+
+CURATOR_TASK_TEMPLATE = """Produce one new held-out case family as a single JSON object.
+
+Follow the case-family contract in the input exactly:
+- one family_id, four cases, and four expected_behaviors entries;
+- the four cases must cover exactly these evidence situations: {situations};
+- every case has a distinct case_id, a task answerable only from its supplied_source, a
+  supplied_source, a mutation_note, and a source pointer;
+- every supplied_source must be a short, bounded, public or non-sensitive passage, and its
+  source_pointers must record a verifiable provenance (a public URL or a standard citation)
+  that an independent reviewer can check — do not fabricate or misquote a source;
+- each expected_behaviors entry states the expected_category and expected_behavior for
+  its case_id and must be evaluable from the supplied source alone;
+- do not duplicate or trivially rephrase any prior family case in the input, and do not
+  reuse the student's personal transfer-case source.
+
+Return only the JSON object, with no commentary."""
+
+
+def curator_launch(*, comparison_dir: Path, report_dir: Path, destination: Path,
+                   attempt: int, runner: Callable[[str], str],
+                   by: str, api_key: str | None = None) -> dict:
+    """Launch the isolated case curator through a supplied isolated runner.
+
+    The runner is provider-neutral: it receives the complete curator prompt
+    (system instruction plus the exact contents of ``curator/input.json``) and
+    returns the raw assistant content string. Only ``curator/input.json`` is
+    supplied to the runner; no variant text, response, assessment, or
+    aggregate is passed. The result is written verbatim to ``destination``
+    (outside the comparison directory) without being opened or validated here,
+    because the candidate contains evaluator-only expectations.
+
+    ``api_key`` is never recorded; a live runner reads its credential from the
+    process environment itself.
+    """
+    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
+    input_path = comparison_dir / "curator" / "input.json"
+    _require(input_path.exists(), "Curator input is missing; run curator-prepare first.")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    _require(
+        not destination.exists(),
+        f"The candidate destination already exists: {destination}. Do not overwrite a candidate.",
+    )
+    prompt = (
+        CURATOR_SYSTEM_PROMPT
+        + "\n\n"
+        + CURATOR_TASK_TEMPLATE.format(situations=", ".join(EVIDENCE_SITUATIONS))
+        + "\n\n"
+        + input_path.read_text(encoding="utf-8")
+    )
+    started_at = _now()
+    session_id = f"cur-{_sha256_bytes((comparison_dir.name + str(attempt) + started_at).encode('utf-8'))[:10]}"
+    content = runner(prompt)
+    _require(isinstance(content, str), "The curator runner must return a string.")
+    _require(bool(content.strip()), "The curator session returned no content.")
+    destination.write_text(content, encoding="utf-8")
+    session_file = comparison_dir / "curator" / "sessions" / f"attempt-{attempt}-session.json"
+    session_file.parent.mkdir(parents=True, exist_ok=True)
+    _write_json_once(session_file, {
+        "schema_version": SCHEMA_VERSION,
+        "session_id": session_id,
+        "attempt": attempt,
+        "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
+        "input_sha256": _file_sha256(input_path, "Curator input"),
+        "destination": str(destination),
+        "destination_sha256": _sha256_bytes(content.encode("utf-8")),
+        "launched_by": by,
+        "launched_at": started_at,
+        "finished_at": _now(),
+    })
+    return {
+        "attempt": attempt,
+        "session_id": session_id,
+        "candidate_path": str(destination),
+        "session_record": str(session_file),
     }
 
 
@@ -1189,7 +1309,8 @@ def record_curator_attempt_failure(
     """Preserve a consumed curator attempt that produced no ingestible candidate."""
     _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
     _require(
-        outcome in {"launch-failed", "route-unavailable", "quota-unavailable", "empty-result", "invalid-candidate"},
+        outcome in {"launch-failed", "route-unavailable", "quota-unavailable", "empty-result",
+                     "invalid-candidate", "reviewer-unavailable"},
         "Unknown curator failure outcome.",
     )
     _require(isinstance(detail, str) and detail.strip(), "Curator attempt failure needs detail.")
@@ -1344,6 +1465,24 @@ def aggregate(*, comparison_dir: Path) -> dict:
             raise WorkflowError(f"Disputes record cannot be read: {exc}") from exc
         disputes = list(disputes_raw.get("items", [])) if isinstance(disputes_raw, dict) else []
     disputed = {d["blind_id"] for d in disputes if isinstance(d, dict) and d.get("blind_id")}
+    corrections: dict[str, dict] = {}
+    corrections_root = comparison_dir / "scoring" / "corrections"
+    if corrections_root.exists():
+        for correction_path in sorted(corrections_root.glob("blind-*.yaml")):
+            try:
+                correction = yaml.safe_load(correction_path.read_text(encoding="utf-8"))
+            except (OSError, yaml.YAMLError) as exc:
+                raise WorkflowError(f"Correction cannot be read: {exc}") from exc
+            if isinstance(correction, dict) and correction.get("blind_id"):
+                corrections[correction["blind_id"]] = correction
+
+    def settled_category(entry_blind_id: str, assessment: dict) -> str:
+        """The recorded category, or its append-only correction when one exists."""
+        correction = corrections.get(entry_blind_id)
+        if correction is not None:
+            return correction["corrected_category"]
+        return assessment["category"]
+
     for entry in index["entries"]:
         path = comparison_dir / "scoring" / "assessments" / f"{entry['blind_id']}.yaml"
         if path.exists():
@@ -1392,19 +1531,20 @@ def aggregate(*, comparison_dir: Path) -> dict:
             if assessment is not None and entry["blind_id"] in disputed:
                 slice_stat["disputed"] += 1
             continue
-        if assessment["category"] == "X":
+        category = settled_category(entry["blind_id"], assessment)
+        if category == "X":
             continue
         stat["assessable"] += 1
         slice_stat["assessable"] += 1
-        acceptable = assessment["category"] in {"S", "Q"}
+        acceptable = category in {"S", "Q"}
         if acceptable:
             stat["rubric_acceptable"] += 1
             slice_stat["rubric_acceptable"] += 1
-        if assessment["category"] == "U":
+        if category == "U":
             stat["critical_unsupported"] += 1
             slice_stat["critical_unsupported"] += 1
         by_case.setdefault(position["case_id"], {"a": [], "b": []})[variant].append(
-            f"{entry['blind_id']}:{assessment['category']}"
+            f"{entry['blind_id']}:{category}"
         )
     for case_id, variant_map in by_case.items():
         if len(variant_map["a"]) == ATTEMPTS_PER_CASE and len(variant_map["b"]) == ATTEMPTS_PER_CASE:
@@ -1416,6 +1556,7 @@ def aggregate(*, comparison_dir: Path) -> dict:
                 "differs_within_b": len(set(variant_map["b"])) > 1,
             })
     observed_latency: dict[str, list[dict]] = {"a": [], "b": []}
+    observed_models: dict[str, set[str]] = {"a": set(), "b": set()}
     for position in schedule["positions"]:
         if position["state"] in {"unstarted", "closed-unstarted"}:
             continue
@@ -1423,6 +1564,9 @@ def aggregate(*, comparison_dir: Path) -> dict:
         if not meta_path.exists():
             continue
         meta, _ = _read_json(meta_path, "Run metadata")
+        observed = meta.get("observed_model")
+        if isinstance(observed, str) and observed.strip():
+            observed_models[position["variant"]].add(observed)
         started = meta.get("started_at")
         finished = meta.get("finished_at")
         seconds = None
@@ -1444,7 +1588,13 @@ def aggregate(*, comparison_dir: Path) -> dict:
         "slices": slices,
         "repeated_attempt_differences": repeated_diffs,
         "disputed_blind_ids": sorted(disputed),
+        "corrected_blind_ids": sorted(corrections),
         "observed_latency": observed_latency,
+        "observed_models": {variant: sorted(models) for variant, models in observed_models.items()},
+        "resolved_model_comparability": (
+            "unknown" if not observed_models["a"] or not observed_models["b"]
+            else ("comparable" if observed_models["a"] == observed_models["b"] else "not-comparable")
+        ),
         "unknown_values": {
             "monetary_cost": "unknown",
             "quota_usage": "unknown",
@@ -1507,6 +1657,46 @@ def record_dispute(*, comparison_dir: Path, blind_id: str, reason: str, student:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(_dump_yaml({"schema_version": SCHEMA_VERSION, "items": items}), encoding="utf-8")
     return path
+
+
+def record_correction(*, comparison_dir: Path, blind_id: str, corrected_category: str,
+                      resolution_basis: str, student: str) -> Path:
+    """Append-only correction of a mistaken evaluator assessment.
+
+    Used only when the supplied source itself resolves that the recorded
+    assessment category is wrong and neither the rubric nor the reference is
+    defective (those cases take ``record-dispute`` or ``record-amendment``).
+    The original immutable assessment is preserved; aggregation settles on the
+    corrected category, and the correction does not force seek-more-evidence.
+    """
+    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
+    known = {entry["blind_id"] for entry in index["entries"]}
+    _require(blind_id in known, f"Unknown blind identifier {blind_id}.")
+    _require(corrected_category in RUBRIC_CATEGORIES,
+             "Corrected category must be a rubric category.")
+    _require(isinstance(resolution_basis, str) and resolution_basis.strip(),
+             "Correction needs the source passage that resolves the mistake.")
+    _require(isinstance(student, str) and student.strip(), "Correction needs the evaluator identity.")
+    assessment_path = comparison_dir / "scoring" / "assessments" / f"{blind_id}.yaml"
+    _require(assessment_path.exists(), f"No recorded assessment exists for {blind_id}.")
+    assessment = yaml.safe_load(assessment_path.read_text(encoding="utf-8"))
+    _require(isinstance(assessment, dict), f"The recorded assessment for {blind_id} is invalid.")
+    _require(
+        assessment.get("category") != corrected_category,
+        "The corrected category must differ from the recorded assessment category.",
+    )
+    return _write_yaml_once(
+        comparison_dir / "scoring" / "corrections" / f"{blind_id}.yaml",
+        {
+            "schema_version": SCHEMA_VERSION,
+            "blind_id": blind_id,
+            "original_category": assessment["category"],
+            "corrected_category": corrected_category,
+            "resolution_basis": resolution_basis.strip(),
+            "corrected_by": student.strip(),
+            "recorded_at": _now(),
+        },
+    )
 
 
 def record_selected_comparison(*, report_dir: Path, comparison_id: str, student: str) -> Path:
@@ -1618,6 +1808,89 @@ def record_regression(*, report_dir: Path, regression: dict) -> Path:
         **regression,
     }
     return _write_yaml_once(report_dir / "regression" / f"{regression_id}.yaml", payload)
+
+
+COMPLETION_DETAIL_FIELDS = {
+    "stopped_at_step": "the laboratory step at which execution stopped",
+    "limitation": "the access or route limitation encountered",
+    "preserved_evidence": "the preserved artifacts that remain valid partial evidence",
+}
+
+
+def validate_completion_detail(detail: object) -> dict:
+    """Validate the machine input contract of ``student/lab03/completion-detail.yaml``.
+
+    Required shape: a mapping with exactly the three non-empty string fields
+    ``stopped_at_step``, ``limitation``, and ``preserved_evidence``. The value
+    of ``preserved_evidence`` lists the preserved artifact paths or artifact
+    groups, one per line.
+    """
+    _require(isinstance(detail, dict), "Completion detail must be a YAML mapping.")
+    checked = cast(dict, detail)
+    missing = sorted(set(COMPLETION_DETAIL_FIELDS) - set(checked))
+    _require(not missing, f"Completion detail is missing required fields: {', '.join(missing)}.")
+    extra = sorted(set(checked) - set(COMPLETION_DETAIL_FIELDS))
+    _require(not extra, f"Completion detail has unexpected fields: {', '.join(extra)}.")
+    for field in COMPLETION_DETAIL_FIELDS:
+        _require(
+            isinstance(checked[field], str) and checked[field].strip(),
+            f"Completion detail field {field} must be a non-empty string.",
+        )
+    return {field: checked[field].strip() for field in COMPLETION_DETAIL_FIELDS}
+
+
+def lab03_status(*, report_dir: Path) -> dict:
+    """Read-only resume bootstrap: working directory, comparison ids, and state.
+
+    Safe to run in a fresh terminal after an interruption. It changes no
+    artifact and only reports: the report directory, each frozen comparison
+    with its id, route, resume deadline, position-state counts, route-stop
+    state, and the next scheduled unstarted position.
+    """
+    _require(report_dir.exists(), f"The report directory does not exist: {report_dir}.")
+    comparisons_root = report_dir / "comparisons"
+    comparisons = []
+    if comparisons_root.exists():
+        for comparison_dir in sorted(comparisons_root.glob("cmp-*")):
+            manifest_path = comparison_dir / "freeze-manifest.json"
+            if not manifest_path.exists():
+                comparisons.append({"comparison_id": comparison_dir.name, "state": "incomplete-freeze"})
+                continue
+            manifest, _ = _read_json(manifest_path, "Freeze manifest")
+            schedule_path = comparison_dir / "schedule.json"
+            position_counts: dict[str, int] = {}
+            next_unstarted: str | None = None
+            if schedule_path.exists():
+                schedule, _ = _read_json(schedule_path, "Schedule")
+                for position in schedule["positions"]:
+                    state = position.get("state", "unknown")
+                    position_counts[state] = position_counts.get(state, 0) + 1
+                next_unstarted = _next_unstarted_id(schedule)
+            route_stop = None
+            stop_path = comparison_dir / "route-stop.json"
+            if stop_path.exists():
+                stop, _ = _read_json(stop_path, "Route stop")
+                route_stop = {
+                    "failure_class": stop.get("failure_class"),
+                    "resume_probe_used": stop.get("resume_probe_used"),
+                    "resume_succeeded": stop.get("resume_succeeded"),
+                }
+            deadline = _resume_deadline(manifest)
+            comparisons.append({
+                "comparison_id": comparison_dir.name,
+                "frozen_at": manifest.get("frozen_at"),
+                "resume_window": manifest.get("resume_window"),
+                "resume_deadline": deadline.isoformat() if deadline is not None else None,
+                "route": manifest.get("route"),
+                "position_counts": position_counts,
+                "next_unstarted_position": next_unstarted,
+                "route_stop": route_stop,
+            })
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "working_directory_hint": str(report_dir),
+        "comparisons": comparisons,
+    }
 
 
 def record_completion_status(*, report_dir: Path, status: str, detail: dict) -> Path:

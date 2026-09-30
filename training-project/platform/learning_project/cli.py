@@ -53,6 +53,7 @@ from .lab03 import (
     record_curator_attempt_failure,
     record_dispute,
     record_evaluator_amendment,
+    record_correction,
     record_human_case_review,
     record_interrupted_position,
     record_premature_exposure,
@@ -62,10 +63,13 @@ from .lab03 import (
     record_transfer_case,
     record_variant_b,
     run_position,
+    curator_launch,
+    lab03_status,
     select_family,
     start_calibration,
     structural_check,
     submit_calibration,
+    validate_completion_detail,
     verify_lab03,
 )
 from .openai_compatible import run_openrouter
@@ -304,6 +308,21 @@ def _build_parser() -> argparse.ArgumentParser:
     curator_prepare.add_argument("--report-dir", type=Path, required=True)
     curator_prepare.add_argument("--freeze-id", required=True)
 
+    curator_launch_cmd = lab03_commands.add_parser(
+        "curator-launch",
+        help="Launch the isolated curator session through the OpenRouter route.",
+    )
+    curator_launch_cmd.add_argument("--report-dir", type=Path, required=True)
+    curator_launch_cmd.add_argument("--freeze-id", required=True)
+    curator_launch_cmd.add_argument("--attempt", type=int, choices=(1, 2), required=True)
+    curator_launch_cmd.add_argument(
+        "--destination", type=Path, required=True,
+        help="Outside the comparison directory, e.g. student/lab03/curator-candidate-1.json.",
+    )
+    curator_launch_cmd.add_argument("--model-id", default="openrouter/free",
+                                    help="Isolated-session route alias; defaults to openrouter/free.")
+    curator_launch_cmd.add_argument("--by", required=True)
+
     curator_ingest = lab03_commands.add_parser(
         "curator-ingest",
         help="Validate one isolated curator candidate family.",
@@ -409,6 +428,25 @@ def _build_parser() -> argparse.ArgumentParser:
     amendment.add_argument("--amendment-id", required=True)
     amendment.add_argument("--defect", required=True)
     amendment.add_argument("--by", required=True)
+
+    correction = lab03_commands.add_parser(
+        "record-correction",
+        help="Record an append-only correction of one mistaken evaluator assessment.",
+    )
+    correction.add_argument("--report-dir", type=Path, required=True)
+    correction.add_argument("--freeze-id", required=True)
+    correction.add_argument("--blind-id", required=True)
+    correction.add_argument("--corrected-category", required=True,
+                            choices=("S", "I", "U", "Q", "R", "X"))
+    correction.add_argument("--resolution-basis", required=True,
+                            help="The supplied-source passage that resolves the mistake.")
+    correction.add_argument("--by", required=True)
+
+    status_cmd = lab03_commands.add_parser(
+        "status",
+        help="Read-only resume bootstrap: comparison ids, routes, and position states.",
+    )
+    status_cmd.add_argument("--report-dir", type=Path, required=True)
 
     agg = lab03_commands.add_parser("aggregate", help="Join identities and compute nested counts.")
     agg.add_argument("--report-dir", type=Path, required=True)
@@ -832,6 +870,28 @@ def _run_lab03(args: argparse.Namespace) -> int:
         path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"Wrote curator input to {path}.")
         return 0
+    if command == "curator-launch":
+        from .lab03_adapters import openrouter_prompt_runner_factory
+
+        def curator_prompt_runner(prompt: str) -> str:
+            # The isolated curator session is a single-prompt OpenRouter call;
+            # the credential stays in the process environment and is never recorded.
+            return openrouter_prompt_runner_factory(args.model_id)(prompt).content
+
+        result = curator_launch(
+            comparison_dir=comparison_dir(args.freeze_id),
+            report_dir=report_dir,
+            destination=args.destination,
+            attempt=args.attempt,
+            runner=curator_prompt_runner,
+            by=args.by,
+        )
+        print(
+            f"Curator attempt {result['attempt']} session {result['session_id']} wrote the candidate "
+            f"to {result['candidate_path']} without opening it; session record at {result['session_record']}. "
+            f"Use --session {result['session_id']} with curator-ingest."
+        )
+        return 0
     if command == "curator-ingest":
         candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
         cmp_dir = comparison_dir(args.freeze_id)
@@ -944,6 +1004,12 @@ def _run_lab03(args: argparse.Namespace) -> int:
         )
         print(f"Position {args.position_id}: {result['outcome']}"
               + (f" ({result['failure_class']})" if "failure_class" in result else "") + ".")
+        metadata_path = cmp_dir / "attempts" / args.position_id / "run-metadata.json"
+        if metadata_path.exists():
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            if metadata.get("observed_model"):
+                print(f"Observed provider-resolved model: {metadata['observed_model']} "
+                      "(reported evidence; the requested route identifier remains frozen).")
         return 0
     if command == "list-positions":
         cmp_dir = comparison_dir(args.freeze_id)
@@ -1017,6 +1083,23 @@ def _run_lab03(args: argparse.Namespace) -> int:
         )
         print(f"Recorded the evaluator amendment to {path}.")
         return 0
+    if command == "record-correction":
+        path = record_correction(
+            comparison_dir=comparison_dir(args.freeze_id),
+            blind_id=args.blind_id,
+            corrected_category=args.corrected_category,
+            resolution_basis=args.resolution_basis,
+            student=args.by,
+        )
+        print(
+            f"Recorded the append-only correction for {args.blind_id} to {path}; "
+            "the original assessment is preserved and aggregation settles on the corrected category."
+        )
+        return 0
+    if command == "status":
+        summary = lab03_status(report_dir=report_dir)
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return 0
     if command == "aggregate":
         result = aggregate_lab03(comparison_dir=comparison_dir(args.freeze_id))
         a, b = result["nested_counts"]["a"], result["nested_counts"]["b"]
@@ -1046,6 +1129,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
         return 0
     if command == "record-completion":
         detail = yaml.safe_load(args.detail.read_text(encoding="utf-8"))
+        detail = validate_completion_detail(detail)
         detail = {**detail, "recorded_by": args.by}
         path = record_completion_status(
             report_dir=report_dir, status=args.status, detail=detail

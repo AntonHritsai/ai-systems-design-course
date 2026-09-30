@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
-  <title id="title">Потік оцінювання доцільності застосування ШІ</title>
+  <title id="title">Потік оцінювання сценаріїв використання ШІ</title>
   <desc id="desc">Потік рішень перевіряє результат, достатність детермінованого програмного забезпечення, допустимі помилки, повноваження людини та вимірну корисність перед переходом до обмеженого експерименту з ШІ.</desc>
   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker><style>.title{font:700 28px system-ui,sans-serif;fill:#0f172a}.q{fill:#e0f2fe;stroke:#0284c7;stroke-width:2.5}.stop{fill:#fee2e2;stroke:#dc2626;stroke-width:2.5}.go{fill:#dcfce7;stroke:#059669;stroke-width:3}.label{font:700 16px system-ui,sans-serif;fill:#0f172a}.small{font:14px system-ui,sans-serif;fill:#334155}.line{fill:none;stroke:#475569;stroke-width:2.5;marker-end:url(#arrow)}.edge{font:700 14px system-ui,sans-serif;fill:#475569}</style></defs>
   <rect width="1200" height="760" fill="#ffffff"/>

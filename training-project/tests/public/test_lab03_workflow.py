@@ -14,6 +14,7 @@ from learning_project.lab03 import (
     check_near_duplicates,
     classify_failure,
     close_unstarted_positions,
+    eligible_families,
     freeze_protocol,
     ingest_curator_candidate,
     load_family,
@@ -1034,6 +1035,273 @@ class Lab03WorkflowTests(unittest.TestCase):
                     reason="repeat",
                     student=STUDENT,
                 )
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+class Lab03Gate2RemediationTests(unittest.TestCase):
+    """Coverage for the eight confirmed Gate 2 blockers reopened on 2026-09-30."""
+
+    def _prepare_development(self, report_dir: Path) -> None:
+        record_transfer_case(
+            report_dir=report_dir,
+            transfer_case={
+                "case_id": "transfer-approval",
+                "task": "State who approves requests.",
+                "supplied_source": "A supervisor approves requests.",
+                "provenance": "public test scenario",
+            },
+            perturbation={
+                "case_id": "transfer-approval-perturbed",
+                "task": "State who approves requests.",
+                "supplied_source": "A supervisor records requests.",
+                "provenance": "public test scenario",
+                "perturbation_note": "verb changed",
+                "expectation": "authority claim must disappear",
+            },
+        )
+        record_variant_b(
+            report_dir=report_dir,
+            variant_b_text="Variant B text for tests.",
+            change_declaration={
+                "changed_property": "length bound",
+                "mechanism": "bounded paragraph",
+                "declared_factors": ["length bound"],
+            },
+        )
+        Lab03WorkflowTests._seed_terminal_development(self, report_dir)  # type: ignore[arg-type]
+
+    def _protocol(self) -> dict:
+        return Lab03WorkflowTests._protocol(self)  # type: ignore[arg-type]
+
+    def _development_schedule(self, a_states, b_states=("unstarted",) * 4):
+        positions = []
+        case_ids = ["dev-criteria", "dev-authority", "transfer-approval", "transfer-approval-perturbed"]
+        for case_id, a_state in zip(case_ids, a_states):
+            positions.append({"position_id": f"pos-{case_id}-a-1", "case_id": case_id,
+                              "case_index": 0, "variant": "a", "attempt": 1, "state": a_state})
+        for case_id, b_state in zip(case_ids, b_states):
+            positions.append({"position_id": f"pos-{case_id}-b-1", "case_id": case_id,
+                              "case_index": 0, "variant": "b", "attempt": 1, "state": b_state})
+        order = [p["position_id"] for p in positions]
+        return {"kind": "development", "family_id": "dev-common", "order": order, "positions": positions}
+
+    def test_all_failed_variant_a_blocks_variant_b_and_requires_partial_stop(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            comparison_dir = Path(temp)
+            schedule = self._development_schedule(("failed",) * 4)
+            (comparison_dir / "variant-b.txt").write_text("Variant B text.", encoding="utf-8")
+            with self.assertRaises(WorkflowError) as ctx:
+                run_position(
+                    comparison_dir=comparison_dir,
+                    schedule=schedule,
+                    position_id="pos-dev-criteria-b-1",
+                    cases_by_id={"dev-criteria": {"case_id": "dev-criteria", "task": "t", "supplied_source": "s"}},
+                    instructions={"b": "instruction"},
+                    runner=fixture_runner,
+                    adapter="offline-fixture",
+                    model_id="offline-fixture",
+                    recorded_by=STUDENT,
+                )
+            self.assertIn("honest-partial", str(ctx.exception))
+
+    def test_completion_detail_contract_is_enforced(self) -> None:
+        from learning_project.lab03 import validate_completion_detail
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            good = {"stopped_at_step": "Step 4", "limitation": "route unavailable",
+                    "preserved_evidence": "reports/lab03/development/"}
+            checked = validate_completion_detail(good)
+            self.assertEqual(checked["stopped_at_step"], "Step 4")
+            record_completion_status(report_dir=report_dir, status="honest-partial",
+                                     detail=validate_completion_detail(good))
+            status = yaml.safe_load((report_dir / "completion-status.yaml").read_text(encoding="utf-8"))
+            self.assertEqual(status["status"], "honest-partial")
+            for bad in ({}, {"stopped_at_step": "Step 4"}, {**good, "extra": 1}):
+                with self.assertRaises(WorkflowError):
+                    validate_completion_detail(bad)
+
+    def test_post_freeze_premature_exposure_removes_eligibility(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            ledger = ExposureLedger(Path(temp) / "exposure-ledger.json")
+            families = sorted(p.parent.name for p in RESERVES.glob("*/family.json"))
+            ledger.append({"event": "premature-exposure", "family_id": families[0],
+                           "actor": STUDENT, "recorded_at": "2100-01-01T00:00:00+00:00"})
+            eligible = eligible_families(RESERVES, ledger, freeze_at="2000-01-01T00:00:00+00:00")
+            self.assertNotIn(families[0], eligible)
+            self.assertTrue(eligible, "remaining families must stay eligible")
+
+    def test_runner_result_records_observed_model_without_changing_frozen_route(self) -> None:
+        from learning_project.lab03_adapters import RunnerResult
+        with tempfile.TemporaryDirectory() as temp:
+            comparison_dir = Path(temp)
+            position_id = "pos-case-a-1"
+            (comparison_dir / "schedule.json").write_text(json.dumps({
+                "kind": "held-out", "order": [position_id],
+                "positions": [{"position_id": position_id, "case_id": "case", "variant": "a",
+                               "attempt": 1, "state": "unstarted"}],
+            }), encoding="utf-8")
+
+            def live_runner(request: dict) -> RunnerResult:
+                return RunnerResult(content=json.dumps(
+                    {"case_id": request["case_id"], "proposed_text": "answer"}), observed_model="provider/x")
+
+            result = run_position(
+                comparison_dir=comparison_dir, schedule=json.loads(
+                    (comparison_dir / "schedule.json").read_text(encoding="utf-8")),
+                position_id=position_id,
+                cases_by_id={"case": {"case_id": "case", "task": "t", "supplied_source": "s"}},
+                instructions={"a": "instruction"}, runner=live_runner,
+                adapter="openrouter", model_id="openrouter/free", recorded_by=STUDENT,
+            )
+            self.assertEqual(result["outcome"], "returned")
+            metadata = json.loads(
+                (comparison_dir / "attempts" / position_id / "run-metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual(metadata["observed_model"], "provider/x")
+            self.assertEqual(metadata["model_id"], "openrouter/free")
+
+    def test_curator_launch_is_executable_and_isolated(self) -> None:
+        from learning_project.lab03 import curator_launch
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            comparison_dir = report_dir / "comparisons" / "cmp-test"
+            input_dir = comparison_dir / "curator"
+            input_dir.mkdir(parents=True)
+            (input_dir / "input.json").write_text("{\"case_family_contract\": {}}", encoding="utf-8")
+            destination = report_dir / "student" / "lab03" / "curator-candidate-1.json"
+            seen_prompts = []
+
+            def isolated_runner(prompt: str) -> str:
+                seen_prompts.append(prompt)
+                return "{\"family_id\": \"curated-1\", \"cases\": []}"
+
+            result = curator_launch(
+                comparison_dir=comparison_dir, report_dir=report_dir, destination=destination,
+                attempt=1, runner=isolated_runner, by=STUDENT,
+            )
+            candidate = json.loads(destination.read_text(encoding="utf-8"))
+            self.assertEqual(candidate["family_id"], "curated-1")
+            self.assertEqual(len(seen_prompts), 1)
+            self.assertNotIn("Variant B text", seen_prompts[0])
+            session = json.loads(
+                (comparison_dir / "curator" / "sessions" / "attempt-1-session.json").read_text(encoding="utf-8"))
+            self.assertEqual(session["attempt"], 1)
+            self.assertTrue(session["session_id"].startswith("cur-"))
+            self.assertEqual(result["session_id"], session["session_id"])
+            self.assertIn("case_family_contract", seen_prompts[0])
+            with self.assertRaises(WorkflowError):
+                curator_launch(
+                    comparison_dir=comparison_dir, report_dir=report_dir, destination=destination,
+                    attempt=1, runner=isolated_runner, by=STUDENT,
+                )
+
+    def test_status_reports_resume_bootstrap_fields(self) -> None:
+        from learning_project.lab03 import lab03_status
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            summary = lab03_status(report_dir=report_dir)
+            self.assertEqual(summary["comparisons"], [])
+            comparison_dir = report_dir / "comparisons" / "cmp-x"
+            comparison_dir.mkdir(parents=True)
+            (comparison_dir / "freeze-manifest.json").write_text(json.dumps({
+                "freeze_id": "cmp-x", "frozen_at": "2026-09-30T10:00:00+00:00",
+                "resume_window": "48h", "route": {"adapter": "openrouter", "model_id": "openrouter/free"},
+            }), encoding="utf-8")
+            (comparison_dir / "schedule.json").write_text(json.dumps({
+                "kind": "held-out", "order": ["p1", "p2"],
+                "positions": [{"position_id": "p1", "state": "returned"},
+                              {"position_id": "p2", "state": "unstarted"}],
+            }), encoding="utf-8")
+            summary = lab03_status(report_dir=report_dir)
+            entry = summary["comparisons"][0]
+            self.assertEqual(entry["comparison_id"], "cmp-x")
+            self.assertEqual(entry["position_counts"], {"returned": 1, "unstarted": 1})
+            self.assertEqual(entry["next_unstarted_position"], "p2")
+            self.assertEqual(entry["resume_window"], "48h")
+            self.assertIn("resume_deadline", entry)
+
+    def test_evaluator_correction_settles_the_aggregate_without_forcing_uncertainty(self) -> None:
+        from learning_project.lab03 import record_correction
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            self._prepare_completion_ready_comparison(report_dir)
+            comparison_dir = sorted((report_dir / "comparisons").glob("cmp-*"))[0]
+            index = json.loads((comparison_dir / "scoring" / "_join-map.json").read_text(encoding="utf-8"))
+            first = index["entries"][0]
+            original = record_assessment(
+                comparison_dir=comparison_dir, blind_id=first["blind_id"],
+                assessment={"category": "I", "source_pointer": "src:1",
+                            "rationale": "initial judgment", "assessed_by": STUDENT},
+            )
+            original_data = yaml.safe_load(original.read_text(encoding="utf-8"))
+            path = record_correction(
+                comparison_dir=comparison_dir, blind_id=first["blind_id"],
+                corrected_category="S", resolution_basis="source line 1 states the fact directly",
+                student=STUDENT,
+            )
+            correction = yaml.safe_load(path.read_text(encoding="utf-8"))
+            self.assertEqual(correction["original_category"], "I")
+            self.assertEqual(correction["corrected_category"], "S")
+            still_original = yaml.safe_load(original.read_text(encoding="utf-8"))
+            self.assertEqual(still_original, original_data)
+            result = aggregate_lab03(comparison_dir=comparison_dir)
+            self.assertIn(first["blind_id"], result["corrected_blind_ids"])
+            variant = first["position_id"].rsplit("-", 2)[-2]
+            self.assertEqual(result["nested_counts"][variant]["rubric_acceptable"], 1)
+            with self.assertRaises(WorkflowError):
+                record_correction(
+                    comparison_dir=comparison_dir, blind_id=first["blind_id"],
+                    corrected_category="S", resolution_basis="duplicate", student=STUDENT,
+                )
+
+    def test_curator_reviewer_unavailable_outcome_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            comparison_dir = Path(temp)
+            path = record_curator_attempt_failure(
+                comparison_dir=comparison_dir, attempt=1, outcome="reviewer-unavailable",
+                detail="candidate ingested but no eligible independent reviewer", student=STUDENT,
+            )
+            recorded = yaml.safe_load(path.read_text(encoding="utf-8"))
+            self.assertEqual(recorded["outcome"], "reviewer-unavailable")
+            with self.assertRaises(WorkflowError):
+                record_curator_attempt_failure(
+                    comparison_dir=comparison_dir, attempt=1, outcome="reviewer-absent",
+                    detail="unknown outcome", student=STUDENT,
+                )
+
+    def test_curator_input_declares_a_permitted_source_rule(self) -> None:
+        from learning_project.lab03 import build_curator_input
+        payload = build_curator_input(
+            reserves_dir=RESERVES, contract_path=CASES / "case-family-contract.yaml",
+        )
+        self.assertIn("permitted_source_rule", payload)
+        self.assertIn("provenance", payload["permitted_source_rule"].lower())
+
+    def _prepare_completion_ready_comparison(self, report_dir: Path) -> None:
+        """Freeze and complete a minimal sixteen-position comparison offline."""
+        self._prepare_development(report_dir)
+        ledger = ExposureLedger(report_dir / "exposure-ledger.json")
+        manifest = freeze_protocol(
+            report_dir=report_dir, protocol=self._protocol(),
+            reserves_dir=RESERVES, ledger=ledger, student=STUDENT,
+        )
+        family = select_family(
+            reserves_dir=RESERVES, ledger=ledger, freeze_manifest=manifest, student=STUDENT,
+        )
+        comparison_dir = Path(manifest["comparison_dir"])
+        build_positions(comparison_dir=comparison_dir, family=family, kind="held-out")
+        schedule = json.loads((comparison_dir / "schedule.json").read_text(encoding="utf-8"))
+        cases_by_id = {c["case_id"]: c for c in family["cases"]}
+        instructions = load_frozen_instructions(comparison_dir)
+        for position_id in schedule["order"]:
+            run_position(
+                comparison_dir=comparison_dir, schedule=schedule, position_id=position_id,
+                cases_by_id=cases_by_id, instructions=instructions, runner=fixture_runner,
+                adapter="offline-fixture", model_id="offline-fixture", recorded_by=STUDENT,
+            )
+        revealed = json.loads((comparison_dir / "revealed-family.json").read_text(encoding="utf-8"))
+        build_blinded_index(comparison_dir=comparison_dir, family=revealed["family"])
 
 
 if __name__ == "__main__":

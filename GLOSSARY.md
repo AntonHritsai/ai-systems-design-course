@@ -11,7 +11,8 @@
 | Agent harness | Середовище взаємодії з ШІ-агентом |
 | AI engineering | Інженерія штучного інтелекту |
 | AI engineering stack | Стек інженерії штучного інтелекту |
-| AI use-case screening | Оцінювання доцільності застосування ШІ |
+| AI use-case screening | Оцінювання сценаріїв використання ШІ |
+| Screening | Попереднє оцінювання |
 | Approval authority | Повноваження затверджувати зміни |
 | Architectural approach | Архітектурний підхід |
 | Architectural characteristic | Архітектурна характеристика |

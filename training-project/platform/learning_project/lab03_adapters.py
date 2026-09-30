@@ -13,6 +13,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -20,13 +21,27 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_TIMEOUT = 120
 
 
-def offline_fixture_runner(request: dict) -> str:
+@dataclass(frozen=True)
+class RunnerResult:
+    """One runner outcome plus the provider-reported model identity, if any.
+
+    ``observed_model`` is the model identifier the provider reported in its
+    response (``null`` when the adapter reports none, such as the offline
+    fixture). It is recorded as reported evidence; it never replaces the
+    frozen requested route identity.
+    """
+
+    content: str
+    observed_model: str | None = None
+
+
+def offline_fixture_runner(request: dict) -> RunnerResult:
     """Deterministic no-purchase runner for workflow exercises and tests.
 
     Produces a structurally valid envelope that answers from the supplied
     source only when the task is answerable from it; used with the
     ``offline-fixture`` adapter label so runs are never confused with live
-    model evidence.
+    model evidence. No provider exists, so no observed model is reported.
     """
     envelope = {
         "case_id": request["case_id"],
@@ -35,52 +50,77 @@ def offline_fixture_runner(request: dict) -> str:
             f" grounded only in the supplied source."
         ),
     }
-    return json.dumps(envelope, ensure_ascii=False)
+    return RunnerResult(content=json.dumps(envelope, ensure_ascii=False))
 
 
-def openrouter_runner_factory(model_id: str, api_key: str | None = None) -> Callable[[dict], str]:
+def _openrouter_post(model_id: str, key: str, messages: list[dict]) -> dict:
+    """POST one chat completion and return the decoded response body."""
+    payload = {"model": model_id, "messages": messages}
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        OPENROUTER_URL,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=OPENROUTER_TIMEOUT) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"openrouter request failed with HTTP {exc.code}: {exc.reason}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"openrouter route unavailable: {exc.reason}") from exc
+
+
+def _assistant_content(body: dict) -> tuple[str, str | None]:
+    choices = body.get("choices") or []
+    if not choices or not isinstance(choices[0].get("message", {}).get("content"), str):
+        raise RuntimeError("openrouter returned no assistant content")
+    observed = body.get("model")
+    return (
+        choices[0]["message"]["content"],
+        observed if isinstance(observed, str) and observed.strip() else None,
+    )
+
+
+def openrouter_prompt_runner_factory(model_id: str, api_key: str | None = None) -> Callable[[str], RunnerResult]:
+    """Build a single-prompt live runner for isolated text-only sessions."""
+    key = api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "")
+    if not key:
+        raise RuntimeError("openrouter authentication failed: OPENROUTER_API_KEY is not set")
+
+    def runner(prompt: str) -> RunnerResult:
+        body = _openrouter_post(model_id, key, [{"role": "user", "content": prompt}])
+        content, observed = _assistant_content(body)
+        return RunnerResult(content=content, observed_model=observed)
+
+    return runner
+
+
+def openrouter_runner_factory(model_id: str, api_key: str | None = None) -> Callable[[dict], RunnerResult]:
     """Build a live OpenRouter runner for one model."""
     key = api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "")
     if not key:
         raise RuntimeError("openrouter authentication failed: OPENROUTER_API_KEY is not set")
 
-    def runner(request: dict) -> str:
-        payload = {
-            "model": model_id,
-            "messages": [
-                {"role": "system", "content": request["instruction"]},
-                {
-                    "role": "user",
-                    "content": (
-                        f"Task: {request['task']}\n\n"
-                        f"Supplied source:\n{request['supplied_source']}\n\n"
-                        "Return one JSON object with exactly the fields "
-                        f'"case_id" (value "{request["case_id"]}") and "proposed_text".'
-                    ),
-                },
-            ],
-        }
-        data = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(
-            OPENROUTER_URL,
-            data=data,
-            headers={
-                "Authorization": f"Bearer {key}",
-                "Content-Type": "application/json",
+    def runner(request: dict) -> RunnerResult:
+        body = _openrouter_post(model_id, key, [
+            {"role": "system", "content": request["instruction"]},
+            {
+                "role": "user",
+                "content": (
+                    f"Task: {request['task']}\n\n"
+                    f"Supplied source:\n{request['supplied_source']}\n\n"
+                    "Return one JSON object with exactly the fields "
+                    f'"case_id" (value "{request["case_id"]}") and "proposed_text".'
+                ),
             },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=OPENROUTER_TIMEOUT) as response:
-                body = json.loads(response.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            raise RuntimeError(f"openrouter request failed with HTTP {exc.code}: {exc.reason}") from exc
-        except urllib.error.URLError as exc:
-            raise RuntimeError(f"openrouter route unavailable: {exc.reason}") from exc
-        choices = body.get("choices") or []
-        if not choices or not isinstance(choices[0].get("message", {}).get("content"), str):
-            raise RuntimeError("openrouter returned no assistant content")
-        return choices[0]["message"]["content"]
+        ])
+        content, observed = _assistant_content(body)
+        return RunnerResult(content=content, observed_model=observed)
 
     return runner
 
