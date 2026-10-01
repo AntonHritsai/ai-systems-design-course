@@ -1106,9 +1106,29 @@ def mark_family_used(*, ledger: ExposureLedger, family_id: str, freeze_id: str, 
     })
 
 
-def build_curator_input(*, reserves_dir: Path, contract_path: Path) -> dict:
-    """Assemble the isolation-bounded curator input: contract, situations, prior manifests."""
+def build_curator_input(*, reserves_dir: Path, contract_path: Path, report_dir: Path | None = None) -> dict:
+    """Assemble the isolation-bounded curator input: contract, situations, priors, exclusions."""
     families = [load_family(p) for p in sorted(reserves_dir.glob("*/family.json"))]
+    excluded_development_sources: list[dict] = []
+    if report_dir is not None:
+        dev_dir = Path(report_dir) / "development"
+        for name in ("transfer-case.yaml", "transfer-perturbation.yaml"):
+            path = dev_dir / name
+            if not path.exists():
+                continue
+            payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            source = payload.get("supplied_source")
+            case_id = payload.get("case_id")
+            if isinstance(source, str) and source.strip() and isinstance(case_id, str) and case_id.strip():
+                entry: dict[str, object] = {
+                    "case_id": case_id.strip(),
+                    "supplied_source": source.strip(),
+                    "origin": name,
+                }
+                pointers = payload.get("source_pointers")
+                if isinstance(pointers, list) and pointers:
+                    entry["source_pointers"] = pointers
+                excluded_development_sources.append(entry)
     return {
         "schema_version": SCHEMA_VERSION,
         "case_family_contract": yaml.safe_load(contract_path.read_text(encoding="utf-8")),
@@ -1116,11 +1136,13 @@ def build_curator_input(*, reserves_dir: Path, contract_path: Path) -> dict:
         "permitted_source_rule": (
             "Every case supplied_source must be a short, bounded, public or non-sensitive passage "
             "with a verifiable provenance pointer (a public URL or a standard citation) recorded in "
-            "its source_pointers. The curator must not reuse the student's personal transfer-case "
-            "source and must not paraphrase any prior family case below. The independent reviewer "
-            "verifies each provenance pointer against the public source rather than trusting the "
-            "curator's own supplied_source wording."
+            "its source_pointers. The curator must not reuse any excluded_development_sources entry "
+            "or paraphrase any prior family case below. The independent reviewer verifies each "
+            "provenance pointer against the public source rather than trusting the curator's own "
+            "supplied_source wording, and checks near-duplication against prior families and "
+            "excluded_development_sources."
         ),
+        "excluded_development_sources": excluded_development_sources,
         "prior_families": [
             {
                 "family_id": f["family_id"],
@@ -1294,11 +1316,29 @@ def ingest_curator_candidate(
                 for behavior in prior.get("expected_behaviors", [])
             ],
         })
+    excluded = curator_input.get("excluded_development_sources") or []
+    excluded_sources = [
+        item["supplied_source"].strip()
+        for item in excluded
+        if isinstance(item, dict) and isinstance(item.get("supplied_source"), str) and item["supplied_source"].strip()
+    ]
+    if excluded_sources:
+        excluded_exact = {hashlib.sha256(s.encode("utf-8")).hexdigest(): s for s in excluded_sources}
+        excluded_normalized = {_normalized_text(s): s for s in excluded_sources}
+        for case in family["cases"]:
+            source = case["supplied_source"]
+            exact_key = hashlib.sha256(source.encode("utf-8")).hexdigest()
+            normalized_key = _normalized_text(source)
+            if exact_key in excluded_exact or normalized_key in excluded_normalized:
+                raise WorkflowError(
+                    f"Case {case['case_id']} reuses an excluded development source "
+                    f"(transfer-case or transfer-perturbation)."
+                )
     check_near_duplicates([family, *prior_families])
     check = {
         "schema_version": SCHEMA_VERSION,
         "candidate_family_id": family["family_id"],
-        "checks": ["schema-conformance", "provenance", "near-duplicate"],
+        "checks": ["schema-conformance", "provenance", "near-duplicate", "development-source-exclusion"],
         "passed": True,
         "checked_at": _now(),
     }

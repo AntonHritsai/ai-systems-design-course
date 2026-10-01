@@ -1517,6 +1517,58 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
         )
         self.assertIn("permitted_source_rule", payload)
         self.assertIn("provenance", payload["permitted_source_rule"].lower())
+        self.assertEqual(payload.get("excluded_development_sources"), [])
+
+    def test_curator_input_includes_excluded_development_sources(self) -> None:
+        from learning_project.lab03 import build_curator_input
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            dev = report_dir / "development"
+            dev.mkdir(parents=True)
+            (dev / "transfer-case.yaml").write_text(
+                "case_id: transfer-student-01\n"
+                "supplied_source: Unique transfer source about packet baselines.\n",
+                encoding="utf-8",
+            )
+            (dev / "transfer-perturbation.yaml").write_text(
+                "case_id: transfer-student-01-perturbed\n"
+                "supplied_source: Unique transfer source about packet baselines, with one omitted clause.\n",
+                encoding="utf-8",
+            )
+            payload = build_curator_input(
+                reserves_dir=RESERVES,
+                contract_path=CASES / "case-family-contract.yaml",
+                report_dir=report_dir,
+            )
+            excluded = payload["excluded_development_sources"]
+            self.assertEqual(len(excluded), 2)
+            self.assertEqual(excluded[0]["case_id"], "transfer-student-01")
+            self.assertIn("Unique transfer source", excluded[0]["supplied_source"])
+            self.assertIn("excluded_development_sources", payload["permitted_source_rule"])
+
+    def test_curator_ingest_rejects_transfer_source_near_duplicate(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            comparison_dir = Path(temp)
+            family = load_family(next(RESERVES.glob("*/family.json")))
+            transfer_source = family["cases"][0]["supplied_source"]
+            curator_input = {
+                "prior_families": [],
+                "excluded_development_sources": [
+                    {"case_id": "transfer-x", "supplied_source": transfer_source, "origin": "transfer-case.yaml"}
+                ],
+                "required_evidence_situations": list(family["cases"][0].keys()),  # unused by ingest path
+            }
+            # rebuild a minimal valid candidate equal to a loaded family so near-dup fires on exclusion
+            candidate = json.loads(json.dumps(family))
+            with self.assertRaises(WorkflowError) as ctx:
+                ingest_curator_candidate(
+                    comparison_dir=comparison_dir,
+                    candidate_family=candidate,
+                    curator_input=curator_input,
+                    curator_session="cur-test",
+                    attempt=1,
+                )
+            self.assertIn("excluded development source", str(ctx.exception).lower())
 
     def _prepare_completion_ready_comparison(self, report_dir: Path) -> None:
         """Freeze and complete a minimal sixteen-position comparison offline."""

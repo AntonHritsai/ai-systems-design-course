@@ -29,9 +29,12 @@
 | Branch | Гілка |
 | Brief | Бриф |
 | Byte-identical | Побітово тотожний |
+| Candidate configuration | Кандидатна конфігурація |
+| Candidate output | Кандидатний вихід |
 | Candidate proposal | Кандидатна пропозиція |
 | Clone | Клон |
 | Commit | Коміт |
+| Configuration comparison | Порівняння конфігурацій |
 | Constrained sampling | Обмежена вибірка |
 | Content digest | Дайджест вмісту |
 | Context window | Вікно контексту |
@@ -45,6 +48,7 @@
 | Embeddings | Векторні подання |
 | Evidence-bound | Прив’язаний до свідчень |
 | Evolvability | Еволюційність |
+| Experiment baseline | Базова конфігурація експерименту |
 | Fallback | Запасний шлях |
 | Fallback portability | Портативність запасного шляху |
 | Fine-tuning | Донавчання |
@@ -71,6 +75,7 @@
 | Maintainability | Супроводжуваність |
 | Markdown vault | Сховище Markdown-файлів |
 | Model gateway | Шлюз доступу до моделей |
+| Model under consideration | Модель, яку розглядають |
 | Modular monolith | Модульний моноліт |
 | Mutation authority | Повноваження змінювати стан |
 | Next-token generation | Генерування наступного токена |

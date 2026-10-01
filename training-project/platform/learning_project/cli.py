@@ -862,6 +862,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
         payload = build_curator_input(
             reserves_dir=training_project / "cases" / "lab03" / "reserves",
             contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
+            report_dir=report_dir,
         )
         path = comparison_dir(args.freeze_id) / "curator" / "input.json"
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -902,6 +903,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
             curator_input = build_curator_input(
                 reserves_dir=training_project / "cases" / "lab03" / "reserves",
                 contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
+                report_dir=report_dir,
             )
         family = ingest_curator_candidate(
             comparison_dir=cmp_dir,
