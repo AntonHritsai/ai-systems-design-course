@@ -82,8 +82,8 @@
 | Ports and adapters | Порти та адаптери |
 | Preliminary check | Попередня перевірка |
 | Production AI system | Система ШІ в промисловій експлуатації |
-| Prompt | Підказка |
-| Prompt and context adaptation | Адаптація підказки та контексту |
+| Prompt | Промпт |
+| Prompt and context adaptation | Адаптація промпту та контексту |
 | Proposal authority | Повноваження пропонувати зміни |
 | Proposer | Пропонувач |
 | Protocol artifact | Протокольний артефакт |
