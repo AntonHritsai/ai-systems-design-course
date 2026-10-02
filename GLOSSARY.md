@@ -111,6 +111,7 @@
 | Semantic acceptance gate | Шлюз семантичного приймання |
 | Semantic review | Семантичний розгляд |
 | Serving | Обслуговування |
+| Shared experiment protocol | Спільний протокол експерименту |
 | Slash command | Слеш-команда |
 | Software architecture | Архітектура програмного забезпечення |
 | Software design | Проєктування програмного забезпечення |
