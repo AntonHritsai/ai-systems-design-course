@@ -98,6 +98,7 @@
 | Reference architecture | Еталонна архітектура |
 | Reliability | Надійність |
 | Remote repository | Віддалений репозиторій |
+| Regression check | Регресійна перевірка |
 | Requirement | Вимога |
 | Requirements baseline | Базова лінія вимог |
 | Retrieval | Пошук |
