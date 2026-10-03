@@ -5,7 +5,7 @@
   "provenance": {
     "authored_by": "course",
     "material_version": "teaching-cases-v1",
-    "note": "Development inputs D1 and D2 from Module 03 Section 8.1; inspectable before freeze. Development inputs are NOT held-out reserve families: they contribute two of the four development inputs (the student transfer case and its perturbation supply the other two)."
+    "note": "Development inputs D1 and D2 from Module 03 Section 4.2; inspectable before freeze. Development inputs are NOT held-out reserve families: they contribute two of the four development inputs (the student transfer case and its perturbation supply the other two)."
   },
   "cases": [
     {
@@ -16,9 +16,9 @@
       "task": "Define what a source baseline identifies.",
       "supplied_source": "A source baseline identifies the material against which a proposal is reviewed.",
       "constructed": true,
-      "mutation_note": "Original course-authored teaching case (D1, Module 03 Table 8.1).",
+      "mutation_note": "Original course-authored teaching case (D1, Module 03 Table 4.1).",
       "source_pointers": [
-        { "theory_section": "8.1", "pointer": "Table 8.1 row D1" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row D1" }
       ]
     },
     {
@@ -29,10 +29,10 @@
       "task": "State who is permitted to approve a proposal.",
       "supplied_source": "The review record stores the reviewer's identity and decision.",
       "constructed": true,
-      "mutation_note": "Original course-authored teaching case (D2, Module 03 Table 8.1); approval authority is absent from the source.",
+      "mutation_note": "Original course-authored teaching case (D2, Module 03 Table 4.1); approval authority is absent from the source.",
       "source_pointers": [
         { "theory_section": "4.1", "pointer": "constructed development case D2" },
-        { "theory_section": "8.1", "pointer": "Table 8.1 row D2" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row D2" }
       ]
     }
   ],

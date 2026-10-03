@@ -5,7 +5,7 @@
   "provenance": {
     "authored_by": "course",
     "material_version": "teaching-cases-v1",
-    "note": "Held-out family from Module 03 Section 8.1: evaluation-packet baseline scenario (H1, H2) plus two course-authored variants covering the remaining evidence situations."
+    "note": "Held-out family implementing the four evidence situations summarized in Module 03 Section 4.2."
   },
   "cases": [
     {
@@ -16,9 +16,9 @@
       "task": "Define what a source baseline identifies.",
       "supplied_source": "The evaluation packet contains a review source. Its source baseline points to that source so that a proposal can be checked against it.",
       "constructed": true,
-      "mutation_note": "Course-authored teaching case (H1, Module 03 Table 8.1) using a distinct source passage for the source-baseline concept.",
+      "mutation_note": "Course-authored held-out case (H1, Module 03 Table 4.1) using a distinct source passage for the source-baseline concept.",
       "source_pointers": [
-        { "theory_section": "8.1", "pointer": "Table 8.1 row H1" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row H1" }
       ]
     },
     {
@@ -29,9 +29,9 @@
       "task": "Define what a source baseline identifies.",
       "supplied_source": "The evaluation packet contains a review source. Its source baseline points to that source so that a proposal can be checked against it. In the separate equipment-maintenance process, a supervisor approves replacement requests.",
       "constructed": true,
-      "mutation_note": "Course-authored teaching case (H2, Module 03 Table 8.1): the equipment-maintenance supervisor is a distractor that must not be attached to the baseline concept.",
+      "mutation_note": "Course-authored held-out case (H2, Module 03 Table 4.1): the equipment-maintenance supervisor is a distractor that must not be attached to the baseline concept.",
       "source_pointers": [
-        { "theory_section": "8.1", "pointer": "Table 8.1 row H2" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row H2" }
       ]
     },
     {
@@ -42,9 +42,9 @@
       "task": "State the retention duration of the review records named in this packet.",
       "supplied_source": "The evaluation packet contains a review source and review records. Each record contains the source identifier and the review decision.",
       "constructed": true,
-      "mutation_note": "Course-authored mutation of the H3 retention scenario (Module 03 Table 8.1) reworded into the evaluation-packet scenario; retention duration is absent.",
+      "mutation_note": "Course-authored held-out case (H3, Module 03 Table 4.1) reworded into the evaluation-packet scenario; retention duration is absent.",
       "source_pointers": [
-        { "theory_section": "8.1", "pointer": "Table 8.1 row H3" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row H3" }
       ]
     },
     {
@@ -53,11 +53,11 @@
       "family_id": "reserve-packet-baseline",
       "evidence_situation": "explicit-ambiguity",
       "task": "Describe the scope of the source baseline recorded in this note.",
-      "supplied_source": "The review workspace stores a source excerpt and a snapshot of the entire repository. The reviewer records a baseline before reviewing the proposal. This note does not specify which of the two stored objects the baseline identifies.",
+      "supplied_source": "The materials prepared for review include a source excerpt and a snapshot of the entire repository. The reviewer records a baseline before reviewing the proposal. This note does not specify which of the two objects the baseline identifies.",
       "constructed": true,
-      "mutation_note": "Course-authored teaching case (H4, Module 03 Table 8.1): the note explicitly states the ambiguity that must remain unresolved.",
+      "mutation_note": "Course-authored held-out case (H4, Module 03 Table 4.1): the note explicitly states the ambiguity that must remain unresolved.",
       "source_pointers": [
-        { "theory_section": "8.1", "pointer": "Table 8.1 row H4" }
+        { "theory_section": "4.2", "pointer": "Table 4.1 row H4" }
       ]
     }
   ],
