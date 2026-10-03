@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://course.example/schemas/lab03-family.schema.json",
   "title": "Laboratory 03 held-out case family",
-  "description": "Applies to held-out reserve families and curator-generated families only. Development inputs are not families: they are two course development inputs plus the student transfer case and its perturbation, and do not conform to this schema.",
+  "description": "Applies to course-owned held-out reserve families. The two course-owned development cases do not conform to this schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,7 +17,7 @@
     "family_id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
     "origin": {
       "type": "string",
-      "enum": ["course-reserve", "curator-generated"]
+      "const": "course-reserve"
     },
     "provenance": {
       "type": "object",

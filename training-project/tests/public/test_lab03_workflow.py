@@ -234,16 +234,14 @@ class Lab03WorkflowTests(unittest.TestCase):
             "blocking_failures": "critical unsupported on a sufficient-evidence case",
             "operational_acceptance": "Observed latency must remain below 30 seconds; cost and tokens are excluded.",
             "tradeoff_rule": "Choose B only for fewer critical unsupported outcomes without worse acceptance.",
-            "recommendation_precedence": {
-                "decisive_rejection": "reject both on blockers",
-                "uncertainty": "seek evidence only when it can change the decision",
-                "positive_selection": "B needs a justified advantage",
-                "no_justified_change": "retain acceptable A",
+            "decision_rule": {
+                "recommend-b": "B passes and provides a justified advantage over A",
+                "retain-a": "A remains acceptable and B does not justify a change",
+                "reject-both": "both variants have a blocking failure",
+                "seek-more-evidence": "available evidence cannot settle the decision",
             },
             "attempt_budget": 16,
-            "order_rule": "schedule order",
             "timing_boundary": "one session",
-            "resume_window": "48h",
             "route": {"adapter": "offline-fixture", "model_id": "offline-fixture"},
         }
 
@@ -259,6 +257,8 @@ class Lab03WorkflowTests(unittest.TestCase):
                 ledger=ledger,
                 student=STUDENT,
             )
+            self.assertEqual(manifest["protocol"]["order_rule"], "course-generated balanced schedule")
+            self.assertEqual(manifest["resume_window"], "48h")
             family = select_family(
                 reserves_dir=RESERVES, ledger=ledger, freeze_manifest=manifest, student=STUDENT
             )

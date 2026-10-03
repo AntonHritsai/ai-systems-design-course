@@ -245,7 +245,7 @@ def _build_parser() -> argparse.ArgumentParser:
     variant_b.add_argument("--text", type=Path, required=True)
     variant_b.add_argument("--change", type=Path, required=True)
 
-    dev_run = lab03_commands.add_parser("dev-run", help="Run one development position (8 scheduled).")
+    dev_run = lab03_commands.add_parser("dev-run", help="Run one development position (4 scheduled).")
     dev_run.add_argument("--report-dir", type=Path, required=True)
     dev_run.add_argument("--position-id", required=True)
     dev_run.add_argument("--adapter", choices=("offline-fixture", "openrouter"), required=True)

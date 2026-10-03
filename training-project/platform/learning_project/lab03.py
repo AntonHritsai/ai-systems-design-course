@@ -43,6 +43,8 @@ VARIANTS = ("a", "b")
 SCHEDULED_POSITIONS = HELDOUT_CASES * ATTEMPTS_PER_CASE * len(VARIANTS)
 DEVELOPMENT_INPUTS = 2
 DEVELOPMENT_POSITIONS = DEVELOPMENT_INPUTS * len(VARIANTS)
+COURSE_ORDER_RULE = "course-generated balanced schedule"
+DEFAULT_RESUME_WINDOW = "48h"
 REPORT_SCREENSHOTS = (
     "01-calibration.png",
     "02-development.png",
@@ -865,8 +867,8 @@ def freeze_protocol(
     """Bind immutable identities for the frozen comparison and write the manifest."""
     required = {
         "engineering_decision", "hypothesis", "semantic_acceptance", "blocking_failures",
-        "operational_acceptance", "tradeoff_rule", "recommendation_precedence",
-        "attempt_budget", "order_rule", "timing_boundary", "resume_window", "route",
+        "operational_acceptance", "tradeoff_rule", "decision_rule",
+        "attempt_budget", "timing_boundary", "route",
     }
     _require(required <= set(protocol), "Protocol draft is missing required fields.")
     for field in ("operational_acceptance", "tradeoff_rule"):
@@ -874,25 +876,12 @@ def freeze_protocol(
             isinstance(protocol[field], str) and protocol[field].strip(),
             f"Protocol {field} must be non-empty.",
         )
-    resume_window = protocol["resume_window"]
+    decision_rule = protocol["decision_rule"]
     _require(
-        isinstance(resume_window, str)
-        and resume_window.endswith("h")
-        and resume_window[:-1].isdigit()
-        and int(resume_window[:-1]) > 0,
-        "Protocol resume_window must use a positive integer-hour form such as 48h.",
-    )
-    precedence = protocol["recommendation_precedence"]
-    _require(
-        isinstance(precedence, dict)
-        and {
-            "decisive_rejection",
-            "uncertainty",
-            "positive_selection",
-            "no_justified_change",
-        } <= set(precedence)
-        and all(isinstance(value, str) and value.strip() for value in precedence.values()),
-        "Protocol recommendation_precedence must define four non-empty decision rules.",
+        isinstance(decision_rule, dict)
+        and set(decision_rule) == set(OUTCOMES)
+        and all(isinstance(value, str) and value.strip() for value in decision_rule.values()),
+        "Protocol decision_rule must define the four permitted outcomes.",
     )
     _require(protocol.get("attempt_budget") == SCHEDULED_POSITIONS, "Attempt budget must be the fixed sixteen positions.")
     route = protocol["route"]
@@ -971,11 +960,16 @@ def freeze_protocol(
         "change_declaration_sha256": _sha256_bytes(change_bytes),
         "exposure_ledger_sha256": ledger_digest,
     }
+    normalized_protocol = {
+        **protocol,
+        "order_rule": COURSE_ORDER_RULE,
+        "resume_window": DEFAULT_RESUME_WINDOW,
+    }
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "freeze_id": freeze_id,
         "comparison_dir": str(comparison_dir),
-        "protocol": dict(protocol),
+        "protocol": normalized_protocol,
         "variant_a_sha256": variant_a_sha,
         "variant_b_sha256": _sha256_bytes(variant_b_bytes),
         "change_declaration": {
@@ -984,7 +978,7 @@ def freeze_protocol(
             "declared_factors": change["declared_factors"],
         },
         "route": {"adapter": route["adapter"], "model_id": route["model_id"]},
-        "resume_window": protocol["resume_window"],
+        "resume_window": DEFAULT_RESUME_WINDOW,
         "eligible_reserve_count_at_freeze": len(eligible),
         "bindings": bindings,
         "frozen_at": _now(),
@@ -1377,7 +1371,7 @@ def record_recommendation(*, comparison_dir: Path, outcome: str, rationale: str,
         "rationale": rationale.strip(),
         "limitations": limitations,
         "blocking_failures": blocking,
-        "recommendation_precedence": manifest["protocol"]["recommendation_precedence"],
+        "decision_rule": manifest["protocol"]["decision_rule"],
         "nested_counts": aggregate["nested_counts"],
         "protocol_freeze_id": manifest["freeze_id"],
         "recorded_by": student,
