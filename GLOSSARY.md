@@ -46,6 +46,7 @@
 | Digest-bound | Прив’язаний дайджестом |
 | Direct model coupling | Пряме зв’язування з моделлю |
 | Embeddings | Векторні подання |
+| Evaluation case | Випадок для оцінювання |
 | Evidence-bound | Прив’язаний до свідчень |
 | Evolvability | Еволюційність |
 | Experiment baseline | Базова конфігурація експерименту |
