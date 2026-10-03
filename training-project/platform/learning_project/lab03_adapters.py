@@ -173,19 +173,4 @@ def cases_for(comparison_dir: Path, training_project: Path, report_dir: Path) ->
         training_project / "cases" / "lab03" / "development" / "dev-common-inputs.json"
     )
     dev_family = json.loads(dev_family_path.read_text(encoding="utf-8"))
-    cases = {c["case_id"]: c for c in dev_family["cases"]}
-    dev_dir = report_dir / "development"
-    transfer_path = dev_dir / "transfer-case.yaml"
-    perturbation_path = dev_dir / "transfer-perturbation.yaml"
-    import yaml
-
-    transfer = yaml.safe_load(transfer_path.read_text(encoding="utf-8"))
-    perturbation = yaml.safe_load(perturbation_path.read_text(encoding="utf-8"))
-    for record in (transfer, perturbation):
-        cases[record["case_id"]] = {
-            "case_id": record["case_id"],
-            "task": record["task"],
-            "supplied_source": record["supplied_source"],
-            "evidence_situation": record.get("evidence_situation", "sufficient-evidence"),
-        }
-    return cases
+    return {c["case_id"]: c for c in dev_family["cases"]}

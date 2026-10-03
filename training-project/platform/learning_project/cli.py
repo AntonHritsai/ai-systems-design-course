@@ -14,7 +14,6 @@ copy of a Markdown report:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import subprocess
@@ -41,29 +40,20 @@ from .lab02 import (
 from .lab03 import (
     aggregate as aggregate_lab03,
     build_blinded_index,
-    build_curator_input,
     build_positions,
     close_unstarted_positions,
     freeze_protocol,
-    ingest_curator_candidate,
     load_family,
     load_frozen_instructions,
     record_assessment,
     record_completion_status,
-    record_curator_attempt_failure,
-    record_dispute,
-    record_evaluator_amendment,
-    record_correction,
-    record_human_case_review,
     record_interrupted_position,
     record_premature_exposure,
     record_recommendation,
     record_regression,
     record_selected_comparison,
-    record_transfer_case,
     record_variant_b,
     run_position,
-    curator_launch,
     lab03_status,
     select_family,
     start_calibration,
@@ -249,10 +239,6 @@ def _build_parser() -> argparse.ArgumentParser:
     calibrate_submit.add_argument("--packet", required=True, choices=("calibration-a", "calibration-b"))
     calibrate_submit.add_argument("--by", required=True)
 
-    transfer = lab03_commands.add_parser("record-transfer", help="Record the transfer case and perturbation.")
-    transfer.add_argument("--report-dir", type=Path, required=True)
-    transfer.add_argument("--transfer", type=Path, required=True)
-    transfer.add_argument("--perturbation", type=Path, required=True)
 
     variant_b = lab03_commands.add_parser("record-variant-b", help="Record Variant B and its change declaration.")
     variant_b.add_argument("--report-dir", type=Path, required=True)
@@ -301,63 +287,6 @@ def _build_parser() -> argparse.ArgumentParser:
     premature.add_argument("--family-id", required=True)
     premature.add_argument("--by", required=True)
 
-    curator_prepare = lab03_commands.add_parser(
-        "curator-prepare",
-        help="Write isolated curator input from prior family manifests.",
-    )
-    curator_prepare.add_argument("--report-dir", type=Path, required=True)
-    curator_prepare.add_argument("--freeze-id", required=True)
-
-    curator_launch_cmd = lab03_commands.add_parser(
-        "curator-launch",
-        help="Launch the isolated curator session through the OpenRouter route.",
-    )
-    curator_launch_cmd.add_argument("--report-dir", type=Path, required=True)
-    curator_launch_cmd.add_argument("--freeze-id", required=True)
-    curator_launch_cmd.add_argument("--attempt", type=int, choices=(1, 2), required=True)
-    curator_launch_cmd.add_argument(
-        "--destination", type=Path, required=True,
-        help="Outside the comparison directory, e.g. student/lab03/curator-candidate-1.json.",
-    )
-    curator_launch_cmd.add_argument("--model-id", default="openrouter/free",
-                                    help="Isolated-session route alias; defaults to openrouter/free.")
-    curator_launch_cmd.add_argument("--by", required=True)
-
-    curator_ingest = lab03_commands.add_parser(
-        "curator-ingest",
-        help="Validate one isolated curator candidate family.",
-    )
-    curator_ingest.add_argument("--report-dir", type=Path, required=True)
-    curator_ingest.add_argument("--freeze-id", required=True)
-    curator_ingest.add_argument("--candidate", type=Path, required=True)
-    curator_ingest.add_argument("--session", required=True)
-    curator_ingest.add_argument("--attempt", type=int, required=True, choices=(1, 2))
-
-    curator_attempt = lab03_commands.add_parser(
-        "curator-attempt-failed",
-        help="Record a consumed curator attempt that produced no ingestible candidate.",
-    )
-    curator_attempt.add_argument("--report-dir", type=Path, required=True)
-    curator_attempt.add_argument("--freeze-id", required=True)
-    curator_attempt.add_argument("--attempt", type=int, required=True, choices=(1, 2))
-    curator_attempt.add_argument(
-        "--outcome",
-        required=True,
-        choices=("launch-failed", "route-unavailable", "quota-unavailable", "empty-result", "invalid-candidate"),
-    )
-    curator_attempt.add_argument("--detail", required=True)
-    curator_attempt.add_argument("--by", required=True)
-
-    curator_review = lab03_commands.add_parser(
-        "curator-review",
-        help="Record the post-freeze human case review of a curator family.",
-    )
-    curator_review.add_argument("--report-dir", type=Path, required=True)
-    curator_review.add_argument("--freeze-id", required=True)
-    curator_review.add_argument("--decision", required=True, choices=("approved", "rejected"))
-    curator_review.add_argument("--attempt", type=int, required=True, choices=(1, 2))
-    curator_review.add_argument("--reasons", required=True)
-    curator_review.add_argument("--by", required=True)
 
     run_cmd = lab03_commands.add_parser("run", help="Run one held-out position through an adapter.")
     run_cmd.add_argument("--report-dir", type=Path, required=True)
@@ -412,35 +341,6 @@ def _build_parser() -> argparse.ArgumentParser:
     assess.add_argument("--shares-rationale-with")
     assess.add_argument("--by", required=True)
 
-    dispute = lab03_commands.add_parser("record-dispute", help="Record an unresolved human-reference dispute.")
-    dispute.add_argument("--report-dir", type=Path, required=True)
-    dispute.add_argument("--freeze-id", required=True)
-    dispute.add_argument("--blind-id", required=True)
-    dispute.add_argument("--reason", required=True)
-    dispute.add_argument("--by", required=True)
-
-    amendment = lab03_commands.add_parser(
-        "record-amendment",
-        help="Record a confirmed rubric or reference defect (append-only).",
-    )
-    amendment.add_argument("--report-dir", type=Path, required=True)
-    amendment.add_argument("--freeze-id", required=True)
-    amendment.add_argument("--amendment-id", required=True)
-    amendment.add_argument("--defect", required=True)
-    amendment.add_argument("--by", required=True)
-
-    correction = lab03_commands.add_parser(
-        "record-correction",
-        help="Record an append-only correction of one mistaken evaluator assessment.",
-    )
-    correction.add_argument("--report-dir", type=Path, required=True)
-    correction.add_argument("--freeze-id", required=True)
-    correction.add_argument("--blind-id", required=True)
-    correction.add_argument("--corrected-category", required=True,
-                            choices=("S", "I", "U", "Q", "R", "X"))
-    correction.add_argument("--resolution-basis", required=True,
-                            help="The supplied-source passage that resolves the mistake.")
-    correction.add_argument("--by", required=True)
 
     status_cmd = lab03_commands.add_parser(
         "status",
@@ -721,14 +621,6 @@ def _run_lab03(args: argparse.Namespace) -> int:
         )
         print(f"Calibration complete: {result['agreement']}/{result['total']} labels agree with reviewed labels.")
         return 0
-    if command == "record-transfer":
-        transfer = yaml.safe_load(args.transfer.read_text(encoding="utf-8"))
-        perturbation = yaml.safe_load(args.perturbation.read_text(encoding="utf-8"))
-        path = record_transfer_case(
-            report_dir=report_dir, transfer_case=transfer, perturbation=perturbation
-        )
-        print(f"Wrote the transfer case to {path}.")
-        return 0
     if command == "record-variant-b":
         variant_b_text = args.text.read_text(encoding="utf-8")
         change = yaml.safe_load(args.change.read_text(encoding="utf-8"))
@@ -745,21 +637,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
                 training_project / "cases" / "lab03" / "development" / "dev-common-inputs.json",
                 expected_cases=2,
             )
-            transfer = yaml.safe_load((dev_dir / "transfer-case.yaml").read_text(encoding="utf-8"))
-            perturbation = yaml.safe_load((dev_dir / "transfer-perturbation.yaml").read_text(encoding="utf-8"))
-            dev_cases = [
-                *dev_family["cases"],
-                {
-                    "case_id": transfer["case_id"],
-                    "task": transfer["task"],
-                    "supplied_source": transfer["supplied_source"],
-                },
-                {
-                    "case_id": perturbation["case_id"],
-                    "task": perturbation["task"],
-                    "supplied_source": perturbation["supplied_source"],
-                },
-            ]
+            dev_cases = dev_family["cases"]
             build_positions(
                 comparison_dir=dev_dir,
                 family={"family_id": "dev-common", "cases": dev_cases},
@@ -858,134 +736,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
         record_premature_exposure(ledger=ledger, family_id=args.family_id, student=args.by)
         print(f"Recorded premature exposure of family {args.family_id}.")
         return 0
-    if command == "curator-prepare":
-        payload = build_curator_input(
-            reserves_dir=training_project / "cases" / "lab03" / "reserves",
-            contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
-            report_dir=report_dir,
-        )
-        path = comparison_dir(args.freeze_id) / "curator" / "input.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        if path.exists():
-            raise WorkflowError(f"The immutable artifact already exists: {path.name}")
-        path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        print(f"Wrote curator input to {path}.")
-        return 0
-    if command == "curator-launch":
-        from .lab03_adapters import openrouter_prompt_runner_factory
 
-        def curator_prompt_runner(prompt: str) -> str:
-            # The isolated curator session is a single-prompt OpenRouter call;
-            # the credential stays in the process environment and is never recorded.
-            return openrouter_prompt_runner_factory(args.model_id)(prompt).content
-
-        result = curator_launch(
-            comparison_dir=comparison_dir(args.freeze_id),
-            report_dir=report_dir,
-            destination=args.destination,
-            attempt=args.attempt,
-            runner=curator_prompt_runner,
-            by=args.by,
-        )
-        print(
-            f"Curator attempt {result['attempt']} session {result['session_id']} wrote the candidate "
-            f"to {result['candidate_path']} without opening it; session record at {result['session_record']}. "
-            f"Use --session {result['session_id']} with curator-ingest."
-        )
-        return 0
-    if command == "curator-ingest":
-        candidate = json.loads(args.candidate.read_text(encoding="utf-8"))
-        cmp_dir = comparison_dir(args.freeze_id)
-        input_path = cmp_dir / "curator" / "input.json"
-        if input_path.exists():
-            curator_input = json.loads(input_path.read_text(encoding="utf-8"))
-        else:
-            curator_input = build_curator_input(
-                reserves_dir=training_project / "cases" / "lab03" / "reserves",
-                contract_path=training_project / "cases" / "lab03" / "case-family-contract.yaml",
-                report_dir=report_dir,
-            )
-        family = ingest_curator_candidate(
-            comparison_dir=cmp_dir,
-            candidate_family=candidate,
-            curator_input=curator_input,
-            curator_session=args.session,
-            attempt=args.attempt,
-        )
-        print(f"Ingested curator candidate {family['family_id']} for attempt {args.attempt}.")
-        return 0
-    if command == "curator-attempt-failed":
-        path = record_curator_attempt_failure(
-            comparison_dir=comparison_dir(args.freeze_id),
-            attempt=args.attempt,
-            outcome=args.outcome,
-            detail=args.detail,
-            student=args.by,
-        )
-        print(f"Recorded failed curator attempt {args.attempt} at {path}.")
-        return 0
-    if command == "curator-review":
-        cmp_dir = comparison_dir(args.freeze_id)
-        candidate = json.loads(
-            (cmp_dir / "curator" / "attempts" / f"attempt-{args.attempt}" / "candidate.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        path = record_human_case_review(
-            comparison_dir=cmp_dir,
-            family=candidate,
-            decision=args.decision,
-            reasons=args.reasons,
-            student=args.by,
-            attempt=args.attempt,
-        )
-        if args.decision == "approved":
-            public_family = {key: value for key, value in candidate.items() if key != "expected_behaviors"}
-            revealed_path = cmp_dir / "revealed-family.json"
-            if revealed_path.exists():
-                raise WorkflowError("A family is already revealed for this comparison.")
-            revealed_path.write_text(
-                json.dumps(
-                    {
-                        "family": public_family,
-                        "family_sha256": hashlib.sha256(
-                            json.dumps(candidate, sort_keys=True).encode("utf-8")
-                        ).hexdigest(),
-                        "eligible_at_selection": [candidate["family_id"]],
-                        "selected_at": _now(),
-                        "selected_by": args.by,
-                        "curator_recovery": True,
-                    },
-                    indent=2,
-                    ensure_ascii=False,
-                ) + "\n",
-                encoding="utf-8",
-            )
-            internal = cmp_dir / "_internal" / "held-out-references.json"
-            internal.parent.mkdir(parents=True, exist_ok=True)
-            internal.write_text(
-                json.dumps(
-                    {
-                        "family_id": candidate["family_id"],
-                        "expected_behaviors": candidate["expected_behaviors"],
-                    },
-                    indent=2,
-                    ensure_ascii=False,
-                ) + "\n",
-                encoding="utf-8",
-            )
-            build_positions(comparison_dir=cmp_dir, family=candidate, kind="held-out")
-            ledger = ExposureLedger(report_dir / "exposure-ledger.json")
-            ledger.append({
-                "event": "used-in-comparison",
-                "family_id": candidate["family_id"],
-                "freeze_id": args.freeze_id,
-                "actor": args.by,
-                "recorded_at": _now(),
-                "curator_recovery": True,
-            })
-        print(f"Recorded curator case review {args.decision} at {path}.")
-        return 0
     if command == "run":
         cmp_dir = comparison_dir(args.freeze_id)
         schedule = json.loads((cmp_dir / "schedule.json").read_text(encoding="utf-8"))
@@ -1067,37 +818,7 @@ def _run_lab03(args: argparse.Namespace) -> int:
         )
         print(f"Recorded the assessment to {path}.")
         return 0
-    if command == "record-dispute":
-        path = record_dispute(
-            comparison_dir=comparison_dir(args.freeze_id),
-            blind_id=args.blind_id,
-            reason=args.reason,
-            student=args.by,
-        )
-        print(f"Recorded the dispute to {path}.")
-        return 0
-    if command == "record-amendment":
-        path = record_evaluator_amendment(
-            comparison_dir=comparison_dir(args.freeze_id),
-            amendment_id=args.amendment_id,
-            defect=args.defect,
-            confirmed_by=args.by,
-        )
-        print(f"Recorded the evaluator amendment to {path}.")
-        return 0
-    if command == "record-correction":
-        path = record_correction(
-            comparison_dir=comparison_dir(args.freeze_id),
-            blind_id=args.blind_id,
-            corrected_category=args.corrected_category,
-            resolution_basis=args.resolution_basis,
-            student=args.by,
-        )
-        print(
-            f"Recorded the append-only correction for {args.blind_id} to {path}; "
-            "the original assessment is preserved and aggregation settles on the corrected category."
-        )
-        return 0
+
     if command == "status":
         summary = lab03_status(report_dir=report_dir)
         print(json.dumps(summary, indent=2, ensure_ascii=False))

@@ -17,19 +17,14 @@ from learning_project.lab03 import (
     close_unstarted_positions,
     eligible_families,
     freeze_protocol,
-    ingest_curator_candidate,
     load_family,
     load_frozen_instructions,
     record_assessment,
     record_completion_status,
-    record_curator_attempt_failure,
-    record_dispute,
-    record_evaluator_amendment,
     record_recommendation,
     record_regression,
     record_interrupted_position,
     record_selected_comparison,
-    record_transfer_case,
     record_variant_b,
     run_position,
     select_family,
@@ -38,7 +33,7 @@ from learning_project.lab03 import (
     submit_calibration,
     verify_lab03,
 )
-from learning_project.lab03_adapters import instructions_for
+from learning_project.lab03_adapters import cases_for, instructions_for
 from learning_project.workflow import WorkflowError
 
 TRAINING_PROJECT = Path(__file__).resolve().parent.parent.parent
@@ -83,6 +78,28 @@ class Lab03FamilyContractTests(unittest.TestCase):
     def test_development_inputs_load_with_two_cases(self) -> None:
         family = load_family(CASES / "development" / "dev-common-inputs.json", expected_cases=2)
         self.assertEqual(len(family["cases"]), 2)
+
+    def test_curator_generated_family_is_not_supported(self) -> None:
+        family = load_family(RESERVES / "reserve-criteria-chain" / "family.json")
+        family["origin"] = "curator-generated"
+        family["provenance"] = {"curator_session": "legacy", "inputs_sha256": "0" * 64}
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "legacy-curator-family.json"
+            path.write_text(json.dumps(family), encoding="utf-8")
+            with self.assertRaisesRegex(WorkflowError, "origin is not supported"):
+                load_family(path)
+
+    def test_development_case_lookup_uses_only_course_owned_cases(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            development_dir = Path(temp)
+            (development_dir / "schedule.json").write_text(
+                json.dumps({"kind": "development"}), encoding="utf-8"
+            )
+            cases = cases_for(development_dir, TRAINING_PROJECT, Path(temp))
+        self.assertEqual(
+            set(cases),
+            {"dev-source-baseline-definition", "dev-approval-authority-absent"},
+        )
 
     def test_family_with_a_missing_evidence_situation_is_rejected(self) -> None:
         family = load_family(RESERVES / "reserve-criteria-chain" / "family.json")
@@ -170,23 +187,6 @@ class Lab03WorkflowTests(unittest.TestCase):
         ).stdout.strip()
 
     def _prepare_development(self, report_dir: Path) -> None:
-        record_transfer_case(
-            report_dir=report_dir,
-            transfer_case={
-                "case_id": "transfer-approval",
-                "task": "State who approves requests.",
-                "supplied_source": "A supervisor approves requests.",
-                "provenance": "public test scenario",
-            },
-            perturbation={
-                "case_id": "transfer-approval-perturbed",
-                "task": "State who approves requests.",
-                "supplied_source": "A supervisor records requests.",
-                "provenance": "public test scenario",
-                "perturbation_note": "verb changed",
-                "expectation": "authority claim must disappear",
-            },
-        )
         record_variant_b(
             report_dir=report_dir,
             variant_b_text="Variant B text for tests.",
@@ -199,7 +199,7 @@ class Lab03WorkflowTests(unittest.TestCase):
         self._seed_terminal_development(report_dir)
 
     def _seed_terminal_development(self, report_dir: Path) -> None:
-        case_ids = ["dev-criteria", "dev-authority", "transfer-approval", "transfer-approval-perturbed"]
+        case_ids = ["dev-criteria", "dev-authority"]
         positions = []
         for index, case_id in enumerate(case_ids):
             for variant in ("a", "b"):
@@ -425,6 +425,25 @@ class Lab03WorkflowTests(unittest.TestCase):
             self.assertNotIn(before[0], after)
             self.assertEqual(len(after), len(before) - 1)
 
+    def test_freeze_stops_when_no_eligible_family_remains(self) -> None:
+        from learning_project.lab03 import record_premature_exposure
+
+        with tempfile.TemporaryDirectory() as temp:
+            report_dir = Path(temp)
+            self._prepare_development(report_dir)
+            ledger = ExposureLedger(report_dir / "exposure-ledger.json")
+            for family_id in eligible_families(RESERVES, ledger, freeze_at=None):
+                record_premature_exposure(ledger=ledger, family_id=family_id, student=STUDENT)
+            protocol = {**self._protocol(), "curator_recovery": True}
+            with self.assertRaisesRegex(WorkflowError, "No eligible reserve family remains"):
+                freeze_protocol(
+                    report_dir=report_dir,
+                    protocol=protocol,
+                    reserves_dir=RESERVES,
+                    ledger=ledger,
+                    student=STUDENT,
+                )
+
     def test_structural_check_rejects_envelope_with_extra_fields(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             comparison_dir = Path(temp)
@@ -444,72 +463,6 @@ class Lab03WorkflowTests(unittest.TestCase):
             result = structural_check(comparison_dir=comparison_dir, position_id="pos-x-a-1")
             self.assertFalse(result["valid"])
 
-    def test_curator_candidate_contract(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            comparison_dir = Path(temp)
-            prior = load_family(RESERVES / "reserve-criteria-chain" / "family.json")
-            curator_input = {
-                "prior_families": [
-                    {
-                        "family_id": prior["family_id"],
-                        "cases": prior["cases"],
-                        "expected_behaviors": prior["expected_behaviors"],
-                    }
-                ]
-            }
-            candidate = load_family(RESERVES / "reserve-experiment-discipline" / "family.json")
-            candidate = json.loads(json.dumps(candidate))  # deep copy
-            candidate["family_id"] = "curator-new-family"
-            for case in candidate["cases"]:
-                case["family_id"] = "curator-new-family"
-                case["task"] = case["task"] + " (curator)"
-            for behavior in candidate["expected_behaviors"]:
-                pass  # behavior case ids still match
-            family = ingest_curator_candidate(
-                comparison_dir=comparison_dir,
-                candidate_family=candidate,
-                curator_input=curator_input,
-                curator_session="curator-session-01",
-            )
-            self.assertEqual(family["origin"], "curator-generated")
-            self.assertIn("curator_session", family["provenance"])
-            self.assertTrue(
-                (comparison_dir / "curator" / "attempts" / "attempt-1" / "result.yaml").exists()
-            )
-
-    def test_curator_attempts_are_bounded_and_sequential(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            comparison_dir = Path(temp)
-            with self.assertRaises(WorkflowError):
-                record_curator_attempt_failure(
-                    comparison_dir=comparison_dir,
-                    attempt=2,
-                    outcome="empty-result",
-                    detail="no content",
-                    student=STUDENT,
-                )
-            record_curator_attempt_failure(
-                comparison_dir=comparison_dir,
-                attempt=1,
-                outcome="route-unavailable",
-                detail="provider unavailable",
-                student=STUDENT,
-            )
-            record_curator_attempt_failure(
-                comparison_dir=comparison_dir,
-                attempt=2,
-                outcome="empty-result",
-                detail="no content",
-                student=STUDENT,
-            )
-            with self.assertRaises(WorkflowError):
-                record_curator_attempt_failure(
-                    comparison_dir=comparison_dir,
-                    attempt=2,
-                    outcome="empty-result",
-                    detail="retry beyond immutable attempt",
-                    student=STUDENT,
-                )
 
     def test_variant_a_can_run_before_variant_b_exists(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -541,23 +494,6 @@ class Lab03WorkflowTests(unittest.TestCase):
     def test_variant_b_is_write_once(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             report_dir = Path(temp)
-            record_transfer_case(
-                report_dir=report_dir,
-                transfer_case={
-                    "case_id": "transfer-approval",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor approves requests.",
-                    "provenance": "public test scenario",
-                },
-                perturbation={
-                    "case_id": "transfer-approval-perturbed",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor records requests.",
-                    "provenance": "public test scenario",
-                    "perturbation_note": "verb changed",
-                    "expectation": "authority claim must disappear",
-                },
-            )
             record_variant_b(
                 report_dir=report_dir,
                 variant_b_text="First Variant B.",
@@ -609,23 +545,6 @@ class Lab03WorkflowTests(unittest.TestCase):
     def test_freeze_requires_terminal_development_structured_route_and_bindings(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             report_dir = Path(temp)
-            record_transfer_case(
-                report_dir=report_dir,
-                transfer_case={
-                    "case_id": "transfer-approval",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor approves requests.",
-                    "provenance": "public test scenario",
-                },
-                perturbation={
-                    "case_id": "transfer-approval-perturbed",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor records requests.",
-                    "provenance": "public test scenario",
-                    "perturbation_note": "verb changed",
-                    "expectation": "authority claim must disappear",
-                },
-            )
             record_variant_b(
                 report_dir=report_dir,
                 variant_b_text="Variant B text for tests.",
@@ -684,32 +603,13 @@ class Lab03WorkflowTests(unittest.TestCase):
             self.assertNotIn("curator_exercised", manifest)
             self.assertNotIn("curator_recovery_exercised", manifest)
 
-    def test_development_schedule_is_four_a_then_four_b_and_b_waits(self) -> None:
+    def test_development_schedule_is_two_a_then_two_b_and_b_waits(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             report_dir = Path(temp)
-            record_transfer_case(
-                report_dir=report_dir,
-                transfer_case={
-                    "case_id": "transfer-approval",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor approves requests.",
-                    "provenance": "public test scenario",
-                },
-                perturbation={
-                    "case_id": "transfer-approval-perturbed",
-                    "task": "State who approves requests.",
-                    "supplied_source": "A supervisor records requests.",
-                    "provenance": "public test scenario",
-                    "perturbation_note": "verb changed",
-                    "expectation": "authority claim must disappear",
-                },
-            )
             dev_dir = report_dir / "development"
             cases = [
                 {"case_id": "dev-one", "task": "t1", "supplied_source": "s1"},
                 {"case_id": "dev-two", "task": "t2", "supplied_source": "s2"},
-                {"case_id": "transfer-approval", "task": "t3", "supplied_source": "s3"},
-                {"case_id": "transfer-approval-perturbed", "task": "t4", "supplied_source": "s4"},
             ]
             build_positions(
                 comparison_dir=dev_dir,
@@ -722,8 +622,8 @@ class Lab03WorkflowTests(unittest.TestCase):
                 next(p["variant"] for p in schedule["positions"] if p["position_id"] == pid)
                 for pid in schedule["order"]
             ]
-            self.assertEqual(ordered_variants, ["a"] * 4 + ["b"] * 4)
-            first_b = schedule["order"][4]
+            self.assertEqual(ordered_variants, ["a"] * 2 + ["b"] * 2)
+            first_b = schedule["order"][2]
             cases_by_id = {c["case_id"]: c for c in cases}
             with self.assertRaises(WorkflowError):
                 run_position(
@@ -737,7 +637,7 @@ class Lab03WorkflowTests(unittest.TestCase):
                     model_id="offline-fixture",
                     recorded_by=STUDENT,
                 )
-            for position_id in schedule["order"][:4]:
+            for position_id in schedule["order"][:2]:
                 run_position(
                     comparison_dir=dev_dir,
                     schedule=json.loads((dev_dir / "schedule.json").read_text(encoding="utf-8")),
@@ -870,7 +770,7 @@ class Lab03WorkflowTests(unittest.TestCase):
                     resume_probe=True,
                 )
 
-    def test_closed_unstarted_counts_as_unstarted_and_disputes_and_latency(self) -> None:
+    def test_closed_unstarted_counts_and_latency(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             report_dir = Path(temp)
             self._prepare_development(report_dir)
@@ -915,29 +815,33 @@ class Lab03WorkflowTests(unittest.TestCase):
                     "rationale": "test rationale",
                 },
             )
-            record_dispute(
-                comparison_dir=comparison_dir,
-                blind_id=index["entries"][0]["blind_id"],
-                reason="human-reference disagreement",
-                student=STUDENT,
-            )
             aggregate = aggregate_lab03(comparison_dir=comparison_dir)
-            started = aggregate["nested_counts"]["a"]["started"] + aggregate["nested_counts"]["b"]["started"]
-            unstarted = aggregate["nested_counts"]["a"]["unstarted"] + aggregate["nested_counts"]["b"]["unstarted"]
-            self.assertEqual(started, 1)
+            expected_count_keys = {
+                "attempted", "returned", "structurally_valid", "assessable", "rubric_acceptable"
+            }
+            self.assertEqual(set(aggregate["nested_counts"]["a"]), expected_count_keys)
+            self.assertEqual(set(aggregate["nested_counts"]["b"]), expected_count_keys)
+            attempted = (
+                aggregate["nested_counts"]["a"]["attempted"]
+                + aggregate["nested_counts"]["b"]["attempted"]
+            )
+            unstarted = aggregate["unstarted_counts"]["a"] + aggregate["unstarted_counts"]["b"]
+            self.assertEqual(attempted, 1)
             self.assertEqual(unstarted, 15)
-            self.assertEqual(aggregate["disputed_blind_ids"], [index["entries"][0]["blind_id"]])
+            self.assertNotIn("disputed_blind_ids", aggregate)
+            self.assertNotIn("corrected_blind_ids", aggregate)
             assessable = (
                 aggregate["nested_counts"]["a"]["assessable"]
                 + aggregate["nested_counts"]["b"]["assessable"]
             )
-            self.assertEqual(assessable, 0)
+            self.assertEqual(assessable, 1)
+            self.assertNotIn("resolved_model_comparability", aggregate)
             self.assertEqual(aggregate["unknown_values"]["quota_usage"], "unknown")
             latencies = aggregate["observed_latency"]["a"] + aggregate["observed_latency"]["b"]
             self.assertEqual(len(latencies), 1)
             self.assertIsInstance(latencies[0]["seconds"], float)
 
-    def test_recommendation_requires_coverage_and_forces_seek_more_on_amendment(self) -> None:
+    def test_recommendation_requires_coverage_and_uses_one_of_four_outcomes(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             report_dir = Path(temp)
             self._prepare_development(report_dir)
@@ -989,29 +893,19 @@ class Lab03WorkflowTests(unittest.TestCase):
                     },
                 )
             aggregate_lab03(comparison_dir=comparison_dir)
-            amendment_dir = comparison_dir / "scoring" / "evaluator-amendments" / "amend-1"
-            amendment_dir.mkdir(parents=True)
-            (amendment_dir / "diagnostic.json").write_text("{\"defect\": \"reference\"}\n", encoding="utf-8")
-            with self.assertRaises(WorkflowError):
-                record_recommendation(
-                    comparison_dir=comparison_dir,
-                    outcome="retain-a",
-                    rationale="amendment present",
-                    limitations=["offline fixture"],
-                    student=STUDENT,
-                )
             path = record_recommendation(
                 comparison_dir=comparison_dir,
-                outcome="seek-more-evidence",
-                rationale="evaluator amendment requires more evidence",
-                limitations=["offline fixture", "evaluator amendment"],
+                outcome="retain-a",
+                rationale="Variant B did not improve the frozen criteria.",
+                limitations=["offline fixture"],
                 student=STUDENT,
             )
             recorded = yaml.safe_load(path.read_text(encoding="utf-8"))
+            self.assertEqual(recorded["outcome"], "retain-a")
             self.assertEqual(recorded["protocol_freeze_id"], manifest["freeze_id"])
             self.assertEqual(recorded["blocking_failures"], self._protocol()["blocking_failures"])
 
-    def test_cli_exposes_premature_exposure_and_dispute_commands(self) -> None:
+    def test_cli_exposes_core_workflow_without_curator_or_dispute_commands(self) -> None:
         parser = _build_parser()
         commands = {action.dest: action for action in parser._subparsers._group_actions}
         lab03 = commands["command"].choices["lab03"]
@@ -1020,35 +914,22 @@ class Lab03WorkflowTests(unittest.TestCase):
             for action in lab03._subparsers._group_actions
         }["lab03_command"]
         self.assertIn("record-premature-exposure", lab03_commands)
-        self.assertIn("record-dispute", lab03_commands)
-        self.assertIn("curator-prepare", lab03_commands)
-        self.assertIn("curator-ingest", lab03_commands)
-        self.assertIn("curator-review", lab03_commands)
         self.assertIn("record-interrupted", lab03_commands)
         self.assertIn("dev-record-interrupted", lab03_commands)
-        self.assertIn("curator-attempt-failed", lab03_commands)
-        self.assertIn("record-amendment", lab03_commands)
         self.assertIn("record-completion", lab03_commands)
+        for removed_command in (
+            "record-transfer",
+            "curator-prepare",
+            "curator-launch",
+            "curator-ingest",
+            "curator-attempt-failed",
+            "curator-review",
+            "record-dispute",
+            "record-amendment",
+            "record-correction",
+        ):
+            self.assertNotIn(removed_command, lab03_commands)
 
-    def test_evaluator_amendment_is_append_only_and_forces_seek_more(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            comparison_dir = Path(temp)
-            path = record_evaluator_amendment(
-                comparison_dir=comparison_dir,
-                amendment_id="amend-ref-1",
-                defect="reference omits approval authority",
-                confirmed_by=STUDENT,
-            )
-            recorded = yaml.safe_load(path.read_text(encoding="utf-8"))
-            self.assertEqual(recorded["amendment_id"], "amend-ref-1")
-            self.assertEqual(recorded["confirmed_by"], STUDENT)
-            with self.assertRaises(WorkflowError):
-                record_evaluator_amendment(
-                    comparison_dir=comparison_dir,
-                    amendment_id="amend-ref-1",
-                    defect="overwrite attempt",
-                    confirmed_by=STUDENT,
-                )
 
     def test_dispatched_interruption_becomes_a_non_retryable_failure(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1097,23 +978,6 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
     """Coverage for the eight confirmed Gate 2 blockers reopened on 2026-09-30."""
 
     def _prepare_development(self, report_dir: Path) -> None:
-        record_transfer_case(
-            report_dir=report_dir,
-            transfer_case={
-                "case_id": "transfer-approval",
-                "task": "State who approves requests.",
-                "supplied_source": "A supervisor approves requests.",
-                "provenance": "public test scenario",
-            },
-            perturbation={
-                "case_id": "transfer-approval-perturbed",
-                "task": "State who approves requests.",
-                "supplied_source": "A supervisor records requests.",
-                "provenance": "public test scenario",
-                "perturbation_note": "verb changed",
-                "expectation": "authority claim must disappear",
-            },
-        )
         record_variant_b(
             report_dir=report_dir,
             variant_b_text="Variant B text for tests.",
@@ -1128,9 +992,9 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
     def _protocol(self) -> dict:
         return Lab03WorkflowTests._protocol(self)  # type: ignore[arg-type]
 
-    def _development_schedule(self, a_states, b_states=("unstarted",) * 4):
+    def _development_schedule(self, a_states, b_states=("unstarted",) * 2):
         positions = []
-        case_ids = ["dev-criteria", "dev-authority", "transfer-approval", "transfer-approval-perturbed"]
+        case_ids = ["dev-criteria", "dev-authority"]
         for case_id, a_state in zip(case_ids, a_states):
             positions.append({"position_id": f"pos-{case_id}-a-1", "case_id": case_id,
                               "case_index": 0, "variant": "a", "attempt": 1, "state": a_state})
@@ -1143,7 +1007,7 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
     def test_all_failed_variant_a_blocks_variant_b_and_requires_partial_stop(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             comparison_dir = Path(temp)
-            schedule = self._development_schedule(("failed",) * 4)
+            schedule = self._development_schedule(("failed",) * 2)
             (comparison_dir / "variant-b.txt").write_text("Variant B text.", encoding="utf-8")
             with self.assertRaises(WorkflowError) as ctx:
                 run_position(
@@ -1401,40 +1265,6 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
             self.assertEqual(metadata["observed_model"], "provider/x")
             self.assertEqual(metadata["model_id"], "openrouter/free")
 
-    def test_curator_launch_is_executable_and_isolated(self) -> None:
-        from learning_project.lab03 import curator_launch
-        with tempfile.TemporaryDirectory() as temp:
-            report_dir = Path(temp)
-            comparison_dir = report_dir / "comparisons" / "cmp-test"
-            input_dir = comparison_dir / "curator"
-            input_dir.mkdir(parents=True)
-            (input_dir / "input.json").write_text("{\"case_family_contract\": {}}", encoding="utf-8")
-            destination = report_dir / "student" / "lab03" / "curator-candidate-1.json"
-            seen_prompts = []
-
-            def isolated_runner(prompt: str) -> str:
-                seen_prompts.append(prompt)
-                return "{\"family_id\": \"curated-1\", \"cases\": []}"
-
-            result = curator_launch(
-                comparison_dir=comparison_dir, report_dir=report_dir, destination=destination,
-                attempt=1, runner=isolated_runner, by=STUDENT,
-            )
-            candidate = json.loads(destination.read_text(encoding="utf-8"))
-            self.assertEqual(candidate["family_id"], "curated-1")
-            self.assertEqual(len(seen_prompts), 1)
-            self.assertNotIn("Variant B text", seen_prompts[0])
-            session = json.loads(
-                (comparison_dir / "curator" / "sessions" / "attempt-1-session.json").read_text(encoding="utf-8"))
-            self.assertEqual(session["attempt"], 1)
-            self.assertTrue(session["session_id"].startswith("cur-"))
-            self.assertEqual(result["session_id"], session["session_id"])
-            self.assertIn("case_family_contract", seen_prompts[0])
-            with self.assertRaises(WorkflowError):
-                curator_launch(
-                    comparison_dir=comparison_dir, report_dir=report_dir, destination=destination,
-                    attempt=1, runner=isolated_runner, by=STUDENT,
-                )
 
     def test_status_reports_resume_bootstrap_fields(self) -> None:
         from learning_project.lab03 import lab03_status
@@ -1461,114 +1291,6 @@ class Lab03Gate2RemediationTests(unittest.TestCase):
             self.assertEqual(entry["resume_window"], "48h")
             self.assertIn("resume_deadline", entry)
 
-    def test_evaluator_correction_settles_the_aggregate_without_forcing_uncertainty(self) -> None:
-        from learning_project.lab03 import record_correction
-        with tempfile.TemporaryDirectory() as temp:
-            report_dir = Path(temp)
-            self._prepare_completion_ready_comparison(report_dir)
-            comparison_dir = sorted((report_dir / "comparisons").glob("cmp-*"))[0]
-            index = json.loads((comparison_dir / "scoring" / "_join-map.json").read_text(encoding="utf-8"))
-            first = index["entries"][0]
-            original = record_assessment(
-                comparison_dir=comparison_dir, blind_id=first["blind_id"],
-                assessment={"category": "I", "source_pointer": "src:1",
-                            "rationale": "initial judgment", "assessed_by": STUDENT},
-            )
-            original_data = yaml.safe_load(original.read_text(encoding="utf-8"))
-            path = record_correction(
-                comparison_dir=comparison_dir, blind_id=first["blind_id"],
-                corrected_category="S", resolution_basis="source line 1 states the fact directly",
-                student=STUDENT,
-            )
-            correction = yaml.safe_load(path.read_text(encoding="utf-8"))
-            self.assertEqual(correction["original_category"], "I")
-            self.assertEqual(correction["corrected_category"], "S")
-            still_original = yaml.safe_load(original.read_text(encoding="utf-8"))
-            self.assertEqual(still_original, original_data)
-            result = aggregate_lab03(comparison_dir=comparison_dir)
-            self.assertIn(first["blind_id"], result["corrected_blind_ids"])
-            variant = first["position_id"].rsplit("-", 2)[-2]
-            self.assertEqual(result["nested_counts"][variant]["rubric_acceptable"], 1)
-            with self.assertRaises(WorkflowError):
-                record_correction(
-                    comparison_dir=comparison_dir, blind_id=first["blind_id"],
-                    corrected_category="S", resolution_basis="duplicate", student=STUDENT,
-                )
-
-    def test_curator_reviewer_unavailable_outcome_is_accepted(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            comparison_dir = Path(temp)
-            path = record_curator_attempt_failure(
-                comparison_dir=comparison_dir, attempt=1, outcome="reviewer-unavailable",
-                detail="candidate ingested but no eligible independent reviewer", student=STUDENT,
-            )
-            recorded = yaml.safe_load(path.read_text(encoding="utf-8"))
-            self.assertEqual(recorded["outcome"], "reviewer-unavailable")
-            with self.assertRaises(WorkflowError):
-                record_curator_attempt_failure(
-                    comparison_dir=comparison_dir, attempt=1, outcome="reviewer-absent",
-                    detail="unknown outcome", student=STUDENT,
-                )
-
-    def test_curator_input_declares_a_permitted_source_rule(self) -> None:
-        from learning_project.lab03 import build_curator_input
-        payload = build_curator_input(
-            reserves_dir=RESERVES, contract_path=CASES / "case-family-contract.yaml",
-        )
-        self.assertIn("permitted_source_rule", payload)
-        self.assertIn("provenance", payload["permitted_source_rule"].lower())
-        self.assertEqual(payload.get("excluded_development_sources"), [])
-
-    def test_curator_input_includes_excluded_development_sources(self) -> None:
-        from learning_project.lab03 import build_curator_input
-        with tempfile.TemporaryDirectory() as temp:
-            report_dir = Path(temp)
-            dev = report_dir / "development"
-            dev.mkdir(parents=True)
-            (dev / "transfer-case.yaml").write_text(
-                "case_id: transfer-student-01\n"
-                "supplied_source: Unique transfer source about packet baselines.\n",
-                encoding="utf-8",
-            )
-            (dev / "transfer-perturbation.yaml").write_text(
-                "case_id: transfer-student-01-perturbed\n"
-                "supplied_source: Unique transfer source about packet baselines, with one omitted clause.\n",
-                encoding="utf-8",
-            )
-            payload = build_curator_input(
-                reserves_dir=RESERVES,
-                contract_path=CASES / "case-family-contract.yaml",
-                report_dir=report_dir,
-            )
-            excluded = payload["excluded_development_sources"]
-            self.assertEqual(len(excluded), 2)
-            self.assertEqual(excluded[0]["case_id"], "transfer-student-01")
-            self.assertIn("Unique transfer source", excluded[0]["supplied_source"])
-            self.assertIn("excluded_development_sources", payload["permitted_source_rule"])
-
-    def test_curator_ingest_rejects_transfer_source_near_duplicate(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            comparison_dir = Path(temp)
-            family = load_family(next(RESERVES.glob("*/family.json")))
-            transfer_source = family["cases"][0]["supplied_source"]
-            curator_input = {
-                "prior_families": [],
-                "excluded_development_sources": [
-                    {"case_id": "transfer-x", "supplied_source": transfer_source, "origin": "transfer-case.yaml"}
-                ],
-                "required_evidence_situations": list(family["cases"][0].keys()),  # unused by ingest path
-            }
-            # rebuild a minimal valid candidate equal to a loaded family so near-dup fires on exclusion
-            candidate = json.loads(json.dumps(family))
-            with self.assertRaises(WorkflowError) as ctx:
-                ingest_curator_candidate(
-                    comparison_dir=comparison_dir,
-                    candidate_family=candidate,
-                    curator_input=curator_input,
-                    curator_session="cur-test",
-                    attempt=1,
-                )
-            self.assertIn("excluded development source", str(ctx.exception).lower())
 
     def _prepare_completion_ready_comparison(self, report_dir: Path) -> None:
         """Freeze and complete a minimal sixteen-position comparison offline."""

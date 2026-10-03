@@ -41,7 +41,7 @@ HELDOUT_CASES = 4
 ATTEMPTS_PER_CASE = 2
 VARIANTS = ("a", "b")
 SCHEDULED_POSITIONS = HELDOUT_CASES * ATTEMPTS_PER_CASE * len(VARIANTS)
-DEVELOPMENT_INPUTS = 4
+DEVELOPMENT_INPUTS = 2
 DEVELOPMENT_POSITIONS = DEVELOPMENT_INPUTS * len(VARIANTS)
 REPORT_SCREENSHOTS = (
     "01-calibration.png",
@@ -200,12 +200,8 @@ def load_family(family_path: Path, *, expected_cases: int | None = None) -> dict
         )
     _require(sorted(behavior_ids) == sorted(case_ids), "Expected behaviors must match the family cases exactly.")
     origin = family.get("origin")
-    _require(origin in {"course-reserve", "curator-generated", "course-development"},
+    _require(origin in {"course-reserve", "course-development"},
              "Family origin is not supported.")
-    if origin == "curator-generated":
-        provenance = family.get("provenance")
-        _require(isinstance(provenance, dict) and provenance.get("curator_session") and provenance.get("inputs_sha256"),
-                 "Curator-generated family must record curator provenance.")
     return family
 
 
@@ -396,34 +392,6 @@ def submit_calibration(*, report_dir: Path, packet_id: str, packets_dir: Path, s
     return result
 
 
-# ---------------------------------------------------------------------------
-# Development stage
-# ---------------------------------------------------------------------------
-
-
-def record_transfer_case(*, report_dir: Path, transfer_case: dict, perturbation: dict) -> Path:
-    """Store the student transfer case and controlled perturbation as development evidence."""
-    dev_dir = report_dir / "development"
-    for payload, name in ((transfer_case, "transfer-case.yaml"), (perturbation, "transfer-perturbation.yaml")):
-        _require(isinstance(payload, dict), f"{name} must be a mapping.")
-        _require(isinstance(payload.get("case_id"), str) and payload["case_id"].strip(), f"{name} needs a case_id.")
-        _require(isinstance(payload.get("task"), str) and payload["task"].strip(), f"{name} needs a task.")
-        _require(isinstance(payload.get("supplied_source"), str) and payload["supplied_source"].strip(),
-                 f"{name} needs supplied_source.")
-        _require(isinstance(payload.get("provenance"), str) and payload["provenance"].strip(),
-                 f"{name} needs provenance (a public non-sensitive source).")
-    _require(
-        isinstance(perturbation.get("perturbation_note"), str) and perturbation["perturbation_note"].strip(),
-        "Perturbation must describe the single altered input feature.",
-    )
-    _require(
-        isinstance(perturbation.get("expectation"), str) and perturbation["expectation"].strip(),
-        "Perturbation must state an invariance or directional expectation.",
-    )
-    _write_yaml_once(dev_dir / "transfer-case.yaml", transfer_case)
-    return _write_yaml_once(dev_dir / "transfer-perturbation.yaml", perturbation)
-
-
 def record_variant_b(*, report_dir: Path, variant_b_text: str, change_declaration: dict) -> Path:
     """Store Variant B and its single-factor change declaration."""
     _require(isinstance(variant_b_text, str) and variant_b_text.strip(), "Variant B must not be empty.")
@@ -481,8 +449,8 @@ def build_positions(*, comparison_dir: Path, family: dict, kind: str, cases: lis
     """Create the schedule file for a comparison (held-out) or development run.
 
     For held-out schedules the four family cases are used. For development
-    schedules the caller passes four explicit inputs (development cases, the
-    student transfer case, and the perturbation) via ``cases``.
+    schedules the caller passes the two course-owned development cases via
+    ``cases``.
     """
     _require(kind in {"held-out", "development"}, "Unknown schedule kind.")
     case_list = family["cases"] if cases is None else cases
@@ -504,7 +472,7 @@ def build_positions(*, comparison_dir: Path, family: dict, kind: str, cases: lis
         _require(len(positions) == SCHEDULED_POSITIONS, "Held-out schedule must contain sixteen positions.")
     else:
         _require(cases is not None and len(cases) == DEVELOPMENT_INPUTS,
-                 "Development schedules require exactly four explicit inputs.")
+                 "Development schedules require exactly two course-owned inputs.")
         positions = []
         for case_index, case in enumerate(case_list):
             for variant in VARIANTS:
@@ -516,7 +484,7 @@ def build_positions(*, comparison_dir: Path, family: dict, kind: str, cases: lis
                     "attempt": 1,
                     "state": "unstarted",
                 })
-        _require(len(positions) == DEVELOPMENT_POSITIONS, "Development schedule must contain eight positions.")
+        _require(len(positions) == DEVELOPMENT_POSITIONS, "Development schedule must contain four positions.")
         a_ids = [p["position_id"] for p in positions if p["variant"] == "a"]
         b_ids = [p["position_id"] for p in positions if p["variant"] == "b"]
         schedule = {
@@ -882,7 +850,7 @@ def _position_case_id(comparison_dir: Path, position_id: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Freeze, selection, curator
+# Freeze and reserve-family selection
 # ---------------------------------------------------------------------------
 
 
@@ -957,7 +925,7 @@ def freeze_protocol(
     _require(dev_schedule.get("kind") == "development", "Development schedule kind must be development.")
     _require(
         len(dev_schedule.get("positions", [])) == DEVELOPMENT_POSITIONS,
-        "Freeze requires eight development positions.",
+        "Freeze requires four development positions.",
     )
     for position in dev_schedule["positions"]:
         _require(
@@ -968,13 +936,13 @@ def freeze_protocol(
     by_id = {p["position_id"]: p for p in dev_schedule["positions"]}
     ordered_variants = [by_id[pid]["variant"] for pid in order if pid in by_id]
     _require(
-        ordered_variants == ["a"] * 4 + ["b"] * 4,
-        "Development schedule must run four A positions then four B positions.",
+        ordered_variants == ["a"] * DEVELOPMENT_INPUTS + ["b"] * DEVELOPMENT_INPUTS,
+        "Development schedule must run two A positions then two B positions.",
     )
     eligible = eligible_families(reserves_dir, ledger, freeze_at=None)
     _require(
-        bool(eligible) or protocol.get("curator_recovery") is True,
-        "No eligible reserve family remains; set curator_recovery: true for post-freeze recovery.",
+        bool(eligible),
+        "No eligible reserve family remains; preserve current evidence and seek more evidence.",
     )
     freeze_id = f"cmp-{_sha256_bytes((variant_a_sha + _sha256_bytes(variant_b_bytes) + _now()).encode('utf-8'))[:12]}"
     comparison_dir = report_dir / "comparisons" / freeze_id
@@ -1106,303 +1074,8 @@ def mark_family_used(*, ledger: ExposureLedger, family_id: str, freeze_id: str, 
     })
 
 
-def build_curator_input(*, reserves_dir: Path, contract_path: Path, report_dir: Path | None = None) -> dict:
-    """Assemble the isolation-bounded curator input: contract, situations, priors, exclusions."""
-    families = [load_family(p) for p in sorted(reserves_dir.glob("*/family.json"))]
-    excluded_development_sources: list[dict] = []
-    if report_dir is not None:
-        dev_dir = Path(report_dir) / "development"
-        for name in ("transfer-case.yaml", "transfer-perturbation.yaml"):
-            path = dev_dir / name
-            if not path.exists():
-                continue
-            payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            source = payload.get("supplied_source")
-            case_id = payload.get("case_id")
-            if isinstance(source, str) and source.strip() and isinstance(case_id, str) and case_id.strip():
-                entry: dict[str, object] = {
-                    "case_id": case_id.strip(),
-                    "supplied_source": source.strip(),
-                    "origin": name,
-                }
-                pointers = payload.get("source_pointers")
-                if isinstance(pointers, list) and pointers:
-                    entry["source_pointers"] = pointers
-                excluded_development_sources.append(entry)
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "case_family_contract": yaml.safe_load(contract_path.read_text(encoding="utf-8")),
-        "required_evidence_situations": list(EVIDENCE_SITUATIONS),
-        "permitted_source_rule": (
-            "Every case supplied_source must be a short, bounded, public or non-sensitive passage "
-            "with a verifiable provenance pointer (a public URL or a standard citation) recorded in "
-            "its source_pointers. The curator must not reuse any excluded_development_sources entry "
-            "or paraphrase any prior family case below. The independent reviewer verifies each "
-            "provenance pointer against the public source rather than trusting the curator's own "
-            "supplied_source wording, and checks near-duplication against prior families and "
-            "excluded_development_sources."
-        ),
-        "excluded_development_sources": excluded_development_sources,
-        "prior_families": [
-            {
-                "family_id": f["family_id"],
-                "cases": [
-                    {"case_id": c["case_id"], "task": c["task"], "supplied_source": c["supplied_source"],
-                     "mutation_note": c.get("mutation_note", ""), "evidence_situation": c["evidence_situation"]}
-                    for c in f["cases"]
-                ],
-                "expected_behaviors": f["expected_behaviors"],
-            }
-            for f in families
-        ],
-    }
 
 
-CURATOR_SYSTEM_PROMPT = (
-    "You are an isolated case curator. You receive exactly one input file: the case-family "
-    "contract, the four required evidence situations, and prior family manifests used for "
-    "near-duplicate avoidance. You see neither instruction variant, no generated responses, "
-    "no assessments, no aggregates, and no preferred conclusion. Return exactly one JSON "
-    "family conforming to the supplied case-family contract."
-)
-
-CURATOR_TASK_TEMPLATE = """Produce one new held-out case family as a single JSON object.
-
-Follow the case-family contract in the input exactly:
-- one family_id, four cases, and four expected_behaviors entries;
-- the four cases must cover exactly these evidence situations: {situations};
-- every case has a distinct case_id, a task answerable only from its supplied_source, a
-  supplied_source, a mutation_note, and a source pointer;
-- every supplied_source must be a short, bounded, public or non-sensitive passage, and its
-  source_pointers must record a verifiable provenance (a public URL or a standard citation)
-  that an independent reviewer can check — do not fabricate or misquote a source;
-- each expected_behaviors entry states the expected_category and expected_behavior for
-  its case_id and must be evaluable from the supplied source alone;
-- do not duplicate or trivially rephrase any prior family case in the input, and do not
-  reuse the student's personal transfer-case source.
-
-Return only the JSON object, with no commentary."""
-
-
-def curator_launch(*, comparison_dir: Path, report_dir: Path, destination: Path,
-                   attempt: int, runner: Callable[[str], str],
-                   by: str, api_key: str | None = None) -> dict:
-    """Launch the isolated case curator through a supplied isolated runner.
-
-    The runner is provider-neutral: it receives the complete curator prompt
-    (system instruction plus the exact contents of ``curator/input.json``) and
-    returns the raw assistant content string. Only ``curator/input.json`` is
-    supplied to the runner; no variant text, response, assessment, or
-    aggregate is passed. The result is written verbatim to ``destination``
-    (outside the comparison directory) without being opened or validated here,
-    because the candidate contains evaluator-only expectations.
-
-    ``api_key`` is never recorded; a live runner reads its credential from the
-    process environment itself.
-    """
-    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
-    input_path = comparison_dir / "curator" / "input.json"
-    _require(input_path.exists(), "Curator input is missing; run curator-prepare first.")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    _require(
-        not destination.exists(),
-        f"The candidate destination already exists: {destination}. Do not overwrite a candidate.",
-    )
-    prompt = (
-        CURATOR_SYSTEM_PROMPT
-        + "\n\n"
-        + CURATOR_TASK_TEMPLATE.format(situations=", ".join(EVIDENCE_SITUATIONS))
-        + "\n\n"
-        + input_path.read_text(encoding="utf-8")
-    )
-    started_at = _now()
-    session_id = f"cur-{_sha256_bytes((comparison_dir.name + str(attempt) + started_at).encode('utf-8'))[:10]}"
-    content = runner(prompt)
-    _require(isinstance(content, str), "The curator runner must return a string.")
-    _require(bool(content.strip()), "The curator session returned no content.")
-    destination.write_text(content, encoding="utf-8")
-    session_file = comparison_dir / "curator" / "sessions" / f"attempt-{attempt}-session.json"
-    session_file.parent.mkdir(parents=True, exist_ok=True)
-    _write_json_once(session_file, {
-        "schema_version": SCHEMA_VERSION,
-        "session_id": session_id,
-        "attempt": attempt,
-        "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
-        "input_sha256": _file_sha256(input_path, "Curator input"),
-        "destination": str(destination),
-        "destination_sha256": _sha256_bytes(content.encode("utf-8")),
-        "launched_by": by,
-        "launched_at": started_at,
-        "finished_at": _now(),
-    })
-    return {
-        "attempt": attempt,
-        "session_id": session_id,
-        "candidate_path": str(destination),
-        "session_record": str(session_file),
-    }
-
-
-def ingest_curator_candidate(
-    *,
-    comparison_dir: Path,
-    candidate_family: dict,
-    curator_input: dict,
-    curator_session: str,
-    attempt: int = 1,
-    deterministic_runner: Callable[[dict], list[str]] | None = None,
-) -> dict:
-    """Validate one curator proposal: provenance, contract checks, near-duplicates.
-
-    deterministic_runner is the pluggable no-purchase curator route (Stage 2 may
-    provide an offline authored-family generator); it is not required when the
-    candidate was produced by another isolated route.
-    """
-    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
-    if attempt == 2:
-        _require(
-            (comparison_dir / "curator" / "attempts" / "attempt-1").exists(),
-            "Curator attempt 1 must be preserved before attempt 2.",
-        )
-    _require(isinstance(candidate_family, dict), "Curator candidate must be a mapping.")
-    candidate_family = {
-        **candidate_family,
-        "origin": "curator-generated",
-        "provenance": {
-            **candidate_family.get("provenance", {}),
-            "curator_session": curator_session,
-            "inputs_sha256": _sha256_bytes(json.dumps(curator_input, sort_keys=True).encode("utf-8")),
-        },
-    }
-    attempt_dir = comparison_dir / "curator" / "attempts" / f"attempt-{attempt}"
-    family_path = attempt_dir / "candidate.json"
-    _write_bytes_once(
-        family_path,
-        (json.dumps(candidate_family, indent=2, ensure_ascii=False) + "\n").encode("utf-8"),
-    )
-    try:
-        family = load_family(family_path)  # deterministic contract checks
-    except WorkflowError as exc:
-        _write_yaml_once(attempt_dir / "result.yaml", {
-            "schema_version": SCHEMA_VERSION,
-            "attempt": attempt,
-            "outcome": "invalid-candidate",
-            "curator_session": curator_session,
-            "detail": str(exc),
-            "recorded_at": _now(),
-        })
-        raise
-    prior_families: list[dict] = []
-    for prior in curator_input["prior_families"]:
-        prior_families.append({
-            "family_id": prior["family_id"],
-            "cases": [
-                {
-                    **case,
-                    "family_id": prior["family_id"],
-                    "schema_version": SCHEMA_VERSION,
-                    "constructed": True,
-                    "mutation_note": case.get("mutation_note", "prior family case"),
-                    "source_pointers": [{"theory_section": "prior", "pointer": prior["family_id"]}],
-                }
-                for case in prior["cases"]
-            ],
-            "expected_behaviors": [
-                {
-                    "case_id": behavior["case_id"],
-                    "expected_category": behavior["expected_category"],
-                    "expected_behavior": behavior["expected_behavior"],
-                }
-                for behavior in prior.get("expected_behaviors", [])
-            ],
-        })
-    excluded = curator_input.get("excluded_development_sources") or []
-    excluded_sources = [
-        item["supplied_source"].strip()
-        for item in excluded
-        if isinstance(item, dict) and isinstance(item.get("supplied_source"), str) and item["supplied_source"].strip()
-    ]
-    if excluded_sources:
-        excluded_exact = {hashlib.sha256(s.encode("utf-8")).hexdigest(): s for s in excluded_sources}
-        excluded_normalized = {_normalized_text(s): s for s in excluded_sources}
-        for case in family["cases"]:
-            source = case["supplied_source"]
-            exact_key = hashlib.sha256(source.encode("utf-8")).hexdigest()
-            normalized_key = _normalized_text(source)
-            if exact_key in excluded_exact or normalized_key in excluded_normalized:
-                raise WorkflowError(
-                    f"Case {case['case_id']} reuses an excluded development source "
-                    f"(transfer-case or transfer-perturbation)."
-                )
-    check_near_duplicates([family, *prior_families])
-    check = {
-        "schema_version": SCHEMA_VERSION,
-        "candidate_family_id": family["family_id"],
-        "checks": ["schema-conformance", "provenance", "near-duplicate", "development-source-exclusion"],
-        "passed": True,
-        "checked_at": _now(),
-    }
-    _write_json_once(attempt_dir / "deterministic-check.json", check)
-    _write_yaml_once(attempt_dir / "result.yaml", {
-        "schema_version": SCHEMA_VERSION,
-        "attempt": attempt,
-        "outcome": "candidate-returned",
-        "curator_session": curator_session,
-        "recorded_at": _now(),
-    })
-    return family
-
-
-def record_curator_attempt_failure(
-    *, comparison_dir: Path, attempt: int, outcome: str, detail: str, student: str
-) -> Path:
-    """Preserve a consumed curator attempt that produced no ingestible candidate."""
-    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
-    _require(
-        outcome in {"launch-failed", "route-unavailable", "quota-unavailable", "empty-result",
-                     "invalid-candidate", "reviewer-unavailable"},
-        "Unknown curator failure outcome.",
-    )
-    _require(isinstance(detail, str) and detail.strip(), "Curator attempt failure needs detail.")
-    if attempt == 2:
-        _require(
-            (comparison_dir / "curator" / "attempts" / "attempt-1").exists(),
-            "Curator attempt 1 must be preserved before attempt 2.",
-        )
-    return _write_yaml_once(
-        comparison_dir / "curator" / "attempts" / f"attempt-{attempt}" / "result.yaml",
-        {
-            "schema_version": SCHEMA_VERSION,
-            "attempt": attempt,
-            "outcome": outcome,
-            "detail": detail.strip(),
-            "recorded_by": student,
-            "recorded_at": _now(),
-        },
-    )
-
-
-def record_human_case_review(
-    *,
-    comparison_dir: Path,
-    family: dict,
-    decision: str,
-    reasons: str,
-    student: str,
-    attempt: int = 1,
-) -> Path:
-    """Record the student's post-freeze human semantic review of a curator family."""
-    _require(decision in {"approved", "rejected"}, "Case review decision must be approved or rejected.")
-    _require(isinstance(reasons, str) and reasons.strip(), "Case review needs reasons.")
-    _require(attempt in {1, 2}, "Curator attempt must be 1 or 2.")
-    return _write_yaml_once(comparison_dir / "curator" / "attempts" / f"attempt-{attempt}" / "human-case-review.yaml", {
-        "schema_version": SCHEMA_VERSION,
-        "family_id": family["family_id"],
-        "decision": decision,
-        "reasons": reasons.strip(),
-        "reviewed_by": student,
-        "reviewed_at": _now(),
-    })
 
 
 # ---------------------------------------------------------------------------
@@ -1506,32 +1179,6 @@ def aggregate(*, comparison_dir: Path) -> dict:
     index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
     by_position = {e["position_id"]: e for e in index["entries"]}
     assessments: dict[str, dict] = {}
-    disputes: list[dict] = []
-    disputes_path = comparison_dir / "scoring" / "disputes.yaml"
-    if disputes_path.exists():
-        try:
-            disputes_raw = yaml.safe_load(disputes_path.read_text(encoding="utf-8"))
-        except (OSError, yaml.YAMLError) as exc:
-            raise WorkflowError(f"Disputes record cannot be read: {exc}") from exc
-        disputes = list(disputes_raw.get("items", [])) if isinstance(disputes_raw, dict) else []
-    disputed = {d["blind_id"] for d in disputes if isinstance(d, dict) and d.get("blind_id")}
-    corrections: dict[str, dict] = {}
-    corrections_root = comparison_dir / "scoring" / "corrections"
-    if corrections_root.exists():
-        for correction_path in sorted(corrections_root.glob("blind-*.yaml")):
-            try:
-                correction = yaml.safe_load(correction_path.read_text(encoding="utf-8"))
-            except (OSError, yaml.YAMLError) as exc:
-                raise WorkflowError(f"Correction cannot be read: {exc}") from exc
-            if isinstance(correction, dict) and correction.get("blind_id"):
-                corrections[correction["blind_id"]] = correction
-
-    def settled_category(entry_blind_id: str, assessment: dict) -> str:
-        """The recorded category, or its append-only correction when one exists."""
-        correction = corrections.get(entry_blind_id)
-        if correction is not None:
-            return correction["corrected_category"]
-        return assessment["category"]
 
     for entry in index["entries"]:
         path = comparison_dir / "scoring" / "assessments" / f"{entry['blind_id']}.yaml"
@@ -1544,26 +1191,27 @@ def aggregate(*, comparison_dir: Path) -> dict:
     cases_by_id = {c["case_id"]: c for c in family["family"]["cases"]}
     variants_stat: dict[str, dict] = {
         v: {
-            "scheduled": 0, "started": 0, "returned": 0, "structurally_valid": 0,
-            "assessable": 0, "rubric_acceptable": 0, "critical_unsupported": 0,
-            "failed": 0, "unstarted": 0,
+            "attempted": 0, "returned": 0, "structurally_valid": 0,
+            "assessable": 0, "rubric_acceptable": 0,
         }
         for v in VARIANTS
     }
+    failure_counts = {v: 0 for v in VARIANTS}
+    unstarted_counts = {v: 0 for v in VARIANTS}
+    critical_unsupported_counts = {v: 0 for v in VARIANTS}
     slices: dict[str, dict] = {}
     repeated_diffs: list[dict] = []
     by_case: dict[str, dict[str, list[str]]] = {}
     for position in schedule["positions"]:
         variant = position["variant"]
         stat = variants_stat[variant]
-        stat["scheduled"] += 1
         state = position["state"]
         if state in {"unstarted", "closed-unstarted"}:
-            stat["unstarted"] += 1
+            unstarted_counts[variant] += 1
             continue
-        stat["started"] += 1
+        stat["attempted"] += 1
         if state == "failed":
-            stat["failed"] += 1
+            failure_counts[variant] += 1
             continue
         stat["returned"] += 1
         entry = by_position.get(position["position_id"])
@@ -1577,11 +1225,9 @@ def aggregate(*, comparison_dir: Path) -> dict:
         slice_stat["returned"] += 1
         slice_stat["structurally_valid"] += 1
         assessment = assessments.get(entry["blind_id"])
-        if assessment is None or entry["blind_id"] in disputed:
-            if assessment is not None and entry["blind_id"] in disputed:
-                slice_stat["disputed"] += 1
+        if assessment is None:
             continue
-        category = settled_category(entry["blind_id"], assessment)
+        category = assessment["category"]
         if category == "X":
             continue
         stat["assessable"] += 1
@@ -1591,7 +1237,7 @@ def aggregate(*, comparison_dir: Path) -> dict:
             stat["rubric_acceptable"] += 1
             slice_stat["rubric_acceptable"] += 1
         if category == "U":
-            stat["critical_unsupported"] += 1
+            critical_unsupported_counts[variant] += 1
             slice_stat["critical_unsupported"] += 1
         by_case.setdefault(position["case_id"], {"a": [], "b": []})[variant].append(
             f"{entry['blind_id']}:{category}"
@@ -1635,16 +1281,13 @@ def aggregate(*, comparison_dir: Path) -> dict:
         "schema_version": SCHEMA_VERSION,
         "comparison_id": comparison_dir.name,
         "nested_counts": variants_stat,
+        "failure_counts": failure_counts,
+        "unstarted_counts": unstarted_counts,
+        "critical_unsupported_counts": critical_unsupported_counts,
         "slices": slices,
         "repeated_attempt_differences": repeated_diffs,
-        "disputed_blind_ids": sorted(disputed),
-        "corrected_blind_ids": sorted(corrections),
         "observed_latency": observed_latency,
         "observed_models": {variant: sorted(models) for variant, models in observed_models.items()},
-        "resolved_model_comparability": (
-            "unknown" if not observed_models["a"] or not observed_models["b"]
-            else ("comparable" if observed_models["a"] == observed_models["b"] else "not-comparable")
-        ),
         "unknown_values": {
             "monetary_cost": "unknown",
             "quota_usage": "unknown",
@@ -1658,7 +1301,7 @@ def aggregate(*, comparison_dir: Path) -> dict:
 
 def _empty_slice() -> dict:
     return {"returned": 0, "structurally_valid": 0, "assessable": 0, "rubric_acceptable": 0,
-            "critical_unsupported": 0, "disputed": 0}
+            "critical_unsupported": 0}
 
 
 def close_unstarted_positions(*, comparison_dir: Path, reason: str, student: str) -> dict:
@@ -1684,71 +1327,6 @@ def close_unstarted_positions(*, comparison_dir: Path, reason: str, student: str
     return closure
 
 
-def record_dispute(*, comparison_dir: Path, blind_id: str, reason: str, student: str) -> Path:
-    """Record an unresolved human-reference dispute against a blinded assessment."""
-    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
-    known = {entry["blind_id"] for entry in index["entries"]}
-    _require(blind_id in known, f"Unknown blind identifier {blind_id}.")
-    _require(isinstance(reason, str) and reason.strip(), "Dispute needs a reason.")
-    path = comparison_dir / "scoring" / "disputes.yaml"
-    items: list[dict] = []
-    if path.exists():
-        try:
-            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-        except (OSError, yaml.YAMLError) as exc:
-            raise WorkflowError(f"Disputes record cannot be read: {exc}") from exc
-        items = list(raw.get("items", [])) if isinstance(raw, dict) else []
-    items.append({
-        "blind_id": blind_id,
-        "reason": reason.strip(),
-        "recorded_by": student,
-        "recorded_at": _now(),
-    })
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(_dump_yaml({"schema_version": SCHEMA_VERSION, "items": items}), encoding="utf-8")
-    return path
-
-
-def record_correction(*, comparison_dir: Path, blind_id: str, corrected_category: str,
-                      resolution_basis: str, student: str) -> Path:
-    """Append-only correction of a mistaken evaluator assessment.
-
-    Used only when the supplied source itself resolves that the recorded
-    assessment category is wrong and neither the rubric nor the reference is
-    defective (those cases take ``record-dispute`` or ``record-amendment``).
-    The original immutable assessment is preserved; aggregation settles on the
-    corrected category, and the correction does not force seek-more-evidence.
-    """
-    index, _ = _read_json(_join_map_path(comparison_dir), "Join map")
-    known = {entry["blind_id"] for entry in index["entries"]}
-    _require(blind_id in known, f"Unknown blind identifier {blind_id}.")
-    _require(corrected_category in RUBRIC_CATEGORIES,
-             "Corrected category must be a rubric category.")
-    _require(isinstance(resolution_basis, str) and resolution_basis.strip(),
-             "Correction needs the source passage that resolves the mistake.")
-    _require(isinstance(student, str) and student.strip(), "Correction needs the evaluator identity.")
-    assessment_path = comparison_dir / "scoring" / "assessments" / f"{blind_id}.yaml"
-    _require(assessment_path.exists(), f"No recorded assessment exists for {blind_id}.")
-    assessment = yaml.safe_load(assessment_path.read_text(encoding="utf-8"))
-    _require(isinstance(assessment, dict), f"The recorded assessment for {blind_id} is invalid.")
-    _require(
-        assessment.get("category") != corrected_category,
-        "The corrected category must differ from the recorded assessment category.",
-    )
-    return _write_yaml_once(
-        comparison_dir / "scoring" / "corrections" / f"{blind_id}.yaml",
-        {
-            "schema_version": SCHEMA_VERSION,
-            "blind_id": blind_id,
-            "original_category": assessment["category"],
-            "corrected_category": corrected_category,
-            "resolution_basis": resolution_basis.strip(),
-            "corrected_by": student.strip(),
-            "recorded_at": _now(),
-        },
-    )
-
-
 def record_selected_comparison(*, report_dir: Path, comparison_id: str, student: str) -> Path:
     """Record which comparison is submitted for evaluation after all runs are terminal."""
     _slug(comparison_id, "comparison_id")
@@ -1769,24 +1347,6 @@ def record_selected_comparison(*, report_dir: Path, comparison_id: str, student:
 # ---------------------------------------------------------------------------
 # Recommendation, regression, verification
 # ---------------------------------------------------------------------------
-
-
-def record_evaluator_amendment(*, comparison_dir: Path, amendment_id: str, defect: str,
-                               confirmed_by: str) -> Path:
-    """Append-only record of a confirmed rubric or reference defect, forcing seek-more-evidence."""
-    _slug(amendment_id, "amendment_id")
-    _require(isinstance(defect, str) and defect.strip(), "Evaluator amendment needs a defect description.")
-    _require(isinstance(confirmed_by, str) and confirmed_by.strip(), "Evaluator amendment needs a confirmer.")
-    return _write_yaml_once(
-        comparison_dir / "scoring" / "evaluator-amendments" / f"{amendment_id}.yaml",
-        {
-            "schema_version": SCHEMA_VERSION,
-            "amendment_id": amendment_id,
-            "defect": defect.strip(),
-            "confirmed_by": confirmed_by.strip(),
-            "recorded_at": _now(),
-        },
-    )
 
 
 def record_recommendation(*, comparison_dir: Path, outcome: str, rationale: str, limitations: list[str],
@@ -1810,9 +1370,6 @@ def record_recommendation(*, comparison_dir: Path, outcome: str, rationale: str,
         (isinstance(blocking, str) and blocking.strip()) or (isinstance(blocking, list) and blocking),
         "Frozen protocol is missing blocking_failures.",
     )
-    amendment_root = comparison_dir / "scoring" / "evaluator-amendments"
-    if amendment_root.exists() and any(amendment_root.iterdir()):
-        _require(outcome == "seek-more-evidence", "An evaluator amendment requires seek-more-evidence.")
     payload = {
         "schema_version": SCHEMA_VERSION,
         "comparison_id": comparison_dir.name,
