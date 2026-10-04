@@ -1,6 +1,7 @@
 import contextlib
 import io
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -54,6 +55,28 @@ class PrepareReportCommandTests(unittest.TestCase):
         embedded = submission.read_text(encoding="utf-8")
         self.assertIn("data:image/png;base64,", embedded)
         self.assertNotIn("screenshots/01-git-remotes.png", embedded)
+
+    def test_lab02_generated_submission_report_is_ignored_by_git(self) -> None:
+        project_root = Path(__file__).resolve().parents[2]
+
+        result = subprocess.run(
+            ["git", "-C", str(project_root), "check-ignore", "reports/lab02/submission/REPORT.md"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_lab01_generated_submission_report_is_ignored_by_git(self) -> None:
+        project_root = Path(__file__).resolve().parents[2]
+
+        result = subprocess.run(
+            ["git", "-C", str(project_root), "check-ignore", "reports/lab01/submission/REPORT.md"],
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_prepare_report_leaves_data_uris_and_http_links_unchanged(self) -> None:
         self.report_path.write_text(
@@ -187,6 +210,55 @@ class PrepareReportCommandTests(unittest.TestCase):
         self.assertEqual(submission.count("data:image/png;base64,"), 6)
         for name in screenshot_names:
             self.assertNotIn(f"screenshots/{name}", submission)
+
+    def test_prepare_report_embeds_all_images_from_the_real_lab03_template(self) -> None:
+        fixture = Path(__file__).resolve().parents[2] / "fixtures" / "lab03" / "REPORT.md"
+        shutil.copyfile(fixture, self.report_path)
+        screenshot_names = (
+            "01-calibration.png",
+            "02-development.png",
+            "03-freeze.png",
+            "04-held-out-execution.png",
+            "05-scoring-recommendation.png",
+            "06-regression.png",
+            "07-final-verification.png",
+        )
+        for name in screenshot_names:
+            write_png(self.screenshots / name, 40, 20)
+        source_before = self.report_path.read_text(encoding="utf-8")
+
+        code, out, err = run_cli(["prepare-report", str(self.report_path)])
+
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        self.assertIn("Embedded images: 7", out)
+        self.assertEqual(self.report_path.read_text(encoding="utf-8"), source_before)
+        self.assertEqual(source_before.count("screenshots/"), 7)
+        self.assertNotIn("data:image/", source_before)
+        submission = (self.report_dir / "submission" / "REPORT.md").read_text(encoding="utf-8")
+        self.assertEqual(submission.count("data:image/png;base64,"), 7)
+        for name in screenshot_names:
+            self.assertNotIn(f"screenshots/{name}", submission)
+
+    def test_prepare_report_embeds_only_applicable_images_from_a_partial_lab03_report(self) -> None:
+        fixture = Path(__file__).resolve().parents[2] / "fixtures" / "lab03" / "REPORT.md"
+        source = fixture.read_text(encoding="utf-8")
+        source = "\n".join(
+            line
+            for line in source.splitlines()
+            if "screenshots/" not in line or "07-final-verification.png" in line
+        ) + "\n"
+        self.report_path.write_text(source, encoding="utf-8")
+        write_png(self.screenshots / "07-final-verification.png", 40, 20)
+
+        code, out, err = run_cli(["prepare-report", str(self.report_path)])
+
+        self.assertEqual(code, 0)
+        self.assertEqual(err, "")
+        self.assertIn("Embedded images: 1", out)
+        submission = (self.report_dir / "submission" / "REPORT.md").read_text(encoding="utf-8")
+        self.assertEqual(submission.count("data:image/png;base64,"), 1)
+        self.assertNotIn("screenshots/07-final-verification.png", submission)
 
 
 if __name__ == "__main__":

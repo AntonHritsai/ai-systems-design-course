@@ -82,7 +82,7 @@ reports/lab02/
   semantic-review.yaml
   verification-report.json
   submission/
-    REPORT.md                 (generated Teams copy with embedded images)
+    REPORT.md                 (generated ignored Teams copy; not committed)
   revisions/                  (only when a human revision is used)
   reviews/                    (only when a candidate is rejected)
   runs/<run-id>/
@@ -200,7 +200,7 @@ uv run learning-project lab02 run-openrouter --report-dir reports/lab02 --run-id
 unset OPENROUTER_API_KEY
 ```
 
-`run-openrouter` uses the pinned free profile `nex-agi/nex-n2.5-mini:free`, reads the key only from `OPENROUTER_API_KEY`, enforces a 120-second overall deadline, and records `adapter: openai-compatible`. The key never appears in arguments, run metadata, or submitted evidence. Free model availability may change; if the profile is no longer available, report the limitation and use AGY.
+`run-openrouter` uses the OpenRouter free router profile `openrouter/free`, which selects an available free provider supporting the requested structured-output parameters. It reads the key only from `OPENROUTER_API_KEY`, enforces a 120-second overall deadline, and records `adapter: openai-compatible`. The key never appears in arguments, run metadata, or submitted evidence. If OpenRouter reports an HTTP error, preserve the displayed status and message in the report and use AGY or an additional run only when the profile becomes available.
 
 **Expected result:** `reports/lab02/runs/live-primary-01/raw-response.txt` contains exactly one JSON candidate and `run-metadata.json` records the live adapter and the model actually used. `git status` does not show the key, and no key value appears in any artifact.
 
@@ -450,18 +450,19 @@ uv run learning-project lab02 verify --vault "$vault" --report-dir reports/lab02
 uv run learning-project prepare-report .\reports\lab02\REPORT.md
 ```
 
-`prepare-report` runs only after that final pass. It leaves the source report and PNG files unchanged and writes `reports/lab02/submission/REPORT.md` with the six images embedded. Open the generated file and confirm that all six figures render. The source report must still contain six relative `screenshots/...` image links and no `data:` URI; the generated copy must contain six `data:image/` entries and no local screenshot dependency.
+`prepare-report` runs only after that final pass. It leaves the source report and PNG files unchanged and writes the ignored `reports/lab02/submission/REPORT.md` with the six images embedded. Open the generated file and confirm that all six figures render. The source report must still contain six relative `screenshots/...` image links and no `data:` URI; the generated copy must contain six `data:image/` entries and no local screenshot dependency. The generated copy is attached to Microsoft Teams only and is not committed or viewed through GitHub.
 
-Commit only the report identity update, the regenerated verification report, and the generated Teams copy, then push the branch to the fork:
+Commit only the report identity update and regenerated verification report, then push the branch to the fork. The `git rm --cached` transition keeps an already tracked copy on disk while removing it from Git; for a new untracked copy it is a no-op:
 
 ```powershell
-git add reports/lab02/REPORT.md reports/lab02/verification-report.json reports/lab02/submission/REPORT.md
+git rm --cached --ignore-unmatch reports/lab02/submission/REPORT.md
+git add reports/lab02/REPORT.md reports/lab02/verification-report.json
 git commit -m "docs(lab02): package report for submission"
 git push -u origin HEAD
 git status --short
 ```
 
-The source report, `verification-report.json`, and generated submission report in this packaging commit now describe the same report content. Identity lives only in the report, not in the Teams assignment text field.
+The source report and `verification-report.json` in this packaging commit describe the same report content. The generated submission report is derived from that source, remains ignored outside the commit, and is attached directly to Teams. Identity lives only in the report, not in the Teams assignment text field.
 
 Do not re-run `lab02 verify` against the working tree after the packaging commit: the command rewrites `verification-report.json` with a new timestamp and would dirty the submission. To read back the submitted evidence, copy the report directory and verify the copy against the original external vault:
 
@@ -479,7 +480,7 @@ uv run learning-project lab02 verify --vault "$vault" --report-dir "$check_dir"
 
 Do not amend or reset either commit to chase a rewritten timestamp.
 
-**Expected result:** the working tree is clean, the branch exists in the fork, the report identifies the immutable evidence commit, and the later packaging commit contains the source report, verification result, and self-contained Teams report without credentials, upstream-owned edits, or vault content.
+**Expected result:** the working tree is clean despite the local ignored Teams copy, the branch exists in the fork, the report identifies the immutable evidence commit, and the later packaging commit contains the source report and verification result without credentials, upstream-owned edits, vault content, or the self-contained Teams report.
 
 ## Cleanup and rollback
 
@@ -512,7 +513,7 @@ The self-study sequence is ready for the scheduled demonstration only when all o
 - the accepted concept and exactly one operation record exist, and a repeated apply refuses with an unchanged concept digest;
 - `verification-report.json` reports `status: passed` and the command exits `0`;
 - the six screenshots are present with the approved filenames and are referenced from `REPORT.md`;
-- `reports/lab02/submission/REPORT.md` contains the same report with all six images embedded;
+- the ignored local `reports/lab02/submission/REPORT.md` contains the same report with all six images embedded and is absent from Git;
 - committed paths are under `training-project/reports/` and `training-project/student/` only;
 - the submitted evidence contains no credentials, tokens, payment-card data, or complete vault content.
 
@@ -525,7 +526,7 @@ Follow the course laboratory standing rules in [`LABORATORY_STANDING_RULES.md`](
 - `reports/lab02/live-comparison.json`;
 - `reports/lab02/semantic-review.yaml`.
 
-Do not attach the six PNG files separately; they are embedded in the Teams copy and remain individually reviewable in the fork. The fork URL, branch name, and complete evidence-commit hash live only in the report identity section, not in the Teams assignment text field. Detailed run evidence remains reviewable in that immutable evidence commit; the later packaging commit contains the finalized report files. The external vault, authentication state, payment-card data, unfiltered logs, and a PDF duplicate of `REPORT.md` are excluded.
+Do not attach the six PNG files separately; they are embedded in the Teams copy and remain individually reviewable through the source report in the fork. The fork URL, branch name, and complete evidence-commit hash live only in the report identity section, not in the Teams assignment text field. Detailed run evidence remains reviewable in that immutable evidence commit; the later packaging commit contains the finalized source report and verification result, not the ignored Teams copy. The external vault, authentication state, payment-card data, unfiltered logs, and a PDF duplicate of `REPORT.md` are excluded.
 
 ## Control questions
 

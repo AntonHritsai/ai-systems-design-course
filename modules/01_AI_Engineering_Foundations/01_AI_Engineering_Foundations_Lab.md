@@ -482,20 +482,21 @@ From `training-project`, write the Teams copy of the report. The command leaves 
 uv run learning-project prepare-report .\reports\lab01\REPORT.md
 ```
 
-Open the generated file and confirm that each required figure renders as an embedded image rather than a local path. Commit that submission copy with the laboratory evidence.
+Open the generated file and confirm that each required figure renders as an embedded image rather than a local path. This self-contained copy is an ignored Microsoft Teams attachment; do not commit it. GitHub renders the source `reports/lab01/REPORT.md` and its separate relative PNG links instead.
 
 Review the repository state from `training-project`, then commit only student-owned laboratory artifacts. Do not stage `modules/`, `platform/`, `fixtures/`, `tests/public/`, `boundary-proposal.yaml` at the project root, `.venv/`, or `provision.log` at the project root.
 
 ```powershell
 git status --short
 git diff --check
+git rm --cached --ignore-unmatch reports/lab01/submission/REPORT.md
 git add student/design/learning-system-boundary.yaml reports/lab01
 git commit -m "feat(lab01): establish governed AI system boundary"
 git status --short
 git rev-parse HEAD
 ```
 
-Copy the printed commit hash into the identity section of `reports/lab01/REPORT.md`, run `prepare-report` again if that section changed, and amend or add a follow-up commit so the submitted hash matches the identity section.
+Copy the printed commit hash into the identity section of `reports/lab01/REPORT.md`, run `prepare-report` again after that section changes, and amend or add a follow-up commit so the submitted hash matches the identity section. The regenerated `submission/REPORT.md` remains local and ignored.
 
 Authenticate GitHub CLI, then push the personal branch to the student's fork. The push target is `origin`. It is not `upstream`.
 
@@ -504,7 +505,7 @@ gh auth login
 git push -u origin HEAD
 ```
 
-**Expected result:** the working tree is clean after the commit, the branch exists in the student's fork, `git remote -v` still shows the required ownership, `reports/lab01/submission/REPORT.md` contains `data:image/` entries, and the submitted commit contains no upstream-owned edits, `.venv/`, credentials, complete personal vault, or unrelated workstation data.
+**Expected result:** the working tree is clean after the commit despite the local ignored Teams copy, the branch exists in the student's fork, `git remote -v` still shows the required ownership, `reports/lab01/submission/REPORT.md` contains `data:image/` entries but is absent from Git, and the submitted commit contains no upstream-owned edits, `.venv/`, credentials, complete personal vault, or unrelated workstation data.
 
 ## Cleanup and rollback
 
@@ -563,7 +564,7 @@ Attach the following files individually in Microsoft Teams, not as an archive:
 - `reports/lab01/boundary-decision.json`
 - `student/design/learning-system-boundary.yaml`
 
-The source report `reports/lab01/REPORT.md` remains in Git with relative screenshot paths. The Teams narrative file is the `prepare-report` copy. The fork URL, branch name, and complete commit hash belong in the identity section of that report. The submitted commit is the reviewable implementation state. Microsoft Teams is the official timestamped snapshot.
+The source report `reports/lab01/REPORT.md` remains in Git with relative screenshot paths and is the report viewed on GitHub. The ignored Teams narrative file is the `prepare-report` copy and is attached only to the assignment. The fork URL, branch name, and complete commit hash belong in the identity section of that report. The submitted commit is the reviewable implementation state. Microsoft Teams is the official timestamped snapshot.
 
 ## Control questions
 

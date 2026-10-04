@@ -1,0 +1,176 @@
+"""Provider-neutral runners for Laboratory 03 positions.
+
+Each runner receives the provider-neutral request payload written by
+``lab03.run_position`` and returns the raw assistant content string. Any
+exception is recorded as position evidence; messages containing route-wide
+markers (authentication, quota, rate limit, unavailability) classify the
+failure as route-wide rather than position-specific.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import urllib.error
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable
+
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_TIMEOUT = 120
+
+
+@dataclass(frozen=True)
+class RunnerResult:
+    """One runner outcome plus the provider-reported model identity, if any.
+
+    ``observed_model`` is the model identifier the provider reported in its
+    response (``null`` when the adapter reports none, such as the offline
+    fixture). It is recorded as reported evidence; it never replaces the
+    frozen requested route identity.
+    """
+
+    content: str
+    observed_model: str | None = None
+
+
+def offline_fixture_runner(request: dict) -> RunnerResult:
+    """Deterministic no-purchase runner for workflow exercises and tests.
+
+    Produces a structurally valid envelope that answers from the supplied
+    source only when the task is answerable from it; used with the
+    ``offline-fixture`` adapter label so runs are never confused with live
+    model evidence. No provider exists, so no observed model is reported.
+    """
+    envelope = {
+        "case_id": request["case_id"],
+        "proposed_text": (
+            f"Offline fixture response for task '{request['task']}' "
+            f" grounded only in the supplied source."
+        ),
+    }
+    return RunnerResult(content=json.dumps(envelope, ensure_ascii=False))
+
+
+def _openrouter_post(model_id: str, key: str, messages: list[dict]) -> dict:
+    """POST one chat completion and return the decoded response body."""
+    payload = {"model": model_id, "messages": messages}
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        OPENROUTER_URL,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=OPENROUTER_TIMEOUT) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"openrouter request failed with HTTP {exc.code}: {exc.reason}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"openrouter route unavailable: {exc.reason}") from exc
+
+
+def _assistant_content(body: dict) -> tuple[str, str | None]:
+    choices = body.get("choices") or []
+    if not choices or not isinstance(choices[0].get("message", {}).get("content"), str):
+        raise RuntimeError("openrouter returned no assistant content")
+    observed = body.get("model")
+    return (
+        choices[0]["message"]["content"],
+        observed if isinstance(observed, str) and observed.strip() else None,
+    )
+
+
+def openrouter_prompt_runner_factory(model_id: str, api_key: str | None = None) -> Callable[[str], RunnerResult]:
+    """Build a single-prompt live runner for isolated text-only sessions."""
+    key = api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "")
+    if not key:
+        raise RuntimeError("openrouter authentication failed: OPENROUTER_API_KEY is not set")
+
+    def runner(prompt: str) -> RunnerResult:
+        body = _openrouter_post(model_id, key, [{"role": "user", "content": prompt}])
+        content, observed = _assistant_content(body)
+        return RunnerResult(content=content, observed_model=observed)
+
+    return runner
+
+
+def openrouter_runner_factory(model_id: str, api_key: str | None = None) -> Callable[[dict], RunnerResult]:
+    """Build a live OpenRouter runner for one model."""
+    key = api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "")
+    if not key:
+        raise RuntimeError("openrouter authentication failed: OPENROUTER_API_KEY is not set")
+
+    def runner(request: dict) -> RunnerResult:
+        body = _openrouter_post(model_id, key, [
+            {"role": "system", "content": request["instruction"]},
+            {
+                "role": "user",
+                "content": (
+                    f"Task: {request['task']}\n\n"
+                    f"Supplied source:\n{request['supplied_source']}\n\n"
+                    "Return one JSON object with exactly the fields "
+                    f'"case_id" (value "{request["case_id"]}") and "proposed_text".'
+                ),
+            },
+        ])
+        content, observed = _assistant_content(body)
+        return RunnerResult(content=content, observed_model=observed)
+
+    return runner
+
+
+ADAPTERS = {
+    "offline-fixture": lambda model_id: offline_fixture_runner,
+    "openrouter": openrouter_runner_factory,
+}
+
+
+def runner_for(adapter: str, model_id: str) -> Callable[[dict], str]:
+    try:
+        factory = ADAPTERS[adapter]
+    except KeyError:
+        raise ValueError(f"Unknown Laboratory 03 adapter: {adapter}") from None
+    return factory(model_id)
+
+
+def instructions_for(
+    report_dir: Path,
+    course_root: Path,
+    *,
+    required_variants: set[str] | None = None,
+) -> dict[str, str]:
+    """Load only the instruction variants required by the current position."""
+    variants = required_variants or {"a", "b"}
+    unknown = variants - {"a", "b"}
+    if unknown:
+        raise ValueError(f"Unknown instruction variants: {sorted(unknown)}")
+    variant_a_path = course_root / "instructions" / "lab03" / "variant-a.txt"
+    variant_b_path = report_dir / "development" / "variant-b.txt"
+    try:
+        instructions = {}
+        if "a" in variants:
+            instructions["a"] = variant_a_path.read_text(encoding="utf-8")
+        if "b" in variants:
+            instructions["b"] = variant_b_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RuntimeError(f"Instruction variant cannot be read: {exc}") from exc
+    return instructions
+
+
+def cases_for(comparison_dir: Path, training_project: Path, report_dir: Path) -> dict[str, dict]:
+    """Resolve the case catalog for a comparison from its schedule kind."""
+    schedule = json.loads((comparison_dir / "schedule.json").read_text(encoding="utf-8"))
+    if schedule["kind"] == "held-out":
+        revealed = json.loads((comparison_dir / "revealed-family.json").read_text(encoding="utf-8"))
+        return {c["case_id"]: c for c in revealed["family"]["cases"]}
+    dev_family_path = (
+        training_project / "cases" / "lab03" / "development" / "dev-common-inputs.json"
+    )
+    dev_family = json.loads(dev_family_path.read_text(encoding="utf-8"))
+    return {c["case_id"]: c for c in dev_family["cases"]}

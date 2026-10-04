@@ -21,7 +21,7 @@
   <text x="430" y="287" text-anchor="middle" class="small">без приховування затвердження</text>
 
   <rect x="625" y="195" width="250" height="120" rx="15" class="group"/>
-  <text x="750" y="230" text-anchor="middle" class="label">Підказка та контекст</text>
+  <text x="750" y="230" text-anchor="middle" class="label">Промпт та контекст</text>
   <text x="750" y="262" text-anchor="middle" class="small">Обмежена інструкція, докази,</text>
   <text x="750" y="287" text-anchor="middle" class="small">приклади, контракт виходу</text>
 
