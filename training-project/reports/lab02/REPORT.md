@@ -6,7 +6,7 @@
 
 - URL форку: `https://github.com/AntonHritsai/ai-systems-design-course`
 - Назва особистої гілки: `lab02/anton-hritsai`
-- Повний хеш коміту зі свідченнями:
+- Повний хеш коміту зі свідченнями: `f04877e1db8eaeb1f359890f0cecc46b9dc59466`
 
 Стан на 2026-10-04: два живі кандидати отримано й перевірено, кандидат 02
 розглянуто та явно затверджено студентом, поняття застосовано один раз і
@@ -236,4 +236,3 @@ Validation, live-comparison, verification-report і згенерована Teams
 ![остаточний результат](screenshots/06-final-result.png)
 
 Рисунок — `06-final-result.png`
-
