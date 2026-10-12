@@ -62,6 +62,7 @@ from .lab03 import (
     validate_completion_detail,
     verify_lab03,
 )
+from .lab04 import DEFAULT_STAGE_B_FIXTURE, prepare_boundary_comparison, record_boundary_decision, verify_stage_b
 from .openai_compatible import run_openrouter
 from .report_submission import prepare_report
 from .workflow import (
@@ -378,6 +379,30 @@ def _build_parser() -> argparse.ArgumentParser:
     verify_lab03_cmd = lab03_commands.add_parser("verify", help="Commit-first verification of Laboratory 03.")
     verify_lab03_cmd.add_argument("--report-dir", type=Path, required=True)
     verify_lab03_cmd.add_argument("--final-commit", required=True)
+
+    lab04 = commands.add_parser("lab04", help="Run the Laboratory 04 retrieval workflow.")
+    lab04_commands = lab04.add_subparsers(dest="lab04_command", required=True)
+
+    prepare_boundaries = lab04_commands.add_parser(
+        "prepare-boundaries",
+        help="Apply both supplied chunking configurations and preserve every provenance link.",
+    )
+    prepare_boundaries.add_argument("--report-dir", type=Path, required=True)
+
+    record_boundary = lab04_commands.add_parser(
+        "record-boundary-decision",
+        help="Record the engineering team's selected chunking configuration.",
+    )
+    record_boundary.add_argument("--report-dir", type=Path, required=True)
+    record_boundary.add_argument("--chunking-configuration-id", required=True)
+    record_boundary.add_argument("--rationale", required=True)
+    record_boundary.add_argument("--by", required=True)
+
+    verify_stage_b_command = lab04_commands.add_parser(
+        "verify-stage-b",
+        help="Verify the Laboratory 04 Stage B evidence without making the human decision.",
+    )
+    verify_stage_b_command.add_argument("--report-dir", type=Path, required=True)
 
     return parser
 
@@ -866,6 +891,31 @@ def _run_lab03(args: argparse.Namespace) -> int:
     raise WorkflowError(f"Unknown Laboratory 03 command: {command}")
 
 
+def _run_lab04(args: argparse.Namespace) -> int:
+    command = args.lab04_command
+    if command == "prepare-boundaries":
+        path = prepare_boundary_comparison(fixture_path=DEFAULT_STAGE_B_FIXTURE, report_dir=args.report_dir)
+        print(f"Prepared the boundary comparison at {path}.")
+        return 0
+    if command == "record-boundary-decision":
+        path = record_boundary_decision(
+            report_dir=args.report_dir,
+            selected_chunking_configuration_id=args.chunking_configuration_id,
+            rationale=args.rationale,
+            student=args.by,
+        )
+        print(f"Recorded the boundary decision at {path}.")
+        return 0
+    if command == "verify-stage-b":
+        verification = verify_stage_b(report_dir=args.report_dir)
+        print(
+            "Laboratory 04 Stage B verification "
+            f"{verification['outcome']} for {verification['selected chunking configuration']}."
+        )
+        return 0
+    raise WorkflowError(f"Unknown Laboratory 04 command: {command}")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     handlers = {
@@ -876,6 +926,7 @@ def main(argv: list[str] | None = None) -> int:
         "prepare-report": _run_prepare_report,
         "lab02": _run_lab02,
         "lab03": _run_lab03,
+        "lab04": _run_lab04,
     }
     try:
         return handlers[args.command](args)
