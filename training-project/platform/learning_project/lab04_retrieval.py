@@ -116,7 +116,7 @@ class _WindowsFiles:
             if not self.kernel.GetFileInformationByHandleEx(handle, 9, self.ctypes.byref(info), self.ctypes.sizeof(info)):
                 raise self.ctypes.WinError(self.ctypes.get_last_error())
             if info.attributes & 0x400 or not info.attributes & 0x10:
-                raise OSError('Reparse point or non-directory in Stage C2 report path')
+                raise OSError('Reparse point or non-directory in report path')
             return handle
         except BaseException:
             self.close(handle)
@@ -140,7 +140,7 @@ class _WindowsFiles:
             if not self.kernel.WriteFile(handle, chunk, len(chunk), self.ctypes.byref(written), None):
                 raise self.ctypes.WinError(self.ctypes.get_last_error())
             if not written.value:
-                raise OSError('Zero-byte Stage C2 write')
+                raise OSError('Zero-byte stage write')
             offset += written.value
 
     def close(self, handle):
@@ -152,19 +152,19 @@ def _windows_filesystem():
     return _WindowsFiles()
 
 
-def _write_stage_c2_windows(output, content, report_dir, api):
-    """Hold every directory without delete sharing until the exclusive write completes."""
+def _write_stage_c2_windows(output, content, report_dir, api, stage_directory: str = STAGE_C2_DIRECTORY):
+    """Hold every directory component without delete sharing until the exclusive write completes."""
     report = PureWindowsPath(report_dir.absolute() if isinstance(report_dir, Path) else report_dir)
     destination = PureWindowsPath(output.absolute() if isinstance(output, Path) else output)
     if (not report.is_absolute() or not report.drive or '..' in report.parts or
             '..' in destination.parts or
-            destination.parent != report / STAGE_C2_DIRECTORY or
+            destination.parent != report / stage_directory or
             destination.name in ('', '.', '..') or ':' in destination.name or
             destination.name.rstrip(' .') != destination.name or
             destination.stem.upper() in {'CON', 'PRN', 'AUX', 'NUL',
                                            *(f'COM{i}' for i in range(1, 10)),
                                            *(f'LPT{i}' for i in range(1, 10))}):
-        raise WorkflowError('Invalid Windows Stage C2 output path.')
+        raise WorkflowError('Invalid Windows stage output path.')
     try:
         with ExitStack() as stack:
             current = PureWindowsPath(report.anchor)
@@ -173,7 +173,7 @@ def _write_stage_c2_windows(output, content, report_dir, api):
                     current = current / component
                 handle = api.open_directory(current)
                 stack.callback(api.close, handle)
-            stage = report / STAGE_C2_DIRECTORY
+            stage = report / stage_directory
             try:
                 api.make_directory(stage)
             except FileExistsError:
@@ -184,17 +184,24 @@ def _write_stage_c2_windows(output, content, report_dir, api):
             stack.callback(api.close, file_handle)
             api.write(file_handle, content.encode('utf-8'))
     except OSError as exc:
-        raise WorkflowError(f'Cannot securely create Stage C2 output at {output}: {exc}') from exc
+        raise WorkflowError(f'Cannot securely create stage output at {output}: {exc}') from exc
 
 
-def _write_stage_c2_output(output: Path, content: str, report_dir: Path) -> None:
-    """Create once beneath directory descriptors, never following a path after validation."""
+def write_secure_stage_output(output: Path, content: str, report_dir: Path, stage_directory: str) -> None:
+    """Create one report file under the named stage directory without path-following races."""
+    if stage_directory in ("", ".", "..") or "/" in stage_directory or "\\" in stage_directory:
+        raise WorkflowError("Invalid stage directory name.")
+    _write_stage_c2_output(output, content, report_dir, stage_directory=stage_directory)
+
+
+def _write_stage_c2_output(output: Path, content: str, report_dir: Path, stage_directory: str = STAGE_C2_DIRECTORY) -> None:
+    """Create one report file once beneath directory descriptors, never following a path after validation."""
     if os.name == "nt":
-        _write_stage_c2_windows(output, content, report_dir, _windows_filesystem())
+        _write_stage_c2_windows(output, content, report_dir, _windows_filesystem(), stage_directory=stage_directory)
         return
     if (os.name != "posix" or not all(hasattr(os, flag) for flag in ("O_DIRECTORY", "O_NOFOLLOW"))
             or not _OPEN_SUPPORTS_DIR_FD or os.mkdir not in os.supports_dir_fd):
-        raise WorkflowError("Secure Stage C2 output creation is unavailable on this platform.")
+        raise WorkflowError("Secure stage output creation is unavailable on this platform.")
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     try:
         with ExitStack() as stack:
@@ -204,17 +211,17 @@ def _write_stage_c2_output(output: Path, content: str, report_dir: Path) -> None
                 parent = os.open(component, directory_flags, dir_fd=parent)
                 stack.callback(os.close, parent)
             try:
-                os.mkdir(STAGE_C2_DIRECTORY, dir_fd=parent)
+                os.mkdir(stage_directory, dir_fd=parent)
             except FileExistsError:
                 pass
-            stage = os.open(STAGE_C2_DIRECTORY, directory_flags, dir_fd=parent)
+            stage = os.open(stage_directory, directory_flags, dir_fd=parent)
             stack.callback(os.close, stage)
             fd = os.open(output.name, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW,
                          0o666, dir_fd=stage)
             with os.fdopen(fd, "w", encoding="utf-8") as stream:
                 stream.write(content)
     except OSError as exc:
-        raise WorkflowError(f"Cannot securely create Stage C2 output at {output}: {exc}") from exc
+        raise WorkflowError(f"Cannot securely create stage output at {output}: {exc}") from exc
 
 
 def execute_retrieval(*, report_dir: Path, case_id: str, configuration_id: str,

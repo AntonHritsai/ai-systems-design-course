@@ -64,6 +64,7 @@ from .lab03 import (
 )
 from .lab04 import DEFAULT_STAGE_B_FIXTURE, prepare_boundary_comparison, record_boundary_decision, verify_stage_b
 from .lab04_retrieval import execute_retrieval, verify_stage_c2
+from . import lab04_evaluation
 from .lab04_index import (
     DEFAULT_STAGE_C1_FIXTURE,
     check_index_bindings,
@@ -462,6 +463,31 @@ def _build_parser() -> argparse.ArgumentParser:
     verify_c2.add_argument("--report-dir", type=Path, required=True)
     verify_c2.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
     verify_c2.add_argument("--model-dir", type=Path)
+
+    record_judgments = lab04_commands.add_parser("record-relevance-judgments", help="Record the designated human evaluator's relevance judgments.")
+    record_judgments.add_argument("--report-dir", type=Path, required=True)
+    record_judgments.add_argument("--judgments", type=Path, required=True)
+    record_judgments.add_argument("--evaluator", required=True)
+    compute_metrics = lab04_commands.add_parser("compute-retrieval-metrics", help="Compute precision@k and recall@k with explicit numerators and denominators.")
+    compute_metrics.add_argument("--report-dir", type=Path, required=True)
+    compute_metrics.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    compute_metrics.add_argument("--model-dir", type=Path)
+    verify_c3 = lab04_commands.add_parser("verify-stage-c3", help="Independently recompute the Stage C3 metric arithmetic.")
+    verify_c3.add_argument("--report-dir", type=Path, required=True)
+    verify_c3.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    verify_c3.add_argument("--model-dir", type=Path)
+    measure_op = lab04_commands.add_parser("measure-operational-evidence", help="Measure the declared operational-evidence items per configuration.")
+    measure_op.add_argument("--report-dir", type=Path, required=True)
+    measure_op.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    measure_op.add_argument("--model-dir", type=Path)
+    measure_op.add_argument("--runs", type=int, default=3)
+    decision = lab04_commands.add_parser("record-configuration-decision", help="Record one bounded configuration decision.")
+    decision.add_argument("--report-dir", type=Path, required=True)
+    decision.add_argument("--selected-configuration", required=True, choices=[
+        "lexical retrieval", "embedding-based retrieval", "hybrid retrieval",
+        "lexical retrieval followed by embedding-based reranking"])
+    decision.add_argument("--rationale", required=True)
+    decision.add_argument("--decided-by", required=True)
 
     return parser
 
@@ -1021,6 +1047,32 @@ def _run_lab04(args: argparse.Namespace) -> int:
     if command == "verify-stage-c2":
         verification = verify_stage_c2(report_dir=args.report_dir, c1_fixture_path=args.fixture, model_dir=args.model_dir)
         print(f"Laboratory 04 Stage C2 verification {verification['outcome']} for {verification['verified outputs']} outputs.")
+        return 0
+    if command == "record-relevance-judgments":
+        path = lab04_evaluation.record_relevance_judgments(report_dir=args.report_dir,
+            judgments_path=args.judgments, evaluator=args.evaluator)
+        print(f"Relevance judgments recorded at {path}.")
+        return 0
+    if command == "compute-retrieval-metrics":
+        path = lab04_evaluation.compute_retrieval_metrics(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Retrieval metrics recorded at {path}.")
+        return 0
+    if command == "verify-stage-c3":
+        verification = lab04_evaluation.verify_stage_c3(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Laboratory 04 Stage C3 verification {verification['outcome']} for {verification['verified metric entries']} metric entries.")
+        return 0
+    if command == "measure-operational-evidence":
+        path = lab04_evaluation.measure_operational_evidence(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir, runs=args.runs)
+        print(f"Operational evidence recorded at {path}.")
+        return 0
+    if command == "record-configuration-decision":
+        path = lab04_evaluation.record_configuration_decision(report_dir=args.report_dir,
+            selected_configuration_id=args.selected_configuration, rationale=args.rationale,
+            decided_by=args.decided_by)
+        print(f"Configuration decision recorded at {path}.")
         return 0
     raise WorkflowError(f"Unknown Laboratory 04 command: {command}")
 
