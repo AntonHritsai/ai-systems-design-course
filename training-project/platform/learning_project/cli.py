@@ -63,6 +63,7 @@ from .lab03 import (
     verify_lab03,
 )
 from .lab04 import DEFAULT_STAGE_B_FIXTURE, prepare_boundary_comparison, record_boundary_decision, verify_stage_b
+from .lab04_retrieval import execute_retrieval, verify_stage_c2
 from .lab04_index import (
     DEFAULT_STAGE_C1_FIXTURE,
     check_index_bindings,
@@ -448,6 +449,19 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     verify_stage_c1_command.add_argument("--report-dir", type=Path, required=True)
     verify_stage_c1_command.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    execute = lab04_commands.add_parser("execute-retrieval", help="Produce one ranked candidate output.")
+    execute.add_argument("--report-dir", type=Path, required=True)
+    execute.add_argument("--case-id", required=True, choices=["Evaluation Case A", "Evaluation Case B"])
+    execute.add_argument("--configuration-id", required=True, choices=[
+        "lexical retrieval", "embedding-based retrieval", "hybrid retrieval",
+        "lexical retrieval followed by embedding-based reranking"])
+    execute.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    execute.add_argument("--model-dir", type=Path)
+    verify_c2 = lab04_commands.add_parser("verify-stage-c2", help="Independently recompute the eight retrieval outputs.")
+    verify_c2.add_argument("--report-dir", type=Path, required=True)
+    verify_c2.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    verify_c2.add_argument("--model-dir", type=Path)
 
     return parser
 
@@ -998,6 +1012,15 @@ def _run_lab04(args: argparse.Namespace) -> int:
     if command == "verify-stage-c1":
         verification = verify_stage_c1(report_dir=args.report_dir, fixture_path=args.fixture)
         print(f"Laboratory 04 Stage C1 verification {verification['outcome']} for {verification['index version']}.")
+        return 0
+    if command == "execute-retrieval":
+        path = execute_retrieval(report_dir=args.report_dir, c1_fixture_path=args.fixture,
+                                 case_id=args.case_id, configuration_id=args.configuration_id, model_dir=args.model_dir)
+        print(f"Ranked candidate output at {path}.")
+        return 0
+    if command == "verify-stage-c2":
+        verification = verify_stage_c2(report_dir=args.report_dir, c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Laboratory 04 Stage C2 verification {verification['outcome']} for {verification['verified outputs']} outputs.")
         return 0
     raise WorkflowError(f"Unknown Laboratory 04 command: {command}")
 
