@@ -63,6 +63,14 @@ from .lab03 import (
     verify_lab03,
 )
 from .lab04 import DEFAULT_STAGE_B_FIXTURE, prepare_boundary_comparison, record_boundary_decision, verify_stage_b
+from .lab04_index import (
+    DEFAULT_STAGE_C1_FIXTURE,
+    check_index_bindings,
+    fetch_embedding_model,
+    prepare_retrieval_unit_embeddings,
+    prepare_vector_index,
+    verify_stage_c1,
+)
 from .openai_compatible import run_openrouter
 from .report_submission import prepare_report
 from .workflow import (
@@ -403,6 +411,43 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Verify the Laboratory 04 Stage B evidence without making the human decision.",
     )
     verify_stage_b_command.add_argument("--report-dir", type=Path, required=True)
+
+    fetch_model = lab04_commands.add_parser(
+        "fetch-embedding-model",
+        help="Acquire the pinned local embedding model once and record its provenance.",
+    )
+    fetch_model.add_argument("--model-dir", type=Path, required=True)
+    fetch_model.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    prepare_embeddings = lab04_commands.add_parser(
+        "prepare-embeddings",
+        help="Produce one compatible retrieval-unit embedding for every included retrieval unit.",
+    )
+    prepare_embeddings.add_argument("--report-dir", type=Path, required=True)
+    prepare_embeddings.add_argument("--model-dir", type=Path)
+    prepare_embeddings.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    prepare_index = lab04_commands.add_parser(
+        "prepare-index",
+        help="Bind the compatible embeddings and their associations into one vector index.",
+    )
+    prepare_index.add_argument("--report-dir", type=Path, required=True)
+    prepare_index.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    check_bindings = lab04_commands.add_parser(
+        "check-index-bindings",
+        help="Compare the required bindings with the recorded index manifest before use.",
+    )
+    check_bindings.add_argument("--report-dir", type=Path, required=True)
+    check_bindings.add_argument("--required-retrieval-configuration-id", required=True)
+    check_bindings.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    verify_stage_c1_command = lab04_commands.add_parser(
+        "verify-stage-c1",
+        help="Verify the Laboratory 04 Stage C1 evidence without executing retrieval.",
+    )
+    verify_stage_c1_command.add_argument("--report-dir", type=Path, required=True)
+    verify_stage_c1_command.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
 
     return parser
 
@@ -912,6 +957,47 @@ def _run_lab04(args: argparse.Namespace) -> int:
             "Laboratory 04 Stage B verification "
             f"{verification['outcome']} for {verification['selected chunking configuration']}."
         )
+        return 0
+    if command == "fetch-embedding-model":
+        provenance = fetch_embedding_model(model_dir=args.model_dir, fixture_path=args.fixture)
+        print(
+            f"Acquired the declared local embedding model {provenance['embedding model']} "
+            f"at revision {provenance['model revision']} in {args.model_dir}."
+        )
+        return 0
+    if command == "prepare-embeddings":
+        path = prepare_retrieval_unit_embeddings(
+            report_dir=args.report_dir,
+            fixture_path=args.fixture,
+            model_dir=args.model_dir,
+        )
+        print(f"Prepared the retrieval-unit embeddings at {path}.")
+        return 0
+    if command == "prepare-index":
+        path = prepare_vector_index(report_dir=args.report_dir, fixture_path=args.fixture)
+        print(f"Prepared the vector index at {path}.")
+        return 0
+    if command == "check-index-bindings":
+        record = check_index_bindings(
+            report_dir=args.report_dir,
+            fixture_path=args.fixture,
+            required_retrieval_configuration_id=args.required_retrieval_configuration_id,
+        )
+        if record["outcome"] == "admissible":
+            print(
+                f"The index version {record['index version']} is admissible for "
+                f"{record['required retrieval configuration id']}."
+            )
+        else:
+            print(
+                f"The index version {record['index version']} is stale for "
+                f"{record['required retrieval configuration id']}; failed binding: "
+                f"{record['failed binding']}. Rebuild condition: {record['rebuild condition']}."
+            )
+        return 0
+    if command == "verify-stage-c1":
+        verification = verify_stage_c1(report_dir=args.report_dir, fixture_path=args.fixture)
+        print(f"Laboratory 04 Stage C1 verification {verification['outcome']} for {verification['index version']}.")
         return 0
     raise WorkflowError(f"Unknown Laboratory 04 command: {command}")
 

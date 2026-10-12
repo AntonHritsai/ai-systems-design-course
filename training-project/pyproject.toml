@@ -5,6 +5,9 @@ description = "Public cumulative training project for AI Engineering laboratorie
 requires-python = ">=3.11"
 dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
 
+[project.optional-dependencies]
+lab04 = ["model2vec>=0.10,<1"]
+
 [project.scripts]
 learning-project = "learning_project.cli:main"
 

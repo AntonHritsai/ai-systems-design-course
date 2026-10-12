@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "representation_contract": {
+    "embedding model": "minishlab/potion-base-8M",
+    "model revision": "bf8b056651a2c21b8d2565580b8569da283cab23",
+    "representation version": "course-static-embed-v1",
+    "embedding dimension": 256,
+    "embedding space": "potion-base-8M@bf8b056651a2c21b8d2565580b8569da283cab23/course-static-embed-v1",
+    "vector-similarity measure": "cosine similarity with the untransformed [-1, 1] score convention",
+    "input normalization": "Unicode NFC followed by stripping leading and trailing whitespace; an empty normalized input is refused"
+  },
+  "index_version": "vector-index-course-seed-v1",
+  "declared_bindings": [
+    "the canonical knowledge collection version",
+    "the chunking configuration that realizes the retrieval-unit definition recorded in the retrieval contract",
+    "the embedding model and representation version",
+    "the required embedding dimension and embedding space",
+    "a stable retrieval identifier and provenance link for every retrieval unit"
+  ],
+  "required_retrieval_configurations": [
+    {
+      "required_retrieval_configuration_id": "required-course-seed-v1",
+      "the canonical knowledge collection version": "course-seed-v1",
+      "the chunking configuration that realizes the retrieval-unit definition recorded in the retrieval contract": "the chunking configuration recorded in the laboratory boundary decision",
+      "the embedding model and representation version": "the declared course representation contract",
+      "the required embedding dimension and embedding space": "the declared course representation contract",
+      "a stable retrieval identifier and provenance link for every retrieval unit": true
+    },
+    {
+      "required_retrieval_configuration_id": "required-course-seed-v2",
+      "the canonical knowledge collection version": "course-seed-v2",
+      "the chunking configuration that realizes the retrieval-unit definition recorded in the retrieval contract": "the chunking configuration recorded in the laboratory boundary decision",
+      "the embedding model and representation version": "the declared course representation contract",
+      "the required embedding dimension and embedding space": "the declared course representation contract",
+      "a stable retrieval identifier and provenance link for every retrieval unit": true
+    }
+  ]
+}
