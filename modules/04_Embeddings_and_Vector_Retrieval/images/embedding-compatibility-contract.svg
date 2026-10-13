@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700" role="img" aria-labelledby="title desc">
+  <title id="title">One representation contract produces compatible embeddings</title>
+  <desc id="desc">Three declared source fragments enter the same course-embed-demo model at representation version v1. The model produces three-dimensional retrieval-unit embeddings in one shared embedding space. A dashed path shows that a future text query must enter the same model and representation version to produce a compatible query embedding. The diagram does not show an index, similarity search, ranking, or relevance judgment.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+    .small{font-size:16px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .input{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .model{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .vector{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .future{fill:#f8fafc;stroke:#64748b;stroke-width:2;stroke-dasharray:8 6}
+    .space{fill:#faf5ff;stroke:#7e22ce;stroke-width:2;stroke-dasharray:8 6}
+    .inputflow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .outputflow{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .futureflow{fill:none;stroke:#64748b;stroke-width:3;stroke-dasharray:7 6;marker-end:url(#gray-arrow)}
+  </style>
+
+  <text x="50" y="48">Preparation time — one declared representation contract</text>
+
+  <rect x="55" y="95" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="128">F-A-72-1</text>
+  <text x="82" y="155" class="small">declared source fragment</text>
+
+  <rect x="55" y="215" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="248">F-A-72-2</text>
+  <text x="82" y="275" class="small">declared source fragment</text>
+
+  <rect x="55" y="335" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="368">F-A-72-3</text>
+  <text x="82" y="395" class="small">declared source fragment</text>
+
+  <rect x="455" y="175" width="310" height="162" rx="12" class="model"/>
+  <text x="495" y="217">Embedding model</text>
+  <text x="495" y="250">course-embed-demo</text>
+  <text x="495" y="282" class="small">representation version: v1</text>
+  <text x="495" y="308" class="small">output dimension: 3</text>
+
+  <path d="M345 136H405V215H455" class="inputflow"/>
+  <path d="M345 256H455" class="inputflow"/>
+  <path d="M345 376H405V297H455" class="inputflow"/>
+
+  <rect x="850" y="72" width="500" height="405" rx="16" class="space"/>
+  <text x="880" y="108">Shared embedding space</text>
+  <text x="880" y="134" class="small">course-embed-demo/v1 in R³</text>
+
+  <rect x="905" y="165" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="194">embedding(F-A-72-1)</text>
+  <text x="930" y="218" class="small">(0.82, 0.18, 0.42)</text>
+
+  <rect x="905" y="263" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="292">embedding(F-A-72-2)</text>
+  <text x="930" y="316" class="small">(0.76, 0.31, 0.47)</text>
+
+  <rect x="905" y="361" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="390">embedding(F-A-72-3)</text>
+  <text x="930" y="414" class="small">(0.22, 0.88, 0.19)</text>
+
+  <path d="M765 220H820V198H905" class="outputflow"/>
+  <path d="M765 256H830V296H905" class="outputflow"/>
+  <path d="M765 292H820V394H905" class="outputflow"/>
+
+  <rect x="55" y="520" width="290" height="88" rx="9" class="future"/>
+  <text x="82" y="554">Future text query</text>
+  <text x="82" y="582" class="small">query time — Section 5</text>
+
+  <rect x="455" y="520" width="310" height="88" rx="9" class="future"/>
+  <text x="488" y="554">Same model and version</text>
+  <text x="488" y="582" class="small">required for compatibility</text>
+
+  <rect x="905" y="520" width="385" height="88" rx="9" class="future"/>
+  <text x="934" y="554">Compatible query embedding</text>
+  <text x="934" y="582" class="small">not produced in this section</text>
+
+  <path d="M345 564H455" class="futureflow"/>
+  <path d="M765 564H905" class="futureflow"/>
+
+  <text x="55" y="660" class="small">Solid blue: declared retrieval-unit inputs · Solid green: retrieval-unit embeddings</text>
+  <text x="55" y="687" class="small">Dashed gray: future compatible query path; no index, similarity search, ranking, or relevance judgment</text>
+</svg>

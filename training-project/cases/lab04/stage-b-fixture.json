@@ -7,10 +7,10 @@
       "canonical knowledge collection version": "course-seed-v1",
       "retrieval unit and its boundary rule": "source fragment under the chunking configuration selected during Laboratory 04 Stage B",
       "retrieval configuration": "one of the four compared retrieval configurations declared below",
-      "ranked candidate output": "ordered stable retrieval identifiers produced by the retrieval operation during Authoring Stage C2",
+      "ranked candidate output": "ordered stable retrieval identifiers produced by the retrieval operation in Student Step 8",
       "evaluator-only expected result": "declared separately inside the evaluator-only information of each evaluation case",
       "relevance judging basis": "declared separately inside the evaluator-only information of each evaluation case",
-      "designated human evaluator": "the student acting as the designated human evaluator during Authoring Stage C3",
+      "designated human evaluator": "the student acting as the designated human evaluator in Student Step 9",
       "observation boundary": "the ranked candidate output of the retrieval operation"
     },
     "retrieval configuration roles": {
