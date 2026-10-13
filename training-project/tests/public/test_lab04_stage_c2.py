@@ -48,6 +48,15 @@ def setup(directory):
 
 
 class RetrievalTests(unittest.TestCase):
+    def test_missing_stage_b_evidence_raises_workflow_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(WorkflowError, "Cannot read Stage B evidence"):
+                lab04_retrieval.execute_retrieval(
+                    report_dir=Path(tmp) / "report",
+                    case_id="Evaluation Case A",
+                    configuration_id="lexical retrieval",
+                )
+
     def test_lexical_case_a_empty_and_case_b_ranked_with_provenance(self):
         with tempfile.TemporaryDirectory() as tmp:
             report, c1 = setup(Path(tmp))

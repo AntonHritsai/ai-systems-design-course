@@ -45,7 +45,6 @@ def _context(report_dir: Path, b_fixture: Path, c_fixture: Path) -> tuple[dict, 
     expected = _build_boundary_comparison(fixture)
     try:
         actual = json.loads((report_dir / "stage-b" / "boundary-comparison.json").read_text())
-        import yaml
         decision = yaml.safe_load((report_dir / "stage-b" / "boundary-decision.yaml").read_text())
     except (OSError, ValueError, yaml.YAMLError) as exc:
         raise WorkflowError(f"Cannot read Stage B evidence: {exc}") from exc

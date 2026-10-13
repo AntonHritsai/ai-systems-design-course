@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import os
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from learning_project import lab04_index
@@ -229,6 +231,39 @@ class Lab04StageC1IndexTests(unittest.TestCase):
 
 
 class Lab04StageC1CommandLineTests(unittest.TestCase):
+    def test_binding_check_output_classifies_the_vector_index_not_its_version(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            report_dir, fixture_path = _prepare_embeddings(directory, _StubEncoder())
+            self.assertEqual(
+                main(["lab04", "prepare-index", "--report-dir", str(report_dir), "--fixture", str(fixture_path)]),
+                0,
+            )
+
+            output = io.StringIO()
+            with redirect_stdout(output):
+                self.assertEqual(
+                    main(
+                        [
+                            "lab04",
+                            "check-index-bindings",
+                            "--report-dir",
+                            str(report_dir),
+                            "--fixture",
+                            str(fixture_path),
+                            "--required-retrieval-configuration-id",
+                            "required-course-seed-v2",
+                        ]
+                    ),
+                    0,
+                )
+
+            self.assertIn(
+                "The vector index identified by index version vector-index-course-seed-v1 is stale for required-course-seed-v2",
+                output.getvalue(),
+            )
+            self.assertNotIn("The index version vector-index-course-seed-v1 is stale", output.getvalue())
+
     def test_cli_prepares_the_index_and_reports_both_binding_checks(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)

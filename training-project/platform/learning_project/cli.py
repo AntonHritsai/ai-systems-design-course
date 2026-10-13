@@ -1025,12 +1025,12 @@ def _run_lab04(args: argparse.Namespace) -> int:
         )
         if record["outcome"] == "admissible":
             print(
-                f"The index version {record['index version']} is admissible for "
+                f"The vector index identified by index version {record['index version']} is admissible for "
                 f"{record['required retrieval configuration id']}."
             )
         else:
             print(
-                f"The index version {record['index version']} is stale for "
+                f"The vector index identified by index version {record['index version']} is stale for "
                 f"{record['required retrieval configuration id']}; failed binding: "
                 f"{record['failed binding']}. Rebuild condition: {record['rebuild condition']}."
             )
