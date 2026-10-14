@@ -4,7 +4,7 @@
 
 ## Goal
 
-Compare a lexical retrieval configuration with an embedding-based retrieval configuration, record relevance judgments under a declared relevance judging basis, compute `precision@1` and `recall@1` from explicit numerators and denominators, and state one bounded configuration decision for the two declared evaluation cases.
+Obtain the evidence that the engineering team needs to decide whether the candidate retrieval configuration — `embedding-based retrieval` — should replace the experiment-baseline retrieval configuration — `lexical retrieval` — for the evaluated use of the retrieval operation over the canonical knowledge collection `course-seed-v1`.
 
 ## Tasks
 
