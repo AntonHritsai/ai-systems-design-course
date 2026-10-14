@@ -66,11 +66,11 @@
 | Development case | Випадок для розроблення |
 | Digest-bound | Прив’язаний дайджестом |
 | Direct model coupling | Пряме зв’язування з моделлю |
-| Embedding dimension | Розмірність векторного подання |
-| Embedding model | Модель векторного подання |
-| Embedding space | Простір векторних подань |
-| Embedding-based retrieval | Пошук на основі векторних подань |
-| Embeddings | Векторні подання |
+| Embedding dimension | Розмірність ембедингу |
+| Embedding model | Модель ембедингу |
+| Embedding space | Простір ембедингів |
+| Embedding-based retrieval | Пошук на основі ембедингів |
+| Embeddings | Ембединги |
 | Evaluation case | Випадок для оцінювання |
 | Evaluation case for the retrieval operation | Випадок для оцінювання операції інформаційного пошуку |
 | Evaluation set | Набір даних для оцінювання |
@@ -145,7 +145,7 @@
 | Provenance link | Зв’язок походження |
 | Provider-neutral | Нейтральний щодо постачальника |
 | Provisioning log | Журнал налаштування |
-| Query embedding | Векторне подання запиту |
+| Query embedding | Ембединг запиту |
 | Querying | Виконання запиту |
 | Quota | Квота |
 | Ranked candidate output | Ранжований кандидатний вихід |

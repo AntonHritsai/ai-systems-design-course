@@ -255,6 +255,7 @@ The following concepts define the representation contract used by embedding-base
 
 - **Embedding:** a numerical vector representation produced by one declared embedding model for one supported input. The vector as a whole represents properties learned by the model; an individual coordinate is not a human-readable topic, word, or fact unless the model documentation explicitly establishes such an interpretation.
 - **Embedding model:** the configured transformation that receives supported input data and produces embeddings in one embedding space. An embedding model is not the retrieval operation: it represents an input but does not search a collection, select retrieval units, or make a relevance judgment.
+- **Representation version:** the identifier of the exact encoding behavior accepted by the engineering team, including any versioned model behavior that affects the output coordinates. It is not the embedding model name, not a model revision, and not one embedding.
 - **Representation contract:** the declared set of embedding-model identity, representation version, embedding dimension, embedding space, and vector-similarity measure that makes query and retrieval-unit embeddings comparable. This local expression names the representation part of a retrieval configuration; it is not the retrieval contract defined in Section 1.
 - **Embedding vector:** the ordered list of numerical coordinates produced as one embedding. The order is part of the representation; rearranging coordinates produces a different vector.
 - **Embedding dimension:** the fixed number of coordinates in every embedding produced under one declared model and representation version. Equal dimension is necessary for coordinate-wise comparison, but equal dimension alone does not make embeddings from different models compatible.
@@ -266,11 +267,11 @@ The following concepts define the representation contract used by embedding-base
 - **Semantic similarity:** the case-bounded relationship estimated between one text query and one retrieval unit through the declared embedding model, representation version, and vector-similarity measure. This section's query–retrieval-unit relationship differs from Module 03's answer–reference semantic-similarity measurement because the compared objects and observation boundary differ.
 - **Similarity score:** the numerical result produced by the vector-similarity measure for one compatible query-embedding–retrieval-unit-embedding pair. A similarity score is ranking evidence under one retrieval configuration; it is not a probability and does not prove relevance, truth, source support, completeness, or authorization.
 
-The distinction between representation and judgment is essential. The embedding model produces vectors, the vector-similarity measure produces a score, and the human evaluator applies the evaluation case's relevance judging basis to a retrieval unit. None of these three operations transfers the authority of another.
+The embedding model produces vectors, the vector-similarity measure produces a score, and the human evaluator applies the evaluation case's relevance judging basis to a retrieval unit. None of these three operations transfers the authority of another.
 
 ### 3.2 One representation contract creates comparable embeddings
 
-A retrieval configuration must identify the embedding model and representation version that produced every embedding it compares. The representation version names the exact representation behavior accepted by the engineering team, including any versioned model behavior that affects the output coordinates. If the engineering team changes the embedding model or representation version, the resulting embeddings belong to another embedding space even when both outputs have the same dimension.
+A retrieval configuration must identify the embedding model and representation version that produced every embedding it compares. If the engineering team changes the embedding model or the representation version, the resulting embeddings belong to another embedding space even when both outputs have the same dimension.
 
 Figure 3.1 shows the shared representation contract for retrieval-unit embeddings and the compatible query embedding that a later query-time operation may produce.
 
