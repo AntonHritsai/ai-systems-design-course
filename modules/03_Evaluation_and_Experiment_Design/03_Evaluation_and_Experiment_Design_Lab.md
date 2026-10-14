@@ -372,9 +372,11 @@ A higher accepted-by-rubric count cannot override a critical failure that violat
 ### Step 9: Preserve one reviewed regression case
 
 The course's designated human evaluator approved each case-specific expected behavior before generation. The student acting as the human evaluator applies the approved expected behavior in Step 7 and does not retrospectively approve or rewrite the expected behavior after seeing a response.
+
 Acting separately as the engineering team in Step 9, the student traces an unfavorable human-evaluator judgment through the supplied source, approved case-specific expected behavior, model-backed concept-proposal-operation input, returned response, structural result, and evaluation-rubric rule.
 
 The engineering team records an observed response as a configuration defect only when the complete trace confirms that the named configuration produced the semantic failure. If the complete trace instead identifies an evaluator, expected-behavior, reference, or rubric defect, or leaves the defect location unresolved, the engineering team does not promote the observed response to a regression case and uses the authored-fixture branch below for the mandatory regression exercise.
+
 For a confirmed configuration defect, create `student/lab03/regression.yaml` with the original scheduled-attempt and anonymous-label identities:
 
 ```yaml
