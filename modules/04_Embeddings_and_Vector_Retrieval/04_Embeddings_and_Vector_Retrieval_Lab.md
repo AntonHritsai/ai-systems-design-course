@@ -51,11 +51,34 @@ After completing the laboratory, the student can:
 
 Run all commands from `AI_Systems_Design/training-project`.
 
-The course supplies `course-seed-v1` (canonical knowledge records `R-A` and `R-B`), two chunking configurations (`sentence-pair-v1` and `fixed-72-v1`), two evaluation cases (`Evaluation Case A` and `Evaluation Case B`) with their text queries and evaluator-only expected results, four retrieval configurations, and the local embedding model `minishlab/potion-base-8M` at revision `bf8b056651a2c21b8d2565580b8569da283cab23`.
+The course supplies:
 
-The Stage C1 authority is `cases/lab04/stage-c1-fixture.json`. Its `representation_contract` declares embedding model `minishlab/potion-base-8M`, model revision `bf8b056651a2c21b8d2565580b8569da283cab23`, representation version `course-static-embed-v1`, embedding dimension `256`, and embedding space `potion-base-8M@bf8b056651a2c21b8d2565580b8569da283cab23/course-static-embed-v1`. Its `required_retrieval_configurations` entries supply the required canonical knowledge collection version. For a binding check, the required chunking value comes from `reports/lab04/stage-b/boundary-decision.yaml`; the required per-unit stable retrieval identifiers and provenance links come from the selected source fragments in `reports/lab04/stage-b/boundary-comparison.json`.
+- canonical knowledge records `R-A` and `R-B` as `course-seed-v1`;
+- two chunking configurations, `sentence-pair-v1` and `fixed-72-v1`;
+- two evaluation cases, `Evaluation Case A` and `Evaluation Case B`, with their text queries and evaluator-only expected results;
+- four compared retrieval configurations;
+- the local embedding model `minishlab/potion-base-8M` at revision `bf8b056651a2c21b8d2565580b8569da283cab23`.
 
-The student performs execution of every declared laboratory operation, inspection of every returned retrieval unit and provenance link, recording of relevance judgments under the declared relevance judging basis, verification of every explicit numerator and denominator, and the bounded configuration decision.
+The Stage C1 authority is `cases/lab04/stage-c1-fixture.json`. Its `representation_contract` declares:
+
+- embedding model `minishlab/potion-base-8M`;
+- model revision `bf8b056651a2c21b8d2565580b8569da283cab23`;
+- representation version `course-static-embed-v1`;
+- embedding dimension `256`;
+- embedding space `potion-base-8M@bf8b056651a2c21b8d2565580b8569da283cab23/course-static-embed-v1`.
+
+Its `required_retrieval_configurations` entries supply the required canonical knowledge collection version. For a binding check:
+
+- the required chunking value comes from `reports/lab04/stage-b/boundary-decision.yaml`;
+- the required per-unit stable retrieval identifiers and provenance links come from the selected source fragments in `reports/lab04/stage-b/boundary-comparison.json`.
+
+The student performs:
+
+- execution of every declared laboratory operation;
+- inspection of every returned retrieval unit and provenance link;
+- recording of relevance judgments under the declared relevance judging basis;
+- verification of every explicit numerator and denominator;
+- the bounded configuration decision.
 
 ## Steps
 
@@ -160,7 +183,11 @@ The command reads the chunking configuration recorded in `reports/lab04/stage-b/
 
 **Expected result:** `sentence-pair-v1` produces one retrieval-unit embedding for `F-A` and one for `F-B`; every recorded retrieval-unit embedding has 256 coordinates and records embedding space `potion-base-8M@bf8b056651a2c21b8d2565580b8569da283cab23/course-static-embed-v1`.
 
-The command stops without writing an artifact when the mandatory local embedding model is unavailable and names the acquisition command to run once. The command also stops when the loaded model does not match the declared representation contract, when a retrieval-unit embedding carries a different embedding dimension, or when a retrieval-unit embedding contains a non-finite coordinate.
+The command stops without writing an artifact when the mandatory local embedding model is unavailable, and it names the acquisition command to run once. The command also stops when:
+
+- the loaded model does not match the declared representation contract;
+- a retrieval-unit embedding carries a different embedding dimension;
+- a retrieval-unit embedding contains a non-finite coordinate.
 
 ### Student Step 6 — Prepare the vector index
 
@@ -174,11 +201,23 @@ Windows PowerShell:
 uv run learning-project lab04 prepare-index --report-dir reports/lab04
 ```
 
-The command binds the compatible retrieval-unit embeddings and their associations into one versioned vector index. It obtains the canonical knowledge collection version from `reports/lab04/stage-c1/retrieval-unit-embeddings.json`, where Student Step 5 copied that value from `reports/lab04/stage-b/boundary-comparison.json` for the selected Stage B source fragments. In this laboratory implementation, the vector index's derived searchable state consists of the vectors in `reports/lab04/stage-c1/retrieval-unit-embeddings.json` together with the associations recorded in `reports/lab04/stage-c1/index-manifest.json`; the index manifest is the record of the vector index, not the vector index itself. The index manifest records the index version, the collection-version binding, the chunking configuration, the embedding model and representation version, the required embedding dimension and embedding space, and one metadata binding for every indexed retrieval unit.
+The command binds the compatible retrieval-unit embeddings and their associations into one versioned vector index. It obtains the canonical knowledge collection version from `reports/lab04/stage-c1/retrieval-unit-embeddings.json`, where Student Step 5 copied that value from `reports/lab04/stage-b/boundary-comparison.json` for the selected Stage B source fragments. In this laboratory implementation, the vector index's derived searchable state consists of the vectors in `reports/lab04/stage-c1/retrieval-unit-embeddings.json` together with the associations recorded in `reports/lab04/stage-c1/index-manifest.json`; the index manifest is the record of the vector index, not the vector index itself. The index manifest records:
+
+- the index version;
+- the collection-version binding;
+- the chunking configuration;
+- the embedding model and representation version;
+- the required embedding dimension and embedding space;
+- one metadata binding for every indexed retrieval unit.
 
 The vector index is derived searchable state. The vector index is neither a canonical knowledge record nor a member of the canonical knowledge collection, and preparing the vector index does not authorize a change to the canonical knowledge collection.
 
-**Expected result:** the index manifest records the index version `vector-index-course-seed-v1`, the canonical knowledge collection version `course-seed-v1`, the chunking configuration `sentence-pair-v1`, and two metadata bindings, one for `F-A` and one for `F-B`.
+**Expected result:** the index manifest records:
+
+- the index version `vector-index-course-seed-v1`;
+- the canonical knowledge collection version `course-seed-v1`;
+- the chunking configuration `sentence-pair-v1`;
+- two metadata bindings, one for `F-A` and one for `F-B`.
 
 The command refuses to replace an existing `index-manifest.json` and refuses to index a set of retrieval units that does not cover the chunking configuration recorded in the boundary decision.
 
@@ -198,7 +237,10 @@ uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v2
 ```
 
-**Expected result:** the check for `required-course-seed-v1` prints that the vector index identified by index version `vector-index-course-seed-v1` is admissible and writes `reports/lab04/stage-c1/binding-check-required-course-seed-v1.json`. The check for `required-course-seed-v2` prints that the vector index identified by the same index version is stale for that required retrieval configuration, names `the canonical knowledge collection version` as the failed binding, states the rebuild condition, and writes `reports/lab04/stage-c1/binding-check-required-course-seed-v2.json`. Each check classifies and does not rebuild the index.
+**Expected result:** each check classifies the vector index and does not rebuild the index:
+
+- the check for `required-course-seed-v1` prints that the vector index identified by index version `vector-index-course-seed-v1` is admissible and writes `reports/lab04/stage-c1/binding-check-required-course-seed-v1.json`;
+- the check for `required-course-seed-v2` prints that the vector index identified by the same index version is stale for that required retrieval configuration, names `the canonical knowledge collection version` as the failed binding, states the rebuild condition, and writes `reports/lab04/stage-c1/binding-check-required-course-seed-v2.json`.
 
 Verify the Stage C1 evidence:
 
@@ -406,7 +448,19 @@ uv run learning-project lab04 record-configuration-decision --report-dir reports
   --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
 ```
 
-The command requires a substantive rationale and writes `reports/lab04/stage-c3/configuration-decision.json`. The configuration decision is bounded to Evaluation Case A and Evaluation Case B, canonical knowledge collection version `course-seed-v1`, the `sentence-pair-v1` retrieval-unit boundary, the declared relevance judging basis, and `k = 1`. The decision does not establish the quality of the candidate concept definition produced downstream, does not establish that the complete user workflow achieves its intended result, and does not authorize any change to the canonical knowledge collection.
+The command requires a substantive rationale and writes `reports/lab04/stage-c3/configuration-decision.json`. The configuration decision is bounded to:
+
+- Evaluation Case A and Evaluation Case B;
+- canonical knowledge collection version `course-seed-v1`;
+- the `sentence-pair-v1` retrieval-unit boundary;
+- the declared relevance judging basis;
+- `k = 1`.
+
+The decision does not:
+
+- establish the quality of the candidate concept definition produced downstream;
+- establish that the complete user workflow achieves its intended result;
+- authorize any change to the canonical knowledge collection.
 
 The selected configuration in your run follows from your own recorded metrics and operational evidence. If your ranked candidate outputs and relevance judgments differ from the archived reference, supply the configuration and rationale that the evidence supports.
 
@@ -424,7 +478,20 @@ uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model
 
 **Expected result:** `Laboratory 04 Stage C3 verification passed for 8 metric entries.` The verifier independently recomputes the metric arithmetic from the recorded relevance judgments and the verified eight ranked candidate outputs and compares the result with the recorded retrieval metrics. The verifier records no relevance judgment of its own.
 
-If the command returns a nonzero exit code, stop before submitting. Preserve the generated Stage C3 files, the Stage C2 ranked candidate outputs, the Stage B and Stage C1 evidence, and the error output for diagnosis. Do not overwrite recorded judgments or metrics, silently delete evidence to force a rerun, or interpret a retrieval metric beyond its declared numerator, denominator, evaluation cases, and observation boundary.
+If the command returns a nonzero exit code, stop before submitting.
+
+Preserve:
+
+- the generated Stage C3 files;
+- the Stage C2 ranked candidate outputs;
+- the Stage B and Stage C1 evidence;
+- the error output for diagnosis.
+
+Do not:
+
+- overwrite recorded judgments or metrics;
+- silently delete evidence to force a rerun;
+- interpret a retrieval metric beyond its declared numerator, denominator, evaluation cases, and observation boundary.
 
 ## Final verification
 
@@ -458,4 +525,15 @@ Laboratory-specific artifacts:
 
 ## Optional extension
 
-Repeat Student Steps 1–3 in a fresh `reports/lab04-fixed72` directory, changing each `--report-dir` argument accordingly. In Student Step 3, set `--chunking-configuration-id fixed-72-v1` and update `--rationale` to justify that selection. Then run Student Steps 5–8 against `reports/lab04-fixed72`, complete Stage C2 verification, and compare the resulting ranked candidate outputs with the `sentence-pair-v1` run. Stop before Student Step 9: do not record relevance judgments, compute retrieval metrics, record a configuration decision, or run Stage C3 verification unless separately reviewed evaluation cases and evaluator-only expected results declare `fixed-72-v1` as their retrieval-unit definition. Explain how the boundary rule choice changes the retrieval-unit set and why the supplied `sentence-pair-v1` evaluator-only expected results cannot evaluate the `fixed-72-v1` outputs.
+Repeat Student Steps 1–3 in a fresh `reports/lab04-fixed72` directory, changing each `--report-dir` argument accordingly.
+
+- In Student Step 3, set `--chunking-configuration-id fixed-72-v1` and update `--rationale` to justify that selection.
+- Run Student Steps 5–8 against `reports/lab04-fixed72`, complete Stage C2 verification, and compare the resulting ranked candidate outputs with the `sentence-pair-v1` run.
+- Explain how the boundary rule choice changes the retrieval-unit set, and why the supplied `sentence-pair-v1` evaluator-only expected results cannot evaluate the `fixed-72-v1` outputs.
+
+Stop before Student Step 9 unless separately reviewed evaluation cases and their evaluator-only expected results declare `fixed-72-v1` as the retrieval-unit definition of those cases. At that stopping point, do not:
+
+- record relevance judgments;
+- compute retrieval metrics;
+- record a configuration decision;
+- run Stage C3 verification.

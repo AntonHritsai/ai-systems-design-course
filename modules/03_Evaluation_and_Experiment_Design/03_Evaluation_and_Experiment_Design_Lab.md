@@ -16,7 +16,19 @@ Obtain the evidence that the engineering team needs to decide whether candidate 
 
 ## Expected result
 
-The `reports/lab03/` and `student/lab03/` evidence package contains four authored-fixture judgments, four development attempts, one declared intended factor, one frozen shared experiment protocol, one related-scenario group of held-out cases provided and controlled by the course, sixteen held-out scheduled attempts, one source-grounded absolute assessment for each structurally valid returned response, five successive counts for each configuration, one bounded configuration decision, one reviewed regression case, and a passing `lab03 verify` result bound to the final student commit.
+The `reports/lab03/` and `student/lab03/` evidence package contains:
+
+- four authored-fixture judgments;
+- four development attempts;
+- one declared intended factor;
+- one frozen shared experiment protocol;
+- one related-scenario group of held-out cases provided and controlled by the course;
+- sixteen held-out scheduled attempts;
+- one source-grounded absolute assessment for each structurally valid returned response;
+- five successive counts for each configuration;
+- one bounded configuration decision;
+- one reviewed regression case;
+- a passing `lab03 verify` result bound to the final student commit.
 
 Variant B is not required to have more accepted-by-rubric responses than Variant A. The held-out comparison record may justify `recommend-b`, `retain-a`, `reject-both`, or `seek-more-evidence`. Laboratory 03 does not modify the accepted `Structured Output` concept and does not authorize deployment or an accepted-knowledge write.
 
