@@ -16,18 +16,19 @@ Obtain the evidence that the engineering team needs to decide whether the candid
 
 ## Expected result
 
-A completed report directory `reports/lab04/` that passes `verify-stage-c3` and contains:
+After completing the laboratory, the student holds the evidence that the bounded configuration decision rests on:
 
-- `stage-b/boundary-comparison.json`;
-- `stage-b/boundary-decision.yaml`;
-- `stage-c1/retrieval-unit-embeddings.json`;
-- `stage-c1/index-manifest.json`;
-- two pre-use binding check records;
-- eight ranked candidate output files in `stage-c2/`;
-- `stage-c3/relevance-judgments.json`;
-- `stage-c3/retrieval-metrics.json`;
-- `stage-c3/operational-evidence.json`;
-- `stage-c3/configuration-decision.json`.
+- `stage-b/boundary-comparison.json` — both supplied chunking configurations applied to the canonical knowledge records, with the source fragments each configuration selects;
+- `stage-b/boundary-decision.yaml` — the recorded choice of the boundary rule that preserves the meaning the declared evaluation cases require;
+- `stage-c1/retrieval-unit-embeddings.json` — one compatible retrieval-unit embedding per retrieval unit of the selected chunking configuration;
+- `stage-c1/index-manifest.json` — the versioned record of the vector index: its canonical knowledge collection version, its representation bindings, its chunking binding, and the stable retrieval identifier and provenance link of every indexed retrieval unit;
+- two pre-use binding check records — the vector index classified as admissible for a compatible required retrieval configuration and as stale for an incompatible one;
+- eight ranked candidate output files in `stage-c2/` — the ranked retrieval units that each of the four compared retrieval configurations returned for each of the two declared evaluation cases;
+- `stage-c3/relevance-judgments.json` — one relevance judgment with its rationale for every returned retrieval unit and evaluation case;
+- `stage-c3/retrieval-metrics.json` — `precision@1` and `recall@1` for every retrieval configuration and evaluation case, computed from explicit numerators and denominators;
+- `stage-c3/operational-evidence.json` — the measured query latency of each retrieval configuration, kept outside every metric numerator and denominator;
+- `stage-c3/configuration-decision.json` — one bounded configuration decision with its decision boundary and its authority boundary;
+- the `reports/lab04/` report directory passing `verify-stage-c3`.
 
 ## Expected competencies
 
