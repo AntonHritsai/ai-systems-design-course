@@ -64,7 +64,10 @@ The documented live route is `openrouter/free`. Free availability can change. No
 
 Route unavailability is handled by these branches:
 
-- if neither Variant A development attempt returns a response, follow the Step 3 `honest-partial` branch; If at least one Variant A development attempt returns a response but both Variant B development attempts have failed outcomes whose `error.json` records identify route-wide unavailability, preserve all four terminal development attempts, skip Steps 5–9, record `honest-partial` completion in Step 10 with `stopped_at_step: "Step 4"`, and continue with Step 11 only. Route unavailability after the held-out comparison begins follows the Step 6 recovery branch. 
+- if neither Variant A development attempt returns a response, follow the Step 3 `honest-partial` branch;
+- if at least one Variant A development attempt returns a response but both Variant B development attempts have failed outcomes whose `error.json` records identify route-wide unavailability, preserve all four terminal development attempts, skip Steps 5–9, record `honest-partial` completion in Step 10 with `stopped_at_step: "Step 4"`, and continue with Step 11 only;
+- route unavailability after the held-out comparison begins follows the Step 6 recovery branch.
+
 An offline authored fixture is not current model-behavior evidence for Variant A or Variant B.
 
 Keep provider credentials outside commands, files, screenshots, commits, and submissions. The student supplies the external-vault path only to the Laboratory 02 admission check in Step 1. Laboratory 03 must not create or modify a file in the external vault.
@@ -368,10 +371,10 @@ A higher accepted-by-rubric count cannot override a critical failure that violat
 
 ### Step 9: Preserve one reviewed regression case
 
-The course's designated human evaluator approved each case-specific expected behavior before generation. The student acting as the human evaluator applies the approved expected behavior in Step 7 and does not retrospectively approve or rewrite the expected behavior after seeing a response. 
+The course's designated human evaluator approved each case-specific expected behavior before generation. The student acting as the human evaluator applies the approved expected behavior in Step 7 and does not retrospectively approve or rewrite the expected behavior after seeing a response.
 Acting separately as the engineering team in Step 9, the student traces an unfavorable human-evaluator judgment through the supplied source, approved case-specific expected behavior, model-backed concept-proposal-operation input, returned response, structural result, and evaluation-rubric rule.
 
-The engineering team records an observed response as a configuration defect only when the complete trace confirms that the named configuration produced the semantic failure. If the complete trace instead identifies an evaluator, expected-behavior, reference, or rubric defect, or leaves the defect location unresolved, the engineering team does not promote the observed response to a regression case and uses the authored-fixture branch below for the mandatory regression exercise. 
+The engineering team records an observed response as a configuration defect only when the complete trace confirms that the named configuration produced the semantic failure. If the complete trace instead identifies an evaluator, expected-behavior, reference, or rubric defect, or leaves the defect location unresolved, the engineering team does not promote the observed response to a regression case and uses the authored-fixture branch below for the mandatory regression exercise.
 For a confirmed configuration defect, create `student/lab03/regression.yaml` with the original scheduled-attempt and anonymous-label identities:
 
 ```yaml
