@@ -16,7 +16,18 @@ Obtain the evidence that the engineering team needs to decide whether the candid
 
 ## Expected result
 
-A completed report directory `reports/lab04/` containing: `stage-b/boundary-comparison.json`, `stage-b/boundary-decision.yaml`, `stage-c1/retrieval-unit-embeddings.json`, `stage-c1/index-manifest.json`, two pre-use binding check records, eight ranked candidate output files in `stage-c2/`, `stage-c3/relevance-judgments.json`, `stage-c3/retrieval-metrics.json`, `stage-c3/operational-evidence.json`, and `stage-c3/configuration-decision.json`, all passing `verify-stage-c3`.
+A completed report directory `reports/lab04/` that passes `verify-stage-c3` and contains:
+
+- `stage-b/boundary-comparison.json`;
+- `stage-b/boundary-decision.yaml`;
+- `stage-c1/retrieval-unit-embeddings.json`;
+- `stage-c1/index-manifest.json`;
+- two pre-use binding check records;
+- eight ranked candidate output files in `stage-c2/`;
+- `stage-c3/relevance-judgments.json`;
+- `stage-c3/retrieval-metrics.json`;
+- `stage-c3/operational-evidence.json`;
+- `stage-c3/configuration-decision.json`.
 
 ## Expected competencies
 

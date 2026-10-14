@@ -16,7 +16,18 @@
 
 ## Очікуваний результат
 
-Заповнений каталог звітів `reports/lab04/`, що містить: `stage-b/boundary-comparison.json`, `stage-b/boundary-decision.yaml`, `stage-c1/retrieval-unit-embeddings.json`, `stage-c1/index-manifest.json`, два записи перевірки прив’язок перед використанням, вісім файлів ранжованого кандидатного виходу в `stage-c2/`, `stage-c3/relevance-judgments.json`, `stage-c3/retrieval-metrics.json`, `stage-c3/operational-evidence.json` та `stage-c3/configuration-decision.json`, які успішно проходять `verify-stage-c3`.
+Заповнений каталог звітів `reports/lab04/`, який успішно проходить `verify-stage-c3` і містить:
+
+- `stage-b/boundary-comparison.json`;
+- `stage-b/boundary-decision.yaml`;
+- `stage-c1/retrieval-unit-embeddings.json`;
+- `stage-c1/index-manifest.json`;
+- два записи перевірки прив’язок перед використанням;
+- вісім файлів ранжованого кандидатного виходу в `stage-c2/`;
+- `stage-c3/relevance-judgments.json`;
+- `stage-c3/retrieval-metrics.json`;
+- `stage-c3/operational-evidence.json`;
+- `stage-c3/configuration-decision.json`.
 
 ## Очікувані компетентності
 
