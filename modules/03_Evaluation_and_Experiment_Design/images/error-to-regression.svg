@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="465" viewBox="0 0 1200 465" role="img" aria-labelledby="title desc"><title id="title">From observed error to reviewed regression</title><desc id="desc">An observed failure moves to diagnosis, then human review of expected behavior, then a versioned regression case retained among the development cases, then a bounded change and reevaluation. A return arrow starts the next change-and-regression-check iteration.</desc>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker><marker id="loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker></defs>
+<style>text{font-family:Arial,sans-serif;fill:#172554;font-size:19px}.small{font-size:16px;fill:#334155}.box{fill:#eff6ff;stroke:#2563eb;stroke-width:2}.review{fill:#f0fdf4;stroke:#15803d;stroke-width:2}.line{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#arr)}.return{fill:none;stroke:#15803d;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#loop)}</style>
+<rect x="25" y="100" width="200" height="92" rx="9" class="box"/><text x="50" y="140">Observed failure</text><text x="54" y="169" class="small">preserve evidence</text>
+<rect x="263" y="100" width="200" height="92" rx="9" class="box"/><text x="305" y="140">Diagnosis</text><text x="280" y="169" class="small">locate boundary</text>
+<rect x="501" y="100" width="200" height="92" rx="9" class="review"/><text x="531" y="140">Human review</text><text x="521" y="169" class="small">expected behavior</text>
+<rect x="739" y="100" width="200" height="92" rx="9" class="box"/><text x="757" y="132">Versioned case</text><text x="770" y="158" class="small">provenance retained</text><text x="771" y="181" class="small">use: development</text>
+<rect x="977" y="100" width="200" height="92" rx="9" class="box"/><text x="1008" y="140">Bounded change</text><text x="992" y="169" class="small">and reevaluation</text>
+<path d="M225 146H263" class="line"/><path d="M463 146H501" class="line"/><path d="M701 146H739" class="line"/><path d="M939 146H977" class="line"/>
+<text x="27" y="76" class="small">Observed outputs do not become truth labels without source and rubric review.</text>
+<path d="M1077 192V327H128V192" class="return"/><text x="337" y="313" class="small">next iteration: change the configuration and record every new run</text>
+<text x="25" y="420" class="small">Solid blue: artifact/decision sequence · Dashed green: new evaluation cycle</text>
+</svg>

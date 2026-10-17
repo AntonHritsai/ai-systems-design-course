@@ -62,6 +62,17 @@ from .lab03 import (
     validate_completion_detail,
     verify_lab03,
 )
+from .lab04 import DEFAULT_STAGE_B_FIXTURE, prepare_boundary_comparison, record_boundary_decision, verify_stage_b
+from .lab04_retrieval import execute_retrieval, verify_stage_c2
+from . import lab04_evaluation
+from .lab04_index import (
+    DEFAULT_STAGE_C1_FIXTURE,
+    check_index_bindings,
+    fetch_embedding_model,
+    prepare_retrieval_unit_embeddings,
+    prepare_vector_index,
+    verify_stage_c1,
+)
 from .openai_compatible import run_openrouter
 from .report_submission import prepare_report
 from .workflow import (
@@ -378,6 +389,105 @@ def _build_parser() -> argparse.ArgumentParser:
     verify_lab03_cmd = lab03_commands.add_parser("verify", help="Commit-first verification of Laboratory 03.")
     verify_lab03_cmd.add_argument("--report-dir", type=Path, required=True)
     verify_lab03_cmd.add_argument("--final-commit", required=True)
+
+    lab04 = commands.add_parser("lab04", help="Run the Laboratory 04 retrieval workflow.")
+    lab04_commands = lab04.add_subparsers(dest="lab04_command", required=True)
+
+    prepare_boundaries = lab04_commands.add_parser(
+        "prepare-boundaries",
+        help="Apply both supplied chunking configurations and preserve every provenance link.",
+    )
+    prepare_boundaries.add_argument("--report-dir", type=Path, required=True)
+
+    record_boundary = lab04_commands.add_parser(
+        "record-boundary-decision",
+        help="Record the engineering team's selected chunking configuration.",
+    )
+    record_boundary.add_argument("--report-dir", type=Path, required=True)
+    record_boundary.add_argument("--chunking-configuration-id", required=True)
+    record_boundary.add_argument("--rationale", required=True)
+    record_boundary.add_argument("--by", required=True)
+
+    verify_stage_b_command = lab04_commands.add_parser(
+        "verify-stage-b",
+        help="Verify the Laboratory 04 Stage B evidence without making the human decision.",
+    )
+    verify_stage_b_command.add_argument("--report-dir", type=Path, required=True)
+
+    fetch_model = lab04_commands.add_parser(
+        "fetch-embedding-model",
+        help="Acquire the pinned local embedding model once and record its provenance.",
+    )
+    fetch_model.add_argument("--model-dir", type=Path, required=True)
+    fetch_model.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    prepare_embeddings = lab04_commands.add_parser(
+        "prepare-embeddings",
+        help="Produce one compatible retrieval-unit embedding for every included retrieval unit.",
+    )
+    prepare_embeddings.add_argument("--report-dir", type=Path, required=True)
+    prepare_embeddings.add_argument("--model-dir", type=Path)
+    prepare_embeddings.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    prepare_index = lab04_commands.add_parser(
+        "prepare-index",
+        help="Bind the compatible embeddings and their associations into one vector index.",
+    )
+    prepare_index.add_argument("--report-dir", type=Path, required=True)
+    prepare_index.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    check_bindings = lab04_commands.add_parser(
+        "check-index-bindings",
+        help="Compare the required bindings with the recorded index manifest before use.",
+    )
+    check_bindings.add_argument("--report-dir", type=Path, required=True)
+    check_bindings.add_argument("--required-retrieval-configuration-id", required=True)
+    check_bindings.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    verify_stage_c1_command = lab04_commands.add_parser(
+        "verify-stage-c1",
+        help="Verify the Laboratory 04 Stage C1 evidence without executing retrieval.",
+    )
+    verify_stage_c1_command.add_argument("--report-dir", type=Path, required=True)
+    verify_stage_c1_command.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+
+    execute = lab04_commands.add_parser("execute-retrieval", help="Produce one ranked candidate output.")
+    execute.add_argument("--report-dir", type=Path, required=True)
+    execute.add_argument("--case-id", required=True, choices=["Evaluation Case A", "Evaluation Case B"])
+    execute.add_argument("--configuration-id", required=True, choices=[
+        "lexical retrieval", "embedding-based retrieval", "hybrid retrieval",
+        "lexical retrieval followed by embedding-based reranking"])
+    execute.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    execute.add_argument("--model-dir", type=Path)
+    verify_c2 = lab04_commands.add_parser("verify-stage-c2", help="Independently recompute the eight retrieval outputs.")
+    verify_c2.add_argument("--report-dir", type=Path, required=True)
+    verify_c2.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    verify_c2.add_argument("--model-dir", type=Path)
+
+    record_judgments = lab04_commands.add_parser("record-relevance-judgments", help="Record the designated human evaluator's relevance judgments.")
+    record_judgments.add_argument("--report-dir", type=Path, required=True)
+    record_judgments.add_argument("--judgments", type=Path, required=True)
+    record_judgments.add_argument("--evaluator", required=True)
+    compute_metrics = lab04_commands.add_parser("compute-retrieval-metrics", help="Compute precision@k and recall@k with explicit numerators and denominators.")
+    compute_metrics.add_argument("--report-dir", type=Path, required=True)
+    compute_metrics.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    compute_metrics.add_argument("--model-dir", type=Path)
+    verify_c3 = lab04_commands.add_parser("verify-stage-c3", help="Independently recompute the Stage C3 metric arithmetic.")
+    verify_c3.add_argument("--report-dir", type=Path, required=True)
+    verify_c3.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    verify_c3.add_argument("--model-dir", type=Path)
+    measure_op = lab04_commands.add_parser("measure-operational-evidence", help="Measure the declared operational-evidence items per configuration.")
+    measure_op.add_argument("--report-dir", type=Path, required=True)
+    measure_op.add_argument("--fixture", type=Path, default=DEFAULT_STAGE_C1_FIXTURE)
+    measure_op.add_argument("--model-dir", type=Path)
+    measure_op.add_argument("--runs", type=int, default=3)
+    decision = lab04_commands.add_parser("record-configuration-decision", help="Record one bounded configuration decision.")
+    decision.add_argument("--report-dir", type=Path, required=True)
+    decision.add_argument("--selected-configuration", required=True, choices=[
+        "lexical retrieval", "embedding-based retrieval", "hybrid retrieval",
+        "lexical retrieval followed by embedding-based reranking"])
+    decision.add_argument("--rationale", required=True)
+    decision.add_argument("--decided-by", required=True)
 
     return parser
 
@@ -866,6 +976,107 @@ def _run_lab03(args: argparse.Namespace) -> int:
     raise WorkflowError(f"Unknown Laboratory 03 command: {command}")
 
 
+def _run_lab04(args: argparse.Namespace) -> int:
+    command = args.lab04_command
+    if command == "prepare-boundaries":
+        path = prepare_boundary_comparison(fixture_path=DEFAULT_STAGE_B_FIXTURE, report_dir=args.report_dir)
+        print(f"Prepared the boundary comparison at {path}.")
+        return 0
+    if command == "record-boundary-decision":
+        path = record_boundary_decision(
+            report_dir=args.report_dir,
+            selected_chunking_configuration_id=args.chunking_configuration_id,
+            rationale=args.rationale,
+            student=args.by,
+        )
+        print(f"Recorded the boundary decision at {path}.")
+        return 0
+    if command == "verify-stage-b":
+        verification = verify_stage_b(report_dir=args.report_dir)
+        print(
+            "Laboratory 04 Stage B verification "
+            f"{verification['outcome']} for {verification['selected chunking configuration']}."
+        )
+        return 0
+    if command == "fetch-embedding-model":
+        provenance = fetch_embedding_model(model_dir=args.model_dir, fixture_path=args.fixture)
+        print(
+            f"Acquired the declared local embedding model {provenance['embedding model']} "
+            f"at revision {provenance['model revision']} in {args.model_dir}."
+        )
+        return 0
+    if command == "prepare-embeddings":
+        path = prepare_retrieval_unit_embeddings(
+            report_dir=args.report_dir,
+            fixture_path=args.fixture,
+            model_dir=args.model_dir,
+        )
+        print(f"Prepared the retrieval-unit embeddings at {path}.")
+        return 0
+    if command == "prepare-index":
+        path = prepare_vector_index(report_dir=args.report_dir, fixture_path=args.fixture)
+        print(f"Prepared the vector index at {path}.")
+        return 0
+    if command == "check-index-bindings":
+        record = check_index_bindings(
+            report_dir=args.report_dir,
+            fixture_path=args.fixture,
+            required_retrieval_configuration_id=args.required_retrieval_configuration_id,
+        )
+        if record["outcome"] == "admissible":
+            print(
+                f"The vector index identified by index version {record['index version']} is admissible for "
+                f"{record['required retrieval configuration id']}."
+            )
+        else:
+            print(
+                f"The vector index identified by index version {record['index version']} is stale for "
+                f"{record['required retrieval configuration id']}; failed binding: "
+                f"{record['failed binding']}. Rebuild condition: {record['rebuild condition']}."
+            )
+        return 0
+    if command == "verify-stage-c1":
+        verification = verify_stage_c1(report_dir=args.report_dir, fixture_path=args.fixture)
+        print(f"Laboratory 04 Stage C1 verification {verification['outcome']} for {verification['index version']}.")
+        return 0
+    if command == "execute-retrieval":
+        path = execute_retrieval(report_dir=args.report_dir, c1_fixture_path=args.fixture,
+                                 case_id=args.case_id, configuration_id=args.configuration_id, model_dir=args.model_dir)
+        print(f"Ranked candidate output at {path}.")
+        return 0
+    if command == "verify-stage-c2":
+        verification = verify_stage_c2(report_dir=args.report_dir, c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Laboratory 04 Stage C2 verification {verification['outcome']} for {verification['verified outputs']} outputs.")
+        return 0
+    if command == "record-relevance-judgments":
+        path = lab04_evaluation.record_relevance_judgments(report_dir=args.report_dir,
+            judgments_path=args.judgments, evaluator=args.evaluator)
+        print(f"Relevance judgments recorded at {path}.")
+        return 0
+    if command == "compute-retrieval-metrics":
+        path = lab04_evaluation.compute_retrieval_metrics(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Retrieval metrics recorded at {path}.")
+        return 0
+    if command == "verify-stage-c3":
+        verification = lab04_evaluation.verify_stage_c3(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir)
+        print(f"Laboratory 04 Stage C3 verification {verification['outcome']} for {verification['verified metric entries']} metric entries.")
+        return 0
+    if command == "measure-operational-evidence":
+        path = lab04_evaluation.measure_operational_evidence(report_dir=args.report_dir,
+            c1_fixture_path=args.fixture, model_dir=args.model_dir, runs=args.runs)
+        print(f"Operational evidence recorded at {path}.")
+        return 0
+    if command == "record-configuration-decision":
+        path = lab04_evaluation.record_configuration_decision(report_dir=args.report_dir,
+            selected_configuration_id=args.selected_configuration, rationale=args.rationale,
+            decided_by=args.decided_by)
+        print(f"Configuration decision recorded at {path}.")
+        return 0
+    raise WorkflowError(f"Unknown Laboratory 04 command: {command}")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     handlers = {
@@ -876,6 +1087,7 @@ def main(argv: list[str] | None = None) -> int:
         "prepare-report": _run_prepare_report,
         "lab02": _run_lab02,
         "lab03": _run_lab03,
+        "lab04": _run_lab04,
     }
     try:
         return handlers[args.command](args)

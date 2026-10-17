@@ -8,6 +8,14 @@ The student reads these rules together with the laboratory being performed. Micr
 
 The report records the work that was performed, not only the final results. It describes the course of execution in enough detail that another reader can follow what was done, in which order, and why.
 
+The supplied `REPORT.md` is an instructional template. Its opening directions and section prompts tell the student what content to write; they are not report content. Before submission, the student replaces or removes every instructional prompt while preserving all supplied report headings.
+
+The report is formal technical documentation. It uses third-person or impersonal constructions and does not use first-person narration such as `я`, `ми`, `мною`, `нами`, `мій`, `наш`, or equivalent first-person forms. For example, the report states that "студент виконав перевірку", "перевірку виконано", or "результат підтверджує", rather than "я виконав перевірку" or "ми отримали результат".
+
+Every report must contain a `Мета роботи` section near the beginning and a `Висновки` section at the end. `Мета роботи` states the desired capability or system state from the laboratory rather than listing the procedure. `Висновки` identifies what the student completed and obtained, then explicitly states whether the goal was achieved fully, achieved partially, or not achieved. That judgment must refer to the report evidence. For a partially achieved or unachieved goal, the conclusions also identify the missing result and its reason.
+
+A report without either mandatory section, without an explicit goal-attainment judgment in `Висновки`, or written as a first-person narrative is incomplete and is returned for correction.
+
 The report includes the required screenshots named in that laboratory. Each screenshot must uniquely identify the author and the date of capture: the operating-system account or GitHub login and the system date must be visible in the image (`Get-Date` or `date` in the same terminal, or the visible clock). A caption in the report does not replace that visible identification.
 
 The submitted package identifies the student's GitHub fork, personal branch, and complete commit hash. Normally all three appear in the report identity section. When a laboratory explicitly uses commit-first verification and therefore cannot place a commit's own hash inside that commit, the committed source report contains the fork and branch, while the generated verification evidence and Microsoft Teams cover message contain the complete final hash.

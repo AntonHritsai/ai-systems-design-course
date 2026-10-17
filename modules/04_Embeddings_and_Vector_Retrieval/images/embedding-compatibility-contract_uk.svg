@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700" role="img" aria-labelledby="title desc">
+  <title id="title">Один контракт представлення створює сумісні ембединги</title>
+  <desc id="desc">Три оголошені фрагменти джерела надходять до тієї самої моделі course-embed-demo з версією представлення v1. Модель створює тривимірні ембединги одиниць інформаційного пошуку в одному спільному просторі ембедингів. Штриховий шлях показує, що майбутній текстовий запит має надійти до тієї самої моделі з тією самою версією представлення для створення сумісного ембедингу запиту. Схема не показує індексу, пошуку за подібністю, ранжування або судження про релевантність.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+    .small{font-size:16px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .input{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .model{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .vector{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .future{fill:#f8fafc;stroke:#64748b;stroke-width:2;stroke-dasharray:8 6}
+    .space{fill:#faf5ff;stroke:#7e22ce;stroke-width:2;stroke-dasharray:8 6}
+    .inputflow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .outputflow{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .futureflow{fill:none;stroke:#64748b;stroke-width:3;stroke-dasharray:7 6;marker-end:url(#gray-arrow)}
+  </style>
+
+  <text x="50" y="48">Час підготовки — один оголошений контракт представлення</text>
+
+  <rect x="55" y="95" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="128">F-A-72-1</text>
+  <text x="82" y="155" class="small">оголошений фрагмент джерела</text>
+
+  <rect x="55" y="215" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="248">F-A-72-2</text>
+  <text x="82" y="275" class="small">оголошений фрагмент джерела</text>
+
+  <rect x="55" y="335" width="290" height="82" rx="9" class="input"/>
+  <text x="82" y="368">F-A-72-3</text>
+  <text x="82" y="395" class="small">оголошений фрагмент джерела</text>
+
+  <rect x="455" y="175" width="310" height="162" rx="12" class="model"/>
+  <text x="495" y="217">Модель ембедингу</text>
+  <text x="495" y="250">course-embed-demo</text>
+  <text x="495" y="282" class="small">версія представлення: v1</text>
+  <text x="495" y="308" class="small">розмірність виходу: 3</text>
+
+  <path d="M345 136H405V215H455" class="inputflow"/>
+  <path d="M345 256H455" class="inputflow"/>
+  <path d="M345 376H405V297H455" class="inputflow"/>
+
+  <rect x="850" y="72" width="500" height="405" rx="16" class="space"/>
+  <text x="880" y="108">Спільний простір ембедингів</text>
+  <text x="880" y="134" class="small">course-embed-demo/v1 у R³</text>
+
+  <rect x="905" y="165" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="194">ембединг(F-A-72-1)</text>
+  <text x="930" y="218" class="small">(0.82, 0.18, 0.42)</text>
+
+  <rect x="905" y="263" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="292">ембединг(F-A-72-2)</text>
+  <text x="930" y="316" class="small">(0.76, 0.31, 0.47)</text>
+
+  <rect x="905" y="361" width="385" height="66" rx="9" class="vector"/>
+  <text x="930" y="390">ембединг(F-A-72-3)</text>
+  <text x="930" y="414" class="small">(0.22, 0.88, 0.19)</text>
+
+  <path d="M765 220H820V198H905" class="outputflow"/>
+  <path d="M765 256H830V296H905" class="outputflow"/>
+  <path d="M765 292H820V394H905" class="outputflow"/>
+
+  <rect x="55" y="520" width="290" height="88" rx="9" class="future"/>
+  <text x="82" y="554">Майбутній текстовий запит</text>
+  <text x="82" y="582" class="small">час запиту — розділ 5</text>
+
+  <rect x="455" y="520" width="310" height="88" rx="9" class="future"/>
+  <text x="488" y="554">Та сама модель ембедингу</text>
+  <text x="488" y="582" class="small">і версія представлення</text>
+
+  <rect x="905" y="520" width="385" height="88" rx="9" class="future"/>
+  <text x="934" y="554">Сумісний ембединг запиту</text>
+  <text x="934" y="582" class="small">не створюється в цьому розділі</text>
+
+  <path d="M345 564H455" class="futureflow"/>
+  <path d="M765 564H905" class="futureflow"/>
+
+  <text x="55" y="660" class="small">Суцільні сині: оголошені входи одиниць інформаційного пошуку · Суцільні зелені: ембединги одиниць інформаційного пошуку</text>
+  <text x="55" y="687" class="small">Сірий штриховий: майбутній сумісний шлях запиту; без індексу, пошуку за подібністю, ранжування чи судження про релевантність</text>
+</svg>

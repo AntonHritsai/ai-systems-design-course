@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="780" viewBox="0 0 1400 780" role="img" aria-labelledby="title desc">
+  <title id="title">Preparation and stale-binding lifecycle of a versioned vector index</title>
+  <desc id="desc">A canonical collection version and chunking configuration determine source fragments. Compatible embeddings, stable retrieval identifiers, and provenance enter index preparation and produce a versioned vector index. A later collection version creates a binding mismatch with the old index, making that index stale for the new retrieval configuration and activating a rebuild condition. No query, similarity search, ranking, or relevance judgment is shown.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b91c1c"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:19px}
+    .heading{font-size:23px;font-weight:700}
+    .small{font-size:15px;fill:#334155}
+    .tiny{font-size:13px;fill:#475569}
+    .source{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .derived{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .index{fill:#faf5ff;stroke:#7e22ce;stroke-width:2.5}
+    .stale{fill:#fef2f2;stroke:#b91c1c;stroke-width:2.5}
+    .flow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .build{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .failure{fill:none;stroke:#b91c1c;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#red-arrow)}
+  </style>
+
+  <text x="50" y="45" class="heading">Preparation time — derived searchable state</text>
+
+  <rect x="50" y="90" width="260" height="120" rx="12" class="source"/>
+  <text x="78" y="126">Canonical collection</text>
+  <text x="78" y="156">course-seed-v1</text>
+  <text x="78" y="184" class="small">knowledge-owner state</text>
+
+  <rect x="360" y="90" width="260" height="120" rx="12" class="source"/>
+  <text x="388" y="126">Declared source fragments</text>
+  <text x="388" y="156" class="small">chunking configuration B</text>
+  <text x="388" y="184" class="small">stable retrieval identifiers</text>
+
+  <rect x="670" y="70" width="300" height="160" rx="12" class="derived"/>
+  <text x="700" y="108">Prepared associations</text>
+  <text x="700" y="139" class="small">compatible embeddings</text>
+  <text x="700" y="166" class="small">stable retrieval identifiers</text>
+  <text x="700" y="193" class="small">provenance links</text>
+
+  <rect x="1020" y="90" width="300" height="120" rx="12" class="operation"/>
+  <text x="1050" y="132">Index preparation</text>
+  <text x="1050" y="162" class="small">bind verified inputs</text>
+  <text x="1050" y="188" class="small">before query time</text>
+
+  <path d="M310 150H360" class="flow"/>
+  <path d="M620 150H670" class="flow"/>
+  <path d="M970 150H1020" class="build"/>
+
+  <rect x="825" y="290" width="520" height="240" rx="16" class="index"/>
+  <text x="855" y="326" class="heading">Vector index: vector-index-demo-v1</text>
+  <text x="855" y="360" class="tiny">the canonical knowledge collection version: course-seed-v1</text>
+  <text x="855" y="386" class="tiny">the chunking configuration that realizes the retrieval-unit</text>
+  <text x="855" y="412" class="tiny">definition recorded in the retrieval contract: B</text>
+  <text x="855" y="438" class="tiny">the embedding model and representation version: course-embed-demo/v1</text>
+  <text x="855" y="464" class="tiny">the required embedding dimension and embedding space: 3</text>
+  <text x="855" y="490" class="tiny">a stable retrieval identifier and provenance link</text>
+  <text x="855" y="516" class="tiny">for every retrieval unit</text>
+  <path d="M1170 210V260H1070V290" class="build"/>
+
+  <text x="50" y="570" class="heading">Binding change — stale for a new retrieval configuration</text>
+
+  <rect x="50" y="610" width="280" height="105" rx="12" class="source"/>
+  <text x="80" y="649">Canonical collection</text>
+  <text x="80" y="680">course-seed-v2</text>
+
+  <rect x="420" y="610" width="330" height="105" rx="12" class="stale"/>
+  <text x="450" y="649">Binding mismatch</text>
+  <text x="450" y="679" class="small">required v2 · index declares v1</text>
+
+  <rect x="825" y="610" width="520" height="105" rx="12" class="stale"/>
+  <text x="855" y="647">Stale index for the v2 configuration</text>
+  <text x="855" y="678" class="small">rebuild condition is active; do not query this binding</text>
+
+  <path d="M330 662H420" class="failure"/>
+  <path d="M750 662H825" class="failure"/>
+  <path d="M1070 530V555H585V610" class="failure"/>
+
+  <text x="50" y="755" class="small">Solid blue: declared preparation inputs · Solid green: index construction · Dashed red: stale binding and rebuild trigger · No query-time retrieval is shown</text>
+</svg>
