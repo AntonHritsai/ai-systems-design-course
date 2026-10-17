@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "dev-approval-authority-absent",
+  "proposed_text": "The provided source does not specify who is permitted to approve a proposal."
+}
+```

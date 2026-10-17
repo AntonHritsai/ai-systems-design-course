@@ -1,0 +1,24 @@
+regression_id: criterion-metric-unsupported-examples
+source_kind: observed-failure
+position_id: pos-criterion-metric-chain-distractor-a-1
+blind_id: blind-002
+comparison_id: cmp-d5d3bf609779
+source_pointer: A criterion states the quality property the system must satisfy. A
+  metric is a defined measurement whose values can be compared against the criterion
+  to judge whether that property holds. In an unrelated deployment note, nightly backups
+  keep the shared drive available for every regional office.
+diagnosis: Завдання просило пояснити зв’язок критерію та метрики за наданим джерелом.
+  Джерело підтримує властивість, вимірювання та напрям порівняння; відповідь A структурно
+  чинна, але додає reliability, usability, security, response time та average latency
+  in milliseconds, яких джерело не надає. Рубрика U вимагає джерельної підтримки кожного
+  змістовного твердження, тому правильна основна частина не усуває відмови. Простежено
+  запит, вихід, структурний результат і blind-002; дефект стосується джерельної обмеженості
+  спостереженого виходу конфігурації A, без твердження про причинний ефект інструкції
+  окремо від моделі маршруту.
+expected_behavior_review: Затверджена до генерування очікувана поведінка вимагає зберегти
+  зв’язок критерію, метрики й порівняння та не переносити відволікальну примітку про
+  резервні копії до пояснення. Вона узгоджується з двома першими реченнями джерела
+  та загальним правилом підкріплення кожного твердження; додаткові технічні приклади
+  не мають підтримки. Очікувана поведінка не переписувалася після відповіді; виправлена
+  поведінка має зберегти три підтримані ланки без зовнішніх прикладів.
+reviewed_by: anton-hritsai

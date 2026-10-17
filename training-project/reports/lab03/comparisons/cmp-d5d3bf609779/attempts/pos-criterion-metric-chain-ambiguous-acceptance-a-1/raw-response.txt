@@ -1,0 +1,6 @@
+
+
+{
+  "case_id": "criterion-metric-chain-ambiguous-acceptance",
+  "proposed_text": "The acceptance condition of this note refers to a checked value that must fall within a declared bound, but since the note records two checked values for the same run without specifying which one the bound applies to, it is ambiguous whether the acceptance pertains to the first or second measurement, leading to uncertainty in interpretation."
+}

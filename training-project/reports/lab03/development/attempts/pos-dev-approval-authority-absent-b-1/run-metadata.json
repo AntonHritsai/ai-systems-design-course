@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-dev-approval-authority-absent-b-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T12:21:40.793408+00:00",
+  "finished_at": "2026-10-17T12:21:45.200330+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "liquid/lfm-2.5-2.6b:free"
+}

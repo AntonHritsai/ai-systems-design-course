@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "criterion-metric-chain-plain",
+  "proposed_text": "In evaluation design, a criterion defines the abstract quality property the system must satisfy, whereas a metric provides the concrete measurement used to assess and compare against this criterion to judge whether the property holds. Essentially, a metric serves as the operational instrument that translates the abstract criterion into measurable data for evaluation."
+}
+```

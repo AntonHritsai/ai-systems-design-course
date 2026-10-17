@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "position_id": "pos-criterion-metric-chain-plain-b-1",
+  "valid": false,
+  "errors": [
+    "Response is not one valid JSON value: Expecting value: line 1 column 1 (char 0)"
+  ],
+  "checked_at": "2026-10-17T12:23:34.954023+00:00"
+}

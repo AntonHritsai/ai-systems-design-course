@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-b-2",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T12:29:32.857905+00:00",
+  "finished_at": "2026-10-17T12:29:35.200851+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "poolside/laguna-xs-2.1:free"
+}

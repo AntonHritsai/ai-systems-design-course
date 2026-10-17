@@ -1,0 +1,1 @@
+{"case_id": "dev-approval-authority-absent", "proposed_text": "The reviewer, as identified in the review record, is permitted to approve a proposal through their decision, since the review record explicitly stores the reviewer's identity and their decision (which, in the context of approval processes, would include the authority to approve)."}

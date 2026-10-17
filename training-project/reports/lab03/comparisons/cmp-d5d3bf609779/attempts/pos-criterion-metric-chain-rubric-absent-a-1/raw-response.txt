@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "criterion-metric-chain-rubric-absent",
+  "proposed_text": "The number of rubric categories is not specified in the provided text."
+}
+```

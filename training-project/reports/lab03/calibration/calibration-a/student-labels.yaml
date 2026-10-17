@@ -1,0 +1,29 @@
+schema_version: '1.0'
+packet_id: calibration-a
+labels:
+- output_id: cal-a-1
+  category: S
+  rationale: 'Завдання source-baseline-definition: джерело «A source baseline identifies
+    the material against which a proposal is reviewed.» повністю підтримує перефразування;
+    збережено зв’язок матеріалу з розглядом пропозиції, як вимагає очікувана поведінка;
+    категорія S — підкріплений і повний зміст.'
+- output_id: cal-a-2
+  category: I
+  rationale: 'Завдання source-baseline-definition: джерело визначає матеріал саме
+    як основу розгляду пропозиції. Текст «The baseline identifies material.» не додає
+    непідкріплених тверджень, але втрачає обов’язковий зв’язок із розглядом; за очікуваною
+    поведінкою та правилом неповноти застосовано I.'
+- output_id: cal-a-3
+  category: U
+  rationale: 'Завдання source-baseline-definition: джерело підтримує зв’язок базового
+    стану з матеріалом розгляду, але не твердження «automatically approves later changes».
+    Очікувана поведінка вимагає лише визначення джерельної основи. Правило U має пріоритет
+    через додане непідкріплене повноваження автоматичного затвердження.'
+- output_id: cal-a-4
+  category: Q
+  rationale: 'Завдання retention-duration: джерело «Review records are stored in the
+    knowledge system.» не встановлює строку зберігання. Очікувана поведінка — прямо
+    назвати відсутність строку; відповідь це робить без вигаданого значення. Категорія
+    Q — доречна невизначеність за недостатніх даних.'
+student: anton-hritsai
+recorded_at: '2026-10-17T12:13:34.315517+00:00'

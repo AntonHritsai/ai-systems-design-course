@@ -1,0 +1,172 @@
+{
+  "comparison_id": "cmp-d5d3bf609779",
+  "category_counts": {
+    "a": {
+      "S": 1,
+      "U": 1,
+      "Q": 3
+    },
+    "b": {
+      "S": 1,
+      "Q": 4
+    }
+  },
+  "latency": {
+    "a": {
+      "count": 8,
+      "unknown_count": 0,
+      "mean_seconds": 30.13130075,
+      "median_seconds": 5.950339,
+      "max_seconds": 148.289127
+    },
+    "b": {
+      "count": 7,
+      "unknown_count": 1,
+      "mean_seconds": 14.821788428571429,
+      "median_seconds": 7.349753,
+      "max_seconds": 52.904299
+    }
+  },
+  "repeated_attempts": [
+    {
+      "case_id": "criterion-metric-chain-plain",
+      "variant": "a",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-plain-a-1",
+          "category": null,
+          "raw_sha256": "d1b0b5adb05a0249075aaec38104bc92f9d71a45f9c879d81744b68bbcc8cbf7"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-plain-a-2",
+          "category": "S",
+          "raw_sha256": "0d91dcd16cb8a8275fa3d996400bc5fa14f45f6ddde6806a2891bff51665c237"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": null
+    },
+    {
+      "case_id": "criterion-metric-chain-distractor",
+      "variant": "a",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-distractor-a-1",
+          "category": "U",
+          "raw_sha256": "d9c20afacbd8b942a3e6812e1c76eaa9e7e4256da900d52cd1a9e3543936f2fd"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-distractor-a-2",
+          "category": null,
+          "raw_sha256": "bda82be64b3cad8a76c7ccf0c385405bd98726bd98e75e53811a5fed462a6549"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": null
+    },
+    {
+      "case_id": "criterion-metric-chain-rubric-absent",
+      "variant": "a",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-rubric-absent-a-1",
+          "category": null,
+          "raw_sha256": "d532ab14f1281b260ea644213170dad1ba2736dc6d6fff31ac41414d92ac5db8"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-rubric-absent-a-2",
+          "category": "Q",
+          "raw_sha256": "000385fc9558539fdb6a5a88a92da449c400344ddd8e3f719043f6a5427771da"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": null
+    },
+    {
+      "case_id": "criterion-metric-chain-ambiguous-acceptance",
+      "variant": "a",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-a-1",
+          "category": "Q",
+          "raw_sha256": "b56d53dd9b2c0c7835a1a866deb13361249af4d024e86c0bbc923746aaa40280"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-a-2",
+          "category": "Q",
+          "raw_sha256": "99ed938cd7ef0409782494ddfb3ff5b724432d0693268584407d3a25448a1f4c"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": false
+    },
+    {
+      "case_id": "criterion-metric-chain-plain",
+      "variant": "b",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-plain-b-1",
+          "category": null,
+          "raw_sha256": "3b73dc46b776351baa0fac0dd962ca09bfa5fba727641310662b899ca86ce118"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-plain-b-2",
+          "category": null,
+          "raw_sha256": "c50b9b9b8915e7b43b6a8aef740e304e8c1b75762e0344a7493759b0e5686c6b"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": null
+    },
+    {
+      "case_id": "criterion-metric-chain-distractor",
+      "variant": "b",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-distractor-b-1",
+          "category": "S",
+          "raw_sha256": "2f6f2c6265ec58b43cf9f742d18333fc78df141b55c34e3cf6aabe4a91b94a83"
+        }
+      ],
+      "raw_differs": null,
+      "category_differs": null
+    },
+    {
+      "case_id": "criterion-metric-chain-rubric-absent",
+      "variant": "b",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-rubric-absent-b-1",
+          "category": "Q",
+          "raw_sha256": "cde43eb0392c6bb070aaad8e495f9ad1f43fad22aedf51f8891ef54e30d880b6"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-rubric-absent-b-2",
+          "category": "Q",
+          "raw_sha256": "c03d28b815e07b36d9a9c2410bcc0e37468e6db395fe99faf855eb9039a71ea1"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": false
+    },
+    {
+      "case_id": "criterion-metric-chain-ambiguous-acceptance",
+      "variant": "b",
+      "responses": [
+        {
+          "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-b-1",
+          "category": "Q",
+          "raw_sha256": "d4e06c4109c31476ab89a40cdfb62cce8412d9673c34b5bef8e269663f4890fb"
+        },
+        {
+          "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-b-2",
+          "category": "Q",
+          "raw_sha256": "b3d836be066cc39059a8a4d5b1ac3583f0b98afe95bab70aa978045738c2ce2c"
+        }
+      ],
+      "raw_differs": true,
+      "category_differs": false
+    }
+  ],
+  "course_repeat_flag_limitation": "Course aggregate repeated_attempt_differences compares blind-id:category strings, so distinct blind IDs can set the flag even when categories match. Use the separately recomputed raw_differs and category_differs fields."
+}

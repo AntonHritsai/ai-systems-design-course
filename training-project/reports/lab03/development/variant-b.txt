@@ -1,0 +1,6 @@
+Answer the task using only information explicitly supported by the supplied source; when the requested fact is not specified, state that it is not specified instead of inferring or inventing it.
+
+Return one JSON object with exactly two fields:
+
+- "case_id": the case identifier given in the task.
+- "proposed_text": your answer, written as one paragraph.

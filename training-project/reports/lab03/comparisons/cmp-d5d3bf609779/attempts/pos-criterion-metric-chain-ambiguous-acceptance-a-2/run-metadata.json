@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-criterion-metric-chain-ambiguous-acceptance-a-2",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T12:29:35.526197+00:00",
+  "finished_at": "2026-10-17T12:29:38.458711+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "cohere/north-mini-code:free"
+}

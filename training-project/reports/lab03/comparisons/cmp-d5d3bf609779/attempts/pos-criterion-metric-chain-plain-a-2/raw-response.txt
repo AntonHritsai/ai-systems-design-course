@@ -1,0 +1,4 @@
+{
+  "case_id": "criterion-metric-chain-plain",
+  "proposed_text": "In evaluation design, a criterion states the quality property the system must satisfy, while a metric is a defined measurement whose values can be compared against that criterion to judge whether the property holds; the criterion therefore sets the required standard, and the metric provides the measurable evidence used to assess whether the system meets it."
+}

@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-criterion-metric-chain-distractor-b-2",
+  "adapter": "unknown-after-interruption",
+  "model_id": "unknown-after-interruption",
+  "started_at": null,
+  "finished_at": "2026-10-17T12:26:03.479100+00:00",
+  "recorded_by": "anton-hritsai",
+  "interrupted_after_dispatch": true
+}

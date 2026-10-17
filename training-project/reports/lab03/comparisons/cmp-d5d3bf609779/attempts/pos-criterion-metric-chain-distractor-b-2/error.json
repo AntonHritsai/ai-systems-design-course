@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "position_id": "pos-criterion-metric-chain-distractor-b-2",
+  "failure_class": "position-specific",
+  "error": "process ended during interrupted assistant turn after request.json was recorded and before terminal evidence",
+  "interrupted_after_dispatch": true
+}

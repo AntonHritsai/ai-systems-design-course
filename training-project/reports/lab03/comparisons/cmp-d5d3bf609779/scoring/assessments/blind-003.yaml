@@ -1,0 +1,12 @@
+schema_version: '1.0'
+blind_id: blind-003
+category: S
+source_pointer: A criterion states the quality property the system must satisfy. A metric is a defined
+  measurement whose values can be compared against the criterion to judge whether that property holds.
+  In an unrelated deployment note, nightly backups keep the shared drive available for every regional
+  office.
+rationale: 'Відповідь відтворює підтриманий джерелом зв’язок: критерій задає властивість, метрика вимірює
+  її, а значення порівнюють із критерієм. Відволікальну примітку про резервні копії не перенесено до пояснення;
+  потрібний зміст повний.'
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T12:30:33.539064+00:00'

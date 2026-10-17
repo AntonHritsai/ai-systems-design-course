@@ -1,0 +1,11 @@
+changed_property: source-grounding policy
+variant_a_value: Answer the task about the supplied source.
+variant_b_value: Answer the task using only information explicitly supported by the
+  supplied source; when the requested fact is not specified, state that it is not
+  specified instead of inferring or inventing it.
+mechanism: Explicit source-only support and a missing-fact response should prevent
+  the development error that infers approval authority from the presence of a reviewer
+  identity and decision, while permitting a supported definition when evidence is
+  sufficient.
+declared_factors:
+- source-grounding policy

@@ -1,0 +1,9 @@
+schema_version: '1.0'
+blind_id: blind-008
+category: Q
+source_pointer: The acceptance condition passes when the checked value is within the declared bound. The
+  note records two checked values for the same run and does not say which one the bound applies to.
+rationale: У джерелі зазначено, що невідомо, до якого з двох значень застосовується межа. Відповідь прямо
+  називає невизначене вимірювання та причину, зберігаючи очікувану нерозв’язану прив’язку.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T12:30:34.228647+00:00'

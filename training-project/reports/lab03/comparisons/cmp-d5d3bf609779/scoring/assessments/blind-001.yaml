@@ -1,0 +1,9 @@
+schema_version: '1.0'
+blind_id: blind-001
+category: S
+source_pointer: A criterion states the quality property the system must satisfy. A metric is a defined
+  measurement whose values can be compared against the criterion to judge whether that property holds.
+rationale: Джерело визначає критерій як властивість якості, метрику як вимірювання та порівняння її значень
+  із критерієм. Відповідь зберігає всі три ланки очікуваного зв’язку без непідкріпленого уточнення.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T12:30:33.311543+00:00'

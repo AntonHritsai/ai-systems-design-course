@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-criterion-metric-chain-plain-a-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T12:23:35.076312+00:00",
+  "finished_at": "2026-10-17T12:24:35.493332+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "xingchen-agi/xing4.0-29b-a4b:free"
+}

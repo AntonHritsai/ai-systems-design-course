@@ -1,0 +1,4 @@
+{
+  "case_id": "criterion-metric-chain-distractor",
+  "proposed_text": "In evaluation design, a criterion defines the desired quality property that a system should have, such as reliability, usability, or security, while a metric is a concrete, quantifiable measure used to assess whether the system meets that criterion; for example, if the criterion is response time, the metric could be average latency in milliseconds. By collecting data on the metric and comparing it against the criterion’s thresholds or expectations, evaluators can determine if the quality property is satisfied, insufficient, or exceeded, thereby linking the abstract requirement expressed by the criterion to an observable, comparable measurement."
+}

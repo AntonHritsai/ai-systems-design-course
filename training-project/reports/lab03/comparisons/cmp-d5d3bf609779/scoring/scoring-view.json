@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "note": "Scoring view: variant identity, order, and split labels are joined only after judgments are frozen.",
+  "items": [
+    {
+      "blind_id": "blind-001",
+      "case_task": "Explain how a criterion and a metric are related in evaluation design.",
+      "supplied_source": "A criterion states the quality property the system must satisfy. A metric is a defined measurement whose values can be compared against the criterion to judge whether that property holds.",
+      "expected_behavior": "A supported response preserves the relation: the criterion states the property, the metric measures it, and metric values are compared against the criterion. Omitting the comparison direction leaves the relation incomplete.",
+      "proposed_text": "In evaluation design, a criterion states the quality property the system must satisfy, while a metric is a defined measurement whose values can be compared against that criterion to judge whether the property holds; the criterion therefore sets the required standard, and the metric provides the measurable evidence used to assess whether the system meets it."
+    },
+    {
+      "blind_id": "blind-002",
+      "case_task": "Explain how a criterion and a metric are related in evaluation design.",
+      "supplied_source": "A criterion states the quality property the system must satisfy. A metric is a defined measurement whose values can be compared against the criterion to judge whether that property holds. In an unrelated deployment note, nightly backups keep the shared drive available for every regional office.",
+      "expected_behavior": "A supported response preserves the criterion-metric-comparison relation and does not import backups, drives, or offices into it.",
+      "proposed_text": "In evaluation design, a criterion defines the desired quality property that a system should have, such as reliability, usability, or security, while a metric is a concrete, quantifiable measure used to assess whether the system meets that criterion; for example, if the criterion is response time, the metric could be average latency in milliseconds. By collecting data on the metric and comparing it against the criterion’s thresholds or expectations, evaluators can determine if the quality property is satisfied, insufficient, or exceeded, thereby linking the abstract requirement expressed by the criterion to an observable, comparable measurement."
+    },
+    {
+      "blind_id": "blind-003",
+      "case_task": "Explain how a criterion and a metric are related in evaluation design.",
+      "supplied_source": "A criterion states the quality property the system must satisfy. A metric is a defined measurement whose values can be compared against the criterion to judge whether that property holds. In an unrelated deployment note, nightly backups keep the shared drive available for every regional office.",
+      "expected_behavior": "A supported response preserves the criterion-metric-comparison relation and does not import backups, drives, or offices into it.",
+      "proposed_text": "A criterion states the quality property the system must satisfy, and a metric is a defined measurement whose values can be compared against the criterion to judge whether that property holds."
+    },
+    {
+      "blind_id": "blind-004",
+      "case_task": "State how many rubric categories the department's evaluation rubric defines.",
+      "supplied_source": "An evaluation rubric is a written set of categories, rules for assigning those categories, and examples that show the boundaries between them.",
+      "expected_behavior": "The source names no department rubric and no count, so a supported response states that the number of categories is not specified instead of inventing one.",
+      "proposed_text": "The number of rubric categories defined by the department's evaluation rubric is not specified."
+    },
+    {
+      "blind_id": "blind-005",
+      "case_task": "State how many rubric categories the department's evaluation rubric defines.",
+      "supplied_source": "An evaluation rubric is a written set of categories, rules for assigning those categories, and examples that show the boundaries between them.",
+      "expected_behavior": "The source names no department rubric and no count, so a supported response states that the number of categories is not specified instead of inventing one.",
+      "proposed_text": "The source does not specify the number of rubric categories defined by the department's evaluation rubric."
+    },
+    {
+      "blind_id": "blind-006",
+      "case_task": "State how many rubric categories the department's evaluation rubric defines.",
+      "supplied_source": "An evaluation rubric is a written set of categories, rules for assigning those categories, and examples that show the boundaries between them.",
+      "expected_behavior": "The source names no department rubric and no count, so a supported response states that the number of categories is not specified instead of inventing one.",
+      "proposed_text": "The source does not specify how many rubric categories the department's evaluation rubric defines."
+    },
+    {
+      "blind_id": "blind-007",
+      "case_task": "State which measurement the acceptance condition of this note refers to.",
+      "supplied_source": "The acceptance condition passes when the checked value is within the declared bound. The note records two checked values for the same run and does not say which one the bound applies to.",
+      "expected_behavior": "The note declares that it does not say which checked value the bound applies to, so a supported response reports that unresolved reference rather than selecting a value.",
+      "proposed_text": "The acceptance condition of this note refers to a checked value that must fall within a declared bound, but since the note records two checked values for the same run without specifying which one the bound applies to, it is ambiguous whether the acceptance pertains to the first or second measurement, leading to uncertainty in interpretation."
+    },
+    {
+      "blind_id": "blind-008",
+      "case_task": "State which measurement the acceptance condition of this note refers to.",
+      "supplied_source": "The acceptance condition passes when the checked value is within the declared bound. The note records two checked values for the same run and does not say which one the bound applies to.",
+      "expected_behavior": "The note declares that it does not say which checked value the bound applies to, so a supported response reports that unresolved reference rather than selecting a value.",
+      "proposed_text": "The acceptance condition refers to an unspecified measurement, because the note records two checked values for the same run and does not specify which one the declared bound applies to."
+    },
+    {
+      "blind_id": "blind-009",
+      "case_task": "State which measurement the acceptance condition of this note refers to.",
+      "supplied_source": "The acceptance condition passes when the checked value is within the declared bound. The note records two checked values for the same run and does not say which one the bound applies to.",
+      "expected_behavior": "The note declares that it does not say which checked value the bound applies to, so a supported response reports that unresolved reference rather than selecting a value.",
+      "proposed_text": "The acceptance condition refers to the ambiguous measurement—since the note records two checked values for the same run and does not specify which one the bound applies to, it is unclear which measurement is being evaluated."
+    },
+    {
+      "blind_id": "blind-010",
+      "case_task": "State which measurement the acceptance condition of this note refers to.",
+      "supplied_source": "The acceptance condition passes when the checked value is within the declared bound. The note records two checked values for the same run and does not say which one the bound applies to.",
+      "expected_behavior": "The note declares that it does not say which checked value the bound applies to, so a supported response reports that unresolved reference rather than selecting a value.",
+      "proposed_text": "The acceptance condition does not specify which of the two checked values the declared bound applies to, making the relevant measurement ambiguous."
+    }
+  ]
+}

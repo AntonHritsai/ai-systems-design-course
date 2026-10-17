@@ -1,0 +1,45 @@
+schema_version: '1.0'
+comparison_id: cmp-d5d3bf609779
+outcome: seek-more-evidence
+rationale: За фіксацією потрібні 8 придатних відповідей і щонайменше 7/8 S+Q для кожної конфігурації,
+  нуль U та максимальна затримка <=120 секунд. A має підрахунки 8/8/5/5/4, одну U та максимальну затримку
+  148.289 секунди; B має 8/7/5/5/5, нуль U, одну перервану спробу й невідому затримку цієї спроби. B має
+  більше прийнятних відповідей серед доступних, але не виконує вимог повноти; за попередньо зафіксованим
+  правилом неповні свідчення потребують seek-more-evidence. Різні внутрішні моделі маршруту та мала вибірка
+  додатково обмежують причинний висновок. Підстав для recommend-b або retain-a немає; reject-both не вибрано,
+  бо щодо B достатність свідчень не встановлено.
+limitations:
+- small designed set
+- one interrupted attempt
+- five structurally invalid responses
+- assistant-assisted judgments without independent human agreement measurement
+- varying provider-resolved models
+- unknown token usage quota usage and cost
+- unknown interrupted-attempt latency
+blocking_failures: Будь-яка категорія U серед відкладених відповідей порушує блокувальну умову конфігурації
+  незалежно від S+Q. Значення S+Q<7/8 за повного оцінювання також означає неприйнятність конфігурації.
+decision_rule:
+  recommend-b: B задовольняє всі умови; A неприйнятний або B має більше S+Q і, за прийнятного A, середня
+    затримка B<=1.25*A. Немає нерозв’язаної релевантної невизначеності.
+  retain-a: A задовольняє всі умови, а B порушує умову прийняття або за повних свідчень не дає передбаченої
+    правилом переваги.
+  reject-both: За повних придатних свідчень обидві конфігурації мають U або не досягають семантичного
+    порога чи порушують виміряну операційну умову.
+  seek-more-evidence: Є X, неповні відповіді, невідома релевантна затримка, дефект очікуваної поведінки
+    або інша невизначеність, що не дозволяє обґрунтувати попередні три результати.
+nested_counts:
+  a:
+    attempted: 8
+    returned: 8
+    structurally_valid: 5
+    assessable: 5
+    rubric_acceptable: 4
+  b:
+    attempted: 8
+    returned: 7
+    structurally_valid: 5
+    assessable: 5
+    rubric_acceptable: 5
+protocol_freeze_id: cmp-d5d3bf609779
+recorded_by: anton-hritsai
+recorded_at: '2026-10-17T12:31:14.939144+00:00'

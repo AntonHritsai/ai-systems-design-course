@@ -1,0 +1,13 @@
+schema_version: '1.0'
+blind_id: blind-002
+category: U
+source_pointer: A criterion states the quality property the system must satisfy. A metric is a defined
+  measurement whose values can be compared against the criterion to judge whether that property holds.
+  In an unrelated deployment note, nightly backups keep the shared drive available for every regional
+  office.
+rationale: Зв’язок критерію, метрики й порівняння збережено, але додано приклади reliability, usability,
+  security та average latency in milliseconds, яких надане джерело не містить. За правилом U непідкріплені
+  змістовні доповнення роблять відповідь неприйнятною, навіть за правильної основної частини; ці приклади
+  не затверджені джерелом.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T12:30:33.418531+00:00'

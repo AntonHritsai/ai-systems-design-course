@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-dev-source-baseline-definition-a-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T12:19:44.823676+00:00",
+  "finished_at": "2026-10-17T12:19:56.186319+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "cohere/north-mini-code:free"
+}
