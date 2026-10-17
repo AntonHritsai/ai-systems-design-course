@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "cases source": "stage-b-fixture.json evaluation_cases operation_input only",
+  "retrieval units source": "Stage B selected chunking configuration and Stage C1 indexed retrieval-unit embeddings",
+  "result count k": 1,
+  "reranking candidate count": 2,
+  "lexical rule": "lowercase exact alphabetic content-word overlap; distinct shared tokens counted once",
+  "excluded lexical function words": ["a", "an", "the", "and", "or", "of", "to", "for", "in", "on", "at", "by", "with", "from", "is", "are", "it", "its", "how", "can", "which", "what", "that", "this"],
+  "embedding rule": "query encoding under the Stage C1 representation contract; exact cosine over every indexed unit",
+  "hybrid rule": "divide each independent ranking score by its ranking maximum, add by stable retrieval identifier; empty ranking contributes nothing",
+  "reranking rule": "cosine order over the first two lexical candidates only",
+  "tie order": "stable retrieval identifier ascending"
+}

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Retrieval contract and evaluator-only path</title>
+  <desc id="desc">A text query, a declared canonical knowledge collection version, and a retrieval configuration enter the retrieval operation. The retrieval operation produces a ranked candidate output. A separate evaluator-only path supplies the relevance judging basis and evaluator-only expected result to the human evaluator. The human evaluator compares the ranked candidate output with that material and records relevance judgments. A selected source fragment may cross the Module 05 boundary into a downstream operation, but no evaluator-only material enters the retrieval operation.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="purple-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7e22ce"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+    .small{font-size:16px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .input{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .output{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .private{fill:#faf5ff;stroke:#7e22ce;stroke-width:2}
+    .boundary{fill:#f8fafc;stroke:#64748b;stroke-width:2;stroke-dasharray:8 6}
+    .info{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .evaluation{fill:none;stroke:#7e22ce;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#purple-arrow)}
+    .result{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .downstream{fill:none;stroke:#64748b;stroke-width:3;stroke-dasharray:5 6;marker-end:url(#gray-arrow)}
+  </style>
+
+  <rect x="25" y="65" width="945" height="315" rx="16" class="boundary"/>
+  <text x="50" y="98">Retrieval-operation boundary</text>
+
+  <rect x="55" y="135" width="245" height="75" rx="9" class="input"/>
+  <text x="82" y="168">Text query</text>
+  <text x="82" y="193" class="small">information need</text>
+
+  <rect x="55" y="245" width="245" height="90" rx="9" class="input"/>
+  <text x="82" y="278">Canonical knowledge</text>
+  <text x="82" y="303">collection</text>
+  <text x="82" y="326" class="small">declared version</text>
+
+  <rect x="375" y="105" width="250" height="72" rx="9" class="input"/>
+  <text x="402" y="137">Retrieval configuration</text>
+  <text x="402" y="161" class="small">complete declared method</text>
+
+  <rect x="375" y="220" width="250" height="92" rx="9" class="operation"/>
+  <text x="410" y="257">Retrieval operation</text>
+  <text x="410" y="283" class="small">searches; does not write</text>
+
+  <rect x="705" y="220" width="235" height="92" rx="9" class="output"/>
+  <text x="733" y="255">Ranked candidate</text>
+  <text x="733" y="280">output</text>
+  <text x="733" y="302" class="small">ordered retrieval units</text>
+
+  <path d="M300 172H338V248H375" class="info"/>
+  <path d="M300 290H338V278H375" class="info"/>
+  <path d="M500 177V220" class="info"/>
+  <path d="M625 266H705" class="result"/>
+
+  <rect x="1025" y="177" width="330" height="178" rx="14" class="boundary"/>
+  <text x="1050" y="210">Module 05 boundary</text>
+  <rect x="1055" y="235" width="270" height="82" rx="9" class="input"/>
+  <text x="1080" y="269">Selected source fragment</text>
+  <text x="1080" y="294" class="small">possible supplied source evidence</text>
+  <path d="M940 266H1055" class="downstream"/>
+  <text x="957" y="247" class="tiny">selection is separate</text>
+
+  <rect x="25" y="425" width="1330" height="215" rx="16" class="boundary"/>
+  <text x="50" y="460">Evaluator-only information boundary — protected from the retrieval operation</text>
+
+  <rect x="70" y="500" width="270" height="90" rx="9" class="private"/>
+  <text x="95" y="534">Relevance judging basis</text>
+  <text x="95" y="560" class="small">required information for the query</text>
+
+  <rect x="405" y="500" width="270" height="90" rx="9" class="private"/>
+  <text x="430" y="534">Evaluator-only</text>
+  <text x="430" y="560">expected result</text>
+  <text x="430" y="582" class="small">reviewed relevant units</text>
+
+  <rect x="760" y="500" width="235" height="90" rx="9" class="private"/>
+  <text x="792" y="540">Human evaluator</text>
+  <text x="792" y="566" class="small">applies the judging basis</text>
+
+  <rect x="1070" y="500" width="235" height="90" rx="9" class="output"/>
+  <text x="1096" y="534">Recorded relevance</text>
+  <text x="1096" y="560">judgments</text>
+  <text x="1096" y="582" class="small">case-bounded evidence</text>
+
+  <path d="M205 500V480H730V525H760" class="evaluation"/>
+  <path d="M675 565H760" class="evaluation"/>
+  <path d="M822 312V405H878V500" class="result"/>
+  <text x="840" y="396" class="tiny">observed output</text>
+  <path d="M995 545H1070" class="result"/>
+
+  <text x="35" y="680" class="small">Solid blue: operation inputs and configuration · Solid green: observed or recorded output</text>
+  <text x="35" y="705" class="small">Dashed purple: evaluator-only information · Dashed gray: later selection across the Module 05 boundary</text>
+</svg>

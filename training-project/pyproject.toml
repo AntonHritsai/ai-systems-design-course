@@ -5,6 +5,16 @@ description = "Public cumulative training project for AI Engineering laboratorie
 requires-python = ">=3.11"
 dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
 
+[project.optional-dependencies]
+lab04 = ["model2vec>=0.10,<1"]
+
+# The public suite is the author-side verification surface for every laboratory, so the test
+# runner belongs to the project environment. Declaring it in the default dev group keeps it
+# present after the documented `uv sync --extra lab04`, which otherwise prunes undeclared
+# packages and leaves `uv run pytest` to resolve an unrelated external runner.
+[dependency-groups]
+dev = ["pytest>=8"]
+
 [project.scripts]
 learning-project = "learning_project.cli:main"
 

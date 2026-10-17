@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+<title id="title">Controlled offline comparison with protected references</title>
+<desc id="desc">Development cases inform the frozen configuration group containing instruction variants A and B on the same model route. Identical held-out task inputs enter both variants. Both output paths enter the fixed evaluator. A separate evaluation view supplies a copy of the source and hidden expected answers only to the evaluator. Assessments flow to the paired record. No hidden answer enters generation.</desc>
+<defs>
+  <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+  <marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7e22ce"/></marker>
+</defs>
+<style>
+  text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+  .small{font-size:16px;fill:#334155}
+  .box{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+  .group{fill:#f8fafc;stroke:#64748b;stroke-width:2}
+  .private{fill:#faf5ff;stroke:#7e22ce;stroke-width:2}
+  .line{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue)}
+  .ref{fill:none;stroke:#7e22ce;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#purple)}
+</style>
+<rect x="30" y="25" width="230" height="76" rx="9" class="box"/>
+<text x="53" y="57">Development cases</text>
+<text x="53" y="82" class="small">prompt/rubric development</text>
+<rect x="340" y="120" width="300" height="315" rx="12" class="group"/>
+<text x="365" y="150">Frozen configurations</text>
+<text x="366" y="174" class="small">same model route and settings</text>
+<path id="freeze" d="M260 63H490V120" class="line"/>
+<text x="308" y="48" class="small">inform and freeze A and B</text>
+<rect x="380" y="200" width="220" height="70" rx="9" class="box"/>
+<text x="410" y="230">Variant A</text>
+<text x="410" y="254" class="small">frozen instruction A</text>
+<rect x="380" y="325" width="220" height="70" rx="9" class="box"/>
+<text x="410" y="355">Variant B</text>
+<text x="410" y="379" class="small">frozen instruction B</text>
+<rect x="30" y="260" width="230" height="80" rx="9" class="box"/>
+<text x="53" y="293">Held-out task inputs</text>
+<text x="53" y="318" class="small">task + source, no answers</text>
+<path id="input-a" d="M260 300H300V235H380" class="line"/>
+<path id="input-b" d="M300 300V360H380" class="line"/>
+<circle cx="300" cy="300" r="4" fill="#2563eb"/>
+<text x="70" y="369" class="small">same cases for A and B</text>
+<rect id="evaluator" x="780" y="240" width="200" height="145" rx="9" class="private"/>
+<text x="800" y="302">Fixed evaluator</text>
+<text x="800" y="330" class="small">rubric + reviewer</text>
+<path id="output-a" d="M600 235H710V270H780" class="line"/>
+<text x="654" y="216" class="small">A outputs</text>
+<path id="output-b" d="M600 360H780" class="line"/>
+<text x="655" y="343" class="small">B outputs</text>
+<rect x="30" y="475" width="295" height="85" rx="9" class="private"/>
+<text x="50" y="507">Evaluation evidence</text>
+<text x="50" y="535" class="small">task/source copy + hidden answers</text>
+<path id="references" d="M325 517H880V385" class="ref"/>
+<text x="426" y="501" class="small">expected behavior and source for grading</text>
+<rect x="1035" y="265" width="155" height="95" rx="9" class="box"/>
+<text x="1050" y="302">Paired result</text>
+<text x="1085" y="330" class="small">record</text>
+<path id="assessment" d="M980 313H1035" class="line"/>
+<text x="984" y="250" class="small">scores + reasons</text>
+
+<text x="30" y="601" class="small">Solid blue: configuration/input/output flow · Dashed purple: protected evaluation-evidence flow</text>
+</svg>

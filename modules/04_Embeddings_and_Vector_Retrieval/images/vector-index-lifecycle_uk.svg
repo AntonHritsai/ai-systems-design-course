@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="830" viewBox="0 0 1400 830" role="img" aria-labelledby="title desc">
+  <title id="title">Підготовка векторного індексу та життєвий цикл застарілої прив’язки версіонованого векторного індексу</title>
+  <desc id="desc">Версія канонічної колекції знань та конфігурація розбивки на фрагменти визначають фрагменти джерел. Сумісні ембединги, стабільні ідентифікатори одиниць інформаційного пошуку та зв’язки походження надходять до підготовки індексу, яка створює версіонований векторний індекс. Пізніша версія канонічної колекції знань створює невідповідність прив’язки зі старим індексом, роблячи цей індекс застарілим для нової конфігурації інформаційного пошуку та активуючи умову перебудови індексу. Запит, пошук за подібністю, ранжування або судження про релевантність не показано.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b91c1c"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:19px}
+    .heading{font-size:23px;font-weight:700}
+    .small{font-size:15px;fill:#334155}
+    .tiny{font-size:13px;fill:#475569}
+    .source{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .derived{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .index{fill:#faf5ff;stroke:#7e22ce;stroke-width:2.5}
+    .stale{fill:#fef2f2;stroke:#b91c1c;stroke-width:2.5}
+    .flow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .build{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .failure{fill:none;stroke:#b91c1c;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#red-arrow)}
+  </style>
+
+  <text x="50" y="45" class="heading">Час підготовки — похідний стан для пошуку</text>
+
+  <rect x="50" y="90" width="250" height="140" rx="12" class="source"/>
+  <text x="76" y="128">Канонічна колекція</text>
+  <text x="76" y="158">course-seed-v1</text>
+  <text x="76" y="188" class="small">стан власника знань</text>
+
+  <rect x="340" y="90" width="310" height="140" rx="12" class="source"/>
+  <text x="364" y="124">Оголошені фрагменти джерел</text>
+  <text x="364" y="152" class="small">конфігурація розбивки</text>
+  <text x="364" y="174" class="small">на фрагменти B</text>
+  <text x="364" y="200" class="small">стабільні ідентифікатори одиниць</text>
+  <text x="364" y="222" class="small">інформаційного пошуку</text>
+
+  <rect x="690" y="90" width="290" height="140" rx="12" class="derived"/>
+  <text x="714" y="124">Підготовлені асоціації</text>
+  <text x="714" y="152" class="small">сумісні ембединги</text>
+  <text x="714" y="176" class="small">стабільні ідентифікатори одиниць</text>
+  <text x="714" y="198" class="small">інформаційного пошуку</text>
+  <text x="714" y="220" class="small">зв’язки походження</text>
+
+  <rect x="1020" y="90" width="310" height="140" rx="12" class="operation"/>
+  <text x="1046" y="134">Підготовка індексу</text>
+  <text x="1046" y="164" class="small">зв’язує перевірені входи</text>
+  <text x="1046" y="190" class="small">до часу запитів</text>
+
+  <path d="M300 160H340" class="flow"/>
+  <path d="M650 160H690" class="flow"/>
+  <path d="M980 160H1020" class="build"/>
+
+  <rect x="825" y="290" width="520" height="272" rx="16" class="index"/>
+  <text x="852" y="324" class="heading">Векторний індекс: vector-index-demo-v1</text>
+  <text x="852" y="354" class="tiny">версія канонічної колекції знань: course-seed-v1</text>
+  <text x="852" y="377" class="tiny">конфігурація розбивки на фрагменти, що реалізує визначення</text>
+  <text x="852" y="400" class="tiny">одиниці інформаційного пошуку, записане в контракті</text>
+  <text x="852" y="423" class="tiny">інформаційного пошуку: B</text>
+  <text x="852" y="446" class="tiny">модель ембедингу та версія представлення: course-embed-demo/v1</text>
+  <text x="852" y="469" class="tiny">потрібна розмірність ембедингу</text>
+  <text x="852" y="492" class="tiny">і простір ембедингів: 3 у R³</text>
+  <text x="852" y="515" class="tiny">стабільний ідентифікатор одиниці інформаційного пошуку</text>
+  <text x="852" y="538" class="tiny">й зв’язок походження для кожної одиниці інформаційного пошуку</text>
+  <path d="M1170 230V260H1070V290" class="build"/>
+
+  <text x="50" y="596" class="heading">Зміна прив’язки — застарілий для нової конфігурації інформаційного пошуку</text>
+
+  <rect x="50" y="634" width="280" height="105" rx="12" class="source"/>
+  <text x="80" y="673">Канонічна колекція</text>
+  <text x="80" y="704">course-seed-v2</text>
+
+  <rect x="420" y="634" width="330" height="105" rx="12" class="stale"/>
+  <text x="450" y="673">Невідповідність прив’язки</text>
+  <text x="450" y="703" class="small">потрібна v2 · індекс оголошує v1</text>
+
+  <rect x="825" y="634" width="520" height="105" rx="12" class="stale"/>
+  <text x="855" y="671">Застарілий індекс для конфігурації v2</text>
+  <text x="855" y="694" class="small">умова перебудови індексу активна;</text>
+  <text x="855" y="716" class="small">не виконувати запитів із цією прив’язкою</text>
+
+  <path d="M330 686H420" class="failure"/>
+  <path d="M750 686H825" class="failure"/>
+  <path d="M1070 562V615H585V634" class="failure"/>
+
+  <text x="50" y="776" class="small">Суцільні сині: оголошені входи підготовки · Суцільні зелені: побудова індексу</text>
+  <text x="50" y="800" class="small">Пунктирні червоні: застаріла прив’язка та активування умови перебудови · Інформаційний пошук у час запитів не показано</text>
+</svg>
