@@ -1,0 +1,6 @@
+
+
+{
+  "case_id": "experiment-baseline-distractor",
+  "proposed_text": "In a controlled comparison, an experiment baseline is the comparison configuration against which observed alternatives are measured; it is distinct from the source baseline, which identifies reviewed material."
+}

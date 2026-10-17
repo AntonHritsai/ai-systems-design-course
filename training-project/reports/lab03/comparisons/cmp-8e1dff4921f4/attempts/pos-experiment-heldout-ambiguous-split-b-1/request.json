@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "lab_id": "lab03",
+  "case_id": "experiment-heldout-ambiguous-split",
+  "task": "State which split the duplicated case belongs to under this note's rules.",
+  "supplied_source": "Development cases may be inspected while configurations change. Held-out cases are reserved from that process. The note lists one case text under both splits and does not say which designation is current.",
+  "instruction": "Answer the task using only information explicitly supported by the supplied source; when the requested fact is not specified, state that it is not specified instead of inferring or inventing it.\n\nReturn one JSON object with exactly two fields:\n\n- \"case_id\": the case identifier given in the task.\n- \"proposed_text\": your answer, written as one paragraph.\n",
+  "output_contract": {
+    "type": "object",
+    "fields": [
+      "case_id",
+      "proposed_text"
+    ],
+    "case_id_value": "experiment-heldout-ambiguous-split"
+  }
+}

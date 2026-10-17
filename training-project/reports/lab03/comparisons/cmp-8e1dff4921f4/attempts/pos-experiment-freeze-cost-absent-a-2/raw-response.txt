@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "experiment-freeze-cost-absent",
+  "proposed_text": "Based on the provided source text, there is no monetary cost recorded for the frozen comparison. The text describes that the protocol freezes the hypothesis, compared configurations, attempt budget, and timing boundary before held-out execution, and notes that the record lists scheduled attempts and their observed durations, but it does not specify any actual monetary amounts or financial figures associated with these elements."
+}
+```

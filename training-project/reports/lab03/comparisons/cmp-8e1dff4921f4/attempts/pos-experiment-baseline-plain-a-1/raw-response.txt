@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "experiment-baseline-plain",
+  "proposed_text": "In a controlled comparison, an experiment baseline serves as the reference point or comparison configuration against which alternative experiments are evaluated. It represents the established condition or setup that provides the standard against which new variations are measured, ensuring consistency and enabling meaningful assessment of changes. This concept is distinct from a source baseline, which simply identifies the original material being reviewed without necessarily serving as a comparative framework."
+}
+```

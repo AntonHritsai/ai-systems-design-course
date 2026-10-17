@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-baseline-plain-a-2",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:30.332452+00:00",
+  "finished_at": "2026-10-17T13:09:32.937064+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "nvidia/nemotron-3.5-content-safety:free"
+}

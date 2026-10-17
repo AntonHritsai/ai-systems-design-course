@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-baseline-distractor-b-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:38.684843+00:00",
+  "finished_at": "2026-10-17T13:09:41.341261+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "nvidia/nemotron-3-super-120b-a12b:free"
+}

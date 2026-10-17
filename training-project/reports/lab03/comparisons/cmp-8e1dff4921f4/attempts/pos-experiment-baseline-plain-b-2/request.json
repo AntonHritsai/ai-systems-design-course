@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "lab_id": "lab03",
+  "case_id": "experiment-baseline-plain",
+  "task": "Explain what an experiment baseline is in a controlled comparison.",
+  "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material.",
+  "instruction": "Answer the task using only information explicitly supported by the supplied source; when the requested fact is not specified, state that it is not specified instead of inferring or inventing it.\n\nReturn one JSON object with exactly two fields:\n\n- \"case_id\": the case identifier given in the task.\n- \"proposed_text\": your answer, written as one paragraph.\n",
+  "output_contract": {
+    "type": "object",
+    "fields": [
+      "case_id",
+      "proposed_text"
+    ],
+    "case_id_value": "experiment-baseline-plain"
+  }
+}

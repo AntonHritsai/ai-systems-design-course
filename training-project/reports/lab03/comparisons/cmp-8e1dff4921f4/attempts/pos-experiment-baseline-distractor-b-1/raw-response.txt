@@ -1,0 +1,4 @@
+{
+  "case_id": "experiment-baseline-distractor",
+  "proposed_text": "An experiment baseline is the comparison configuration against which observed alternatives are measured in a controlled comparison, and it is distinct from the source baseline that identifies reviewed material."
+}

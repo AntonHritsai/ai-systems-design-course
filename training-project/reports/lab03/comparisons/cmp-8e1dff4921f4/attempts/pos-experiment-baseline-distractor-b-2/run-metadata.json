@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-baseline-distractor-b-2",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:41.596904+00:00",
+  "finished_at": "2026-10-17T13:09:50.755019+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "dots-studio/dots-3-note-preview:free"
+}

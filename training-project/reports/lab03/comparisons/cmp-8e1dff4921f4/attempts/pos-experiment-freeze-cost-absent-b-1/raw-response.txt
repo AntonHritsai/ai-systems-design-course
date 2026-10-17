@@ -1,0 +1,4 @@
+{
+  "case_id": "experiment-freeze-cost-absent",
+  "proposed_text": "The note does not specify any monetary cost for the frozen comparison."
+}

@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "experiment-baseline-plain",
+  "proposed_text": "In a controlled comparison, an experiment baseline refers to the comparison configuration that serves as the reference point against which alternative options are measured. This concept is distinct from the source baseline, which identifies reviewed material."
+}
+```

@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0",
+  "comparison_id": "cmp-8e1dff4921f4",
+  "nested_counts": {
+    "a": {
+      "attempted": 8,
+      "returned": 8,
+      "structurally_valid": 4,
+      "assessable": 4,
+      "rubric_acceptable": 4
+    },
+    "b": {
+      "attempted": 8,
+      "returned": 8,
+      "structurally_valid": 5,
+      "assessable": 5,
+      "rubric_acceptable": 4
+    }
+  },
+  "failure_counts": {
+    "a": 0,
+    "b": 0
+  },
+  "unstarted_counts": {
+    "a": 0,
+    "b": 0
+  },
+  "critical_unsupported_counts": {
+    "a": 0,
+    "b": 1
+  },
+  "slices": {
+    "distractor": {
+      "a": {
+        "returned": 2,
+        "structurally_valid": 2,
+        "assessable": 2,
+        "rubric_acceptable": 2,
+        "critical_unsupported": 0
+      },
+      "b": {
+        "returned": 2,
+        "structurally_valid": 2,
+        "assessable": 2,
+        "rubric_acceptable": 2,
+        "critical_unsupported": 0
+      }
+    },
+    "missing-fact": {
+      "a": {
+        "returned": 1,
+        "structurally_valid": 1,
+        "assessable": 1,
+        "rubric_acceptable": 1,
+        "critical_unsupported": 0
+      },
+      "b": {
+        "returned": 2,
+        "structurally_valid": 2,
+        "assessable": 2,
+        "rubric_acceptable": 2,
+        "critical_unsupported": 0
+      }
+    },
+    "explicit-ambiguity": {
+      "a": {
+        "returned": 1,
+        "structurally_valid": 1,
+        "assessable": 1,
+        "rubric_acceptable": 1,
+        "critical_unsupported": 0
+      },
+      "b": {
+        "returned": 1,
+        "structurally_valid": 1,
+        "assessable": 1,
+        "rubric_acceptable": 0,
+        "critical_unsupported": 1
+      }
+    }
+  },
+  "repeated_attempt_differences": [
+    {
+      "case_id": "experiment-baseline-distractor",
+      "a": [
+        "blind-001:S",
+        "blind-003:S"
+      ],
+      "b": [
+        "blind-002:S",
+        "blind-004:S"
+      ],
+      "differs_within_a": true,
+      "differs_within_b": true
+    }
+  ],
+  "observed_latency": {
+    "a": [
+      {
+        "position_id": "pos-experiment-baseline-plain-a-1",
+        "started_at": "2026-10-17T13:09:28.775603+00:00",
+        "finished_at": "2026-10-17T13:09:30.068997+00:00",
+        "seconds": 1.293394
+      },
+      {
+        "position_id": "pos-experiment-baseline-plain-a-2",
+        "started_at": "2026-10-17T13:09:30.332452+00:00",
+        "finished_at": "2026-10-17T13:09:32.937064+00:00",
+        "seconds": 2.604612
+      },
+      {
+        "position_id": "pos-experiment-baseline-distractor-a-1",
+        "started_at": "2026-10-17T13:09:34.795152+00:00",
+        "finished_at": "2026-10-17T13:09:38.427552+00:00",
+        "seconds": 3.6324
+      },
+      {
+        "position_id": "pos-experiment-baseline-distractor-a-2",
+        "started_at": "2026-10-17T13:09:51.029739+00:00",
+        "finished_at": "2026-10-17T13:09:59.080841+00:00",
+        "seconds": 8.051102
+      },
+      {
+        "position_id": "pos-experiment-freeze-cost-absent-a-1",
+        "started_at": "2026-10-17T13:10:08.028387+00:00",
+        "finished_at": "2026-10-17T13:10:17.066945+00:00",
+        "seconds": 9.038558
+      },
+      {
+        "position_id": "pos-experiment-freeze-cost-absent-a-2",
+        "started_at": "2026-10-17T13:10:17.369686+00:00",
+        "finished_at": "2026-10-17T13:10:19.857800+00:00",
+        "seconds": 2.488114
+      },
+      {
+        "position_id": "pos-experiment-heldout-ambiguous-split-a-1",
+        "started_at": "2026-10-17T13:10:23.996786+00:00",
+        "finished_at": "2026-10-17T13:10:36.525082+00:00",
+        "seconds": 12.528296
+      },
+      {
+        "position_id": "pos-experiment-heldout-ambiguous-split-a-2",
+        "started_at": "2026-10-17T13:10:54.392007+00:00",
+        "finished_at": "2026-10-17T13:11:53.033286+00:00",
+        "seconds": 58.641279
+      }
+    ],
+    "b": [
+      {
+        "position_id": "pos-experiment-baseline-plain-b-1",
+        "started_at": "2026-10-17T13:09:27.007616+00:00",
+        "finished_at": "2026-10-17T13:09:28.514250+00:00",
+        "seconds": 1.506634
+      },
+      {
+        "position_id": "pos-experiment-baseline-plain-b-2",
+        "started_at": "2026-10-17T13:09:33.202912+00:00",
+        "finished_at": "2026-10-17T13:09:34.531931+00:00",
+        "seconds": 1.329019
+      },
+      {
+        "position_id": "pos-experiment-baseline-distractor-b-1",
+        "started_at": "2026-10-17T13:09:38.684843+00:00",
+        "finished_at": "2026-10-17T13:09:41.341261+00:00",
+        "seconds": 2.656418
+      },
+      {
+        "position_id": "pos-experiment-baseline-distractor-b-2",
+        "started_at": "2026-10-17T13:09:41.596904+00:00",
+        "finished_at": "2026-10-17T13:09:50.755019+00:00",
+        "seconds": 9.158115
+      },
+      {
+        "position_id": "pos-experiment-freeze-cost-absent-b-1",
+        "started_at": "2026-10-17T13:09:59.347371+00:00",
+        "finished_at": "2026-10-17T13:10:07.754249+00:00",
+        "seconds": 8.406878
+      },
+      {
+        "position_id": "pos-experiment-freeze-cost-absent-b-2",
+        "started_at": "2026-10-17T13:10:20.119584+00:00",
+        "finished_at": "2026-10-17T13:10:23.731472+00:00",
+        "seconds": 3.611888
+      },
+      {
+        "position_id": "pos-experiment-heldout-ambiguous-split-b-1",
+        "started_at": "2026-10-17T13:10:36.784299+00:00",
+        "finished_at": "2026-10-17T13:10:51.269722+00:00",
+        "seconds": 14.485423
+      },
+      {
+        "position_id": "pos-experiment-heldout-ambiguous-split-b-2",
+        "started_at": "2026-10-17T13:10:51.533672+00:00",
+        "finished_at": "2026-10-17T13:10:54.131651+00:00",
+        "seconds": 2.597979
+      }
+    ]
+  },
+  "observed_models": {
+    "a": [
+      "dots-studio/dots-3-note-preview:free",
+      "liquid/lfm-2.5-2.6b:free",
+      "nvidia/nemotron-3-super-120b-a12b:free",
+      "nvidia/nemotron-3.5-content-safety:free",
+      "nvidia/nemotron-3.5-super-vl:free",
+      "poolside/laguna-xs-2.1:free",
+      "xingchen-agi/xing4.0-29b-a4b:free"
+    ],
+    "b": [
+      "dots-studio/dots-3-note-preview:free",
+      "liquid/lfm-2.5-2.6b:free",
+      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "nvidia/nemotron-3-super-120b-a12b:free",
+      "poolside/laguna-xs-2.1:free"
+    ]
+  },
+  "unknown_values": {
+    "monetary_cost": "unknown",
+    "quota_usage": "unknown",
+    "token_usage": "unknown"
+  },
+  "generated_at": "2026-10-17T13:22:55.320128+00:00"
+}

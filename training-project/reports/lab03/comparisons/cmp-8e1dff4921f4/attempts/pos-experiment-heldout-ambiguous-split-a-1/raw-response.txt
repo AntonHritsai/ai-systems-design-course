@@ -1,0 +1,4 @@
+{
+  "case_id": "experiment-heldout-ambiguous-split",
+  "proposed_text": "The note lists one case text under both splits and does not say which designation is current, so the duplicated case's split cannot be determined from the supplied rules; although development cases may be inspected while configurations change and held-out cases are reserved from that process, the note leaves the case's current designation unresolved."
+}

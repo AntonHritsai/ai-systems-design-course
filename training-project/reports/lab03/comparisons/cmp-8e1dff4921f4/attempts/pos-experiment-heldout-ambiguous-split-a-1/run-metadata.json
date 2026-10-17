@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-heldout-ambiguous-split-a-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:10:23.996786+00:00",
+  "finished_at": "2026-10-17T13:10:36.525082+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "nvidia/nemotron-3.5-super-vl:free"
+}

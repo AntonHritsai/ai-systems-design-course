@@ -1,0 +1,10 @@
+schema_version: '1.0'
+blind_id: blind-008
+category: Q
+source_pointer: Development cases may be inspected while configurations change. Held-out cases are reserved
+  from that process. The note lists one case text under both splits and does not say which designation
+  is current.
+rationale: Джерело містить той самий випадок в обох частинах набору й не визначає актуальної належності.
+  Відповідь зберігає цю невизначеність без довільного вибору частини, тому застосовано Q.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T13:19:35.694649+00:00'

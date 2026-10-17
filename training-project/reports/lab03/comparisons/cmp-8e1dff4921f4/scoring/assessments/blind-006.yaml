@@ -1,0 +1,10 @@
+schema_version: '1.0'
+blind_id: blind-006
+category: Q
+source_pointer: The protocol freezes the hypothesis, the compared configurations, the attempt budget,
+  and the timing boundary before held-out execution. The record lists scheduled attempts and their observed
+  durations.
+rationale: Джерело не містить грошової вартості порівняння. Відповідь коректно вказує, що вартість не
+  зазначена, не прирівнюючи її до нуля й не вигадуючи суму, тому застосовано Q.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T13:19:11.853300+00:00'

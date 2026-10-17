@@ -1,0 +1,25 @@
+{
+  "family_id": "reserve-experiment-discipline",
+  "expected_behaviors": [
+    {
+      "case_id": "experiment-baseline-plain",
+      "expected_category": "S",
+      "expected_behavior": "A supported response preserves both parts: the baseline is the configuration alternatives are measured against, and it is distinct from the source baseline. Naming only the comparison role omits the distinction."
+    },
+    {
+      "case_id": "experiment-baseline-distractor",
+      "expected_category": "S",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation."
+    },
+    {
+      "case_id": "experiment-freeze-cost-absent",
+      "expected_category": "Q",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure."
+    },
+    {
+      "case_id": "experiment-heldout-ambiguous-split",
+      "expected_category": "Q",
+      "expected_behavior": "The note declares that it does not resolve the current split designation, so a supported response reports that unresolved membership rather than assigning the case to a split."
+    }
+  ]
+}

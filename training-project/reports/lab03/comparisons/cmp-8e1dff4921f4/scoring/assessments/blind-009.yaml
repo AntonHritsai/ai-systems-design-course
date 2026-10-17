@@ -1,0 +1,11 @@
+schema_version: '1.0'
+blind_id: blind-009
+category: U
+source_pointer: Development cases may be inspected while configurations change. Held-out cases are reserved
+  from that process. The note lists one case text under both splits and does not say which designation
+  is current.
+rationale: Джерело прямо зазначає, що актуальну належність випадку не визначено, але відповідь безпідставно
+  призначає його до відкладеної частини. Це непідкріплений висновок замість очікуваного визнання невизначеності,
+  тому застосовано U.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T13:19:45.772109+00:00'

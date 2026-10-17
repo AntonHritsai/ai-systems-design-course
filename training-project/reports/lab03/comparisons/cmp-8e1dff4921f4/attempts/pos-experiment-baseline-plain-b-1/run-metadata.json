@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-baseline-plain-b-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:27.007616+00:00",
+  "finished_at": "2026-10-17T13:09:28.514250+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "liquid/lfm-2.5-2.6b:free"
+}

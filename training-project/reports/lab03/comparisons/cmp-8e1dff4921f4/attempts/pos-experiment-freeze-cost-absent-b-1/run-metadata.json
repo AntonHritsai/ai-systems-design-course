@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-freeze-cost-absent-b-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:59.347371+00:00",
+  "finished_at": "2026-10-17T13:10:07.754249+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+}

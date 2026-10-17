@@ -1,0 +1,6 @@
+
+
+{
+  "case_id": "experiment-freeze-cost-absent",
+  "proposed_text": "The provided note does not record or mention any monetary cost for the frozen comparison. Instead, it describes the protocol freezing the hypothesis, compared configurations, attempt budget, and timing boundary before held-out execution, and lists the scheduled attempts and their observed durations."
+}

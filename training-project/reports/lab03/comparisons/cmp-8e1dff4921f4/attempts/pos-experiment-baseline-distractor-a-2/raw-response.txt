@@ -1,0 +1,4 @@
+{
+  "case_id": "experiment-baseline-distractor",
+  "proposed_text": "An experiment baseline is the reference configuration against which the performance or outcomes of alternative conditions in a controlled experiment are measured; it serves as the standard point of comparison, distinct from a source baseline that merely identifies the material being reviewed."
+}

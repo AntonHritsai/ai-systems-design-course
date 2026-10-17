@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "note": "Scoring view: variant identity, order, and split labels are joined only after judgments are frozen.",
+  "items": [
+    {
+      "blind_id": "blind-001",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "proposed_text": "An experiment baseline is the comparison configuration used as the standard reference against which observed alternatives are measured in a controlled comparison, serving as the control condition to assess differences or outcomes; it is specifically distinct from a source baseline, which pertains to identifying reviewed material, as emphasized in the provided context."
+    },
+    {
+      "blind_id": "blind-002",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "proposed_text": "An experiment baseline is the comparison configuration against which observed alternatives are measured in a controlled comparison, and it is distinct from the source baseline that identifies reviewed material."
+    },
+    {
+      "blind_id": "blind-003",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "proposed_text": "An experiment baseline is the reference configuration against which the performance or outcomes of alternative conditions in a controlled experiment are measured; it serves as the standard point of comparison, distinct from a source baseline that merely identifies the material being reviewed."
+    },
+    {
+      "blind_id": "blind-004",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "proposed_text": "In a controlled comparison, an experiment baseline is the comparison configuration against which observed alternatives are measured; it is distinct from the source baseline, which identifies reviewed material."
+    },
+    {
+      "blind_id": "blind-005",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "proposed_text": "The provided note does not record or mention any monetary cost for the frozen comparison. Instead, it describes the protocol freezing the hypothesis, compared configurations, attempt budget, and timing boundary before held-out execution, and lists the scheduled attempts and their observed durations."
+    },
+    {
+      "blind_id": "blind-006",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "proposed_text": "The note does not specify any monetary cost for the frozen comparison."
+    },
+    {
+      "blind_id": "blind-007",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "proposed_text": "The monetary cost recorded for the frozen comparison is not specified in the provided source."
+    },
+    {
+      "blind_id": "blind-008",
+      "case_task": "State which split the duplicated case belongs to under this note's rules.",
+      "supplied_source": "Development cases may be inspected while configurations change. Held-out cases are reserved from that process. The note lists one case text under both splits and does not say which designation is current.",
+      "expected_behavior": "The note declares that it does not resolve the current split designation, so a supported response reports that unresolved membership rather than assigning the case to a split.",
+      "proposed_text": "The note lists one case text under both splits and does not say which designation is current, so the duplicated case's split cannot be determined from the supplied rules; although development cases may be inspected while configurations change and held-out cases are reserved from that process, the note leaves the case's current designation unresolved."
+    },
+    {
+      "blind_id": "blind-009",
+      "case_task": "State which split the duplicated case belongs to under this note's rules.",
+      "supplied_source": "Development cases may be inspected while configurations change. Held-out cases are reserved from that process. The note lists one case text under both splits and does not say which designation is current.",
+      "expected_behavior": "The note declares that it does not resolve the current split designation, so a supported response reports that unresolved membership rather than assigning the case to a split.",
+      "proposed_text": "Under the note's rules, the held-out split is the current designation since development cases are explicitly for inspection during configuration changes, while held-out cases are reserved from that process; the case is assigned to the held-out split despite being listed under both due to the absence of a current designation clarification."
+    }
+  ]
+}

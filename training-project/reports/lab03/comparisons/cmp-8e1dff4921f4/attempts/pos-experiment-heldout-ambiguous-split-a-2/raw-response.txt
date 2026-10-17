@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "experiment-heldout-ambiguous-split",
+  "proposed_text": "The duplicated case cannot be definitively assigned to one split under this note's rules, because the case text is listed under both development and held-out cases and no designation of the current split is specified; therefore it remains ambiguously associated with the experiment-heldout-ambiguous-split."
+}
+```

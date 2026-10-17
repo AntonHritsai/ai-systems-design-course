@@ -1,0 +1,4 @@
+{
+  "case_id": "experiment-freeze-cost-absent",
+  "proposed_text": "The monetary cost recorded for the frozen comparison is not specified in the provided source."
+}

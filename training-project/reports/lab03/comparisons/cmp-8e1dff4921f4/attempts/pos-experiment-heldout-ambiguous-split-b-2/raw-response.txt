@@ -1,0 +1,6 @@
+```json
+{
+  "case_id": "experiment-heldout-ambiguous-split",
+  "proposed_text": "According to the note, the same case text appears under both splits, but the note does not indicate which designation is current. Therefore, it is not possible to definitively state which split the duplicated case belongs to."
+}
+```

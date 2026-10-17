@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "entries": [
+    {
+      "blind_id": "blind-001",
+      "position_id": "pos-experiment-baseline-distractor-a-1",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "expected_category": "S"
+    },
+    {
+      "blind_id": "blind-002",
+      "position_id": "pos-experiment-baseline-distractor-b-1",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "expected_category": "S"
+    },
+    {
+      "blind_id": "blind-003",
+      "position_id": "pos-experiment-baseline-distractor-a-2",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "expected_category": "S"
+    },
+    {
+      "blind_id": "blind-004",
+      "position_id": "pos-experiment-baseline-distractor-b-2",
+      "case_task": "Explain what an experiment baseline is in a controlled comparison.",
+      "supplied_source": "An experiment baseline is the comparison configuration that observed alternatives are measured against; it is distinct from the source baseline that identifies reviewed material. A separate announcement states that the office library keeps printed standards for anyone to borrow.",
+      "expected_behavior": "A supported response preserves the comparison-role and distinction-from-source-baseline parts and does not import the library, printed standards, or borrowing into the explanation.",
+      "expected_category": "S"
+    },
+    {
+      "blind_id": "blind-005",
+      "position_id": "pos-experiment-freeze-cost-absent-a-1",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "expected_category": "Q"
+    },
+    {
+      "blind_id": "blind-006",
+      "position_id": "pos-experiment-freeze-cost-absent-b-1",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "expected_category": "Q"
+    },
+    {
+      "blind_id": "blind-007",
+      "position_id": "pos-experiment-freeze-cost-absent-b-2",
+      "case_task": "State the monetary cost recorded for the frozen comparison in this note.",
+      "supplied_source": "The protocol freezes the hypothesis, the compared configurations, the attempt budget, and the timing boundary before held-out execution. The record lists scheduled attempts and their observed durations.",
+      "expected_behavior": "The note records no monetary cost, so a supported response states that the cost is unknown rather than reporting zero or an invented figure.",
+      "expected_category": "Q"
+    },
+    {
+      "blind_id": "blind-008",
+      "position_id": "pos-experiment-heldout-ambiguous-split-a-1",
+      "case_task": "State which split the duplicated case belongs to under this note's rules.",
+      "supplied_source": "Development cases may be inspected while configurations change. Held-out cases are reserved from that process. The note lists one case text under both splits and does not say which designation is current.",
+      "expected_behavior": "The note declares that it does not resolve the current split designation, so a supported response reports that unresolved membership rather than assigning the case to a split.",
+      "expected_category": "Q"
+    },
+    {
+      "blind_id": "blind-009",
+      "position_id": "pos-experiment-heldout-ambiguous-split-b-1",
+      "case_task": "State which split the duplicated case belongs to under this note's rules.",
+      "supplied_source": "Development cases may be inspected while configurations change. Held-out cases are reserved from that process. The note lists one case text under both splits and does not say which designation is current.",
+      "expected_behavior": "The note declares that it does not resolve the current split designation, so a supported response reports that unresolved membership rather than assigning the case to a split.",
+      "expected_category": "Q"
+    }
+  ],
+  "built_at": "2026-10-17T13:14:49.245705+00:00"
+}

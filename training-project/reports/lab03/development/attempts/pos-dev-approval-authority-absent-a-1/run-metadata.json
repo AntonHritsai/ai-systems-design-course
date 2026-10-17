@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-dev-approval-authority-absent-a-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:01:37.372465+00:00",
+  "finished_at": "2026-10-17T13:01:47.832481+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "dots-studio/dots-3-note-preview:free"
+}

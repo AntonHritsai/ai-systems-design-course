@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-heldout-ambiguous-split-a-2",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:10:54.392007+00:00",
+  "finished_at": "2026-10-17T13:11:53.033286+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "xingchen-agi/xing4.0-29b-a4b:free"
+}

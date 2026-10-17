@@ -1,0 +1,11 @@
+schema_version: '1.0'
+blind_id: blind-002
+category: S
+source_pointer: An experiment baseline is the comparison configuration that observed alternatives are
+  measured against; it is distinct from the source baseline that identifies reviewed material. A separate
+  announcement states that the office library keeps printed standards for anyone to borrow.
+rationale: Відповідь повністю зберігає підтримані джерелом роль базової конфігурації експерименту в порівнянні
+  альтернатив та її відмінність від базового стану джерела. Відомості про бібліотеку не включено, непідкріплених
+  тверджень немає, тому застосовано S.
+assessed_by: anton-hritsai
+recorded_at: '2026-10-17T13:15:57.655812+00:00'

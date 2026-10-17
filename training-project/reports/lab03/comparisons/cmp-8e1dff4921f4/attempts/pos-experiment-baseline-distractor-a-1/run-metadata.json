@@ -1,0 +1,9 @@
+{
+  "position_id": "pos-experiment-baseline-distractor-a-1",
+  "adapter": "openrouter",
+  "model_id": "openrouter/free",
+  "started_at": "2026-10-17T13:09:34.795152+00:00",
+  "finished_at": "2026-10-17T13:09:38.427552+00:00",
+  "recorded_by": "anton-hritsai",
+  "observed_model": "poolside/laguna-xs-2.1:free"
+}
