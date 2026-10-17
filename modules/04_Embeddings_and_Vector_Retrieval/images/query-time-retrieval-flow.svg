@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Query-time flow from one text query to one ranked candidate output</title>
+  <desc id="desc">One text query becomes a query embedding produced by the declared embedding model and representation version. Similarity search compares that embedding with entries of the already prepared vector index whose bindings were checked against the index manifest, and returns candidate retrieval units resolved through stable retrieval identifiers and provenance links. Those candidates form the ranked candidate output of at most the configured number k of retrieval units. The index box states its canonical binding fields: the canonical knowledge collection version, the chunking configuration that realizes the retrieval-unit definition recorded in the retrieval contract, the embedding model and representation version, the required embedding dimension and embedding space, and a stable retrieval identifier and provenance link for every retrieval unit. Similarity scores order candidates but do not establish relevance, truth, or authority. A failed binding check makes the index stale for that retrieval configuration and activates the rebuild condition before query time, and a missing compatible query embedding ends the sequence without a ranked candidate output. Index preparation, context construction, and generation are not shown.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b91c1c"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:19px}
+    .heading{font-size:22px;font-weight:700}
+    .small{font-size:15px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .source{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .derived{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .index{fill:#faf5ff;stroke:#7e22ce;stroke-width:2.5}
+    .stale{fill:#fef2f2;stroke:#b91c1c;stroke-width:2.5}
+    .note{fill:#f8fafc;stroke:#64748b;stroke-width:2}
+    .flow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .build{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .failure{fill:none;stroke:#b91c1c;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#red-arrow)}
+    .down{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+  </style>
+
+  <text x="60" y="45" class="heading">Query time — from one text query to one ranked candidate output</text>
+
+  <rect x="60" y="90" width="580" height="95" rx="12" class="source"/>
+  <text x="90" y="127">Text query</text>
+  <text x="90" y="158" class="small">one execution under one retrieval configuration · Evaluation Case A or B</text>
+
+  <rect x="60" y="225" width="580" height="110" rx="12" class="derived"/>
+  <text x="90" y="262">Query embedding</text>
+  <text x="90" y="291" class="small">the declared embedding model and representation version produce it</text>
+  <text x="90" y="316" class="small">from the text query, not from the indexed retrieval units</text>
+
+  <rect x="60" y="375" width="580" height="115" rx="12" class="operation"/>
+  <text x="90" y="412">Similarity search over the prepared vector index</text>
+  <text x="90" y="441" class="small">exact or approximate nearest-neighbor search under the declared measure</text>
+  <text x="90" y="466" class="small">bindings are compared against the index manifest before use (Section 4.3)</text>
+
+  <rect x="60" y="530" width="580" height="115" rx="12" class="derived"/>
+  <text x="90" y="567">Candidate retrieval units</text>
+  <text x="90" y="596" class="small">at most the configured number k, ordered by similarity score</text>
+  <text x="90" y="621" class="small">each resolved through a stable retrieval identifier and provenance link</text>
+
+  <rect x="60" y="685" width="580" height="110" rx="12" class="source"/>
+  <text x="90" y="722">Ranked candidate output</text>
+  <text x="90" y="751" class="small">provenance-preserving source fragments, for example [F-A]</text>
+  <text x="90" y="776" class="small">at most k retrieval units; no relevance judgment is included</text>
+
+  <path d="M350 185V225" class="down"/>
+  <path d="M350 335V375" class="down"/>
+  <path d="M350 490V530" class="down"/>
+  <path d="M350 645V685" class="down"/>
+
+  <rect x="700" y="80" width="650" height="300" rx="16" class="index"/>
+  <text x="730" y="118" class="heading">Vector index: vector-index-case-ab-v1</text>
+  <text x="730" y="150" class="tiny">the canonical knowledge collection version: course-seed-v1</text>
+  <text x="730" y="176" class="tiny">the chunking configuration that realizes the retrieval-unit</text>
+  <text x="730" y="200" class="tiny">definition recorded in the retrieval contract: A</text>
+  <text x="730" y="226" class="tiny">the embedding model and representation version: course-embed-demo/v1</text>
+  <text x="730" y="252" class="tiny">the required embedding dimension and embedding space: dimension 3 in ℝ³</text>
+  <text x="730" y="278" class="tiny">a stable retrieval identifier and provenance link</text>
+  <text x="730" y="302" class="tiny">for every retrieval unit: F-A (0.84, 0.26, 0.45), F-B (0.48, 0.68, 0.42)</text>
+  <text x="730" y="336" class="tiny">prepared before query time; reused across compatible query executions</text>
+  <text x="730" y="360" class="tiny">bindings verified against the index manifest before each use</text>
+  <path d="M700 330H670V432H640" class="build"/>
+
+  <rect x="700" y="405" width="650" height="110" rx="12" class="stale"/>
+  <text x="730" y="441">Binding mismatch: stale index for that configuration</text>
+  <text x="730" y="470" class="small">the Section 4.3 rebuild condition applies before query time</text>
+  <text x="730" y="495" class="small">no query-level change repairs a stale binding</text>
+
+  <rect x="700" y="540" width="650" height="160" rx="12" class="note"/>
+  <text x="730" y="578">Boundaries of this flow</text>
+  <text x="730" y="609" class="small">similarity scores order candidate retrieval units; they do not prove relevance</text>
+  <text x="730" y="634" class="small">the human evaluator judges every returned retrieval unit</text>
+  <text x="730" y="659" class="small">a missing compatible query embedding ends the sequence without an output</text>
+  <text x="730" y="684" class="small">index preparation, context construction, and generation are not shown</text>
+
+  <text x="60" y="830" class="small">Solid blue: query-time flow · Solid green: query embedding and prepared index supply candidates · Red: stale-binding branch (Section 4.3)</text>
+</svg>

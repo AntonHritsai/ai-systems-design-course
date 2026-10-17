@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "cases source": "stage-b-fixture.json evaluation_cases operation_input only",
+  "expected-result chunking configuration binding": {
+    "chunking configuration": "sentence-pair-v1",
+    "binding rule": "the evaluator-only expected result identifiers of both evaluation cases are constructed under chunking configuration sentence-pair-v1; retrieval metrics computed under another chunking configuration are not comparable with these expected results"
+  },
+  "evaluation_cases": [
+    {
+      "evaluation_case_id": "Evaluation Case A",
+      "case_version": 1,
+      "identity_source": "Module 04 theory Section 1.4",
+      "intended_risk_group": "lexical miss",
+      "membership": "development",
+      "relevance judging basis": "A retrieval unit must explain which data identify the originating record, the originating record version, and the exact location of the supporting passage.",
+      "evaluator-only expected result": ["F-A"],
+      "approving designated human evaluator": "the course author acting as the designated human evaluator for the supplied evaluation cases",
+      "expected result provenance": "Module 04 theory Section 1.4, Evaluation Case A: the designated human evaluator has approved {F-A} under the declared relevance judging basis"
+    },
+    {
+      "evaluation_case_id": "Evaluation Case B",
+      "case_version": 1,
+      "identity_source": "Module 04 theory Section 1.4",
+      "intended_risk_group": "lexical false positive",
+      "membership": "development",
+      "relevance judging basis": "A retrieval unit must explain which data identify the originating record, the originating record version, and the exact location of the supporting passage.",
+      "evaluator-only expected result": ["F-A"],
+      "approving designated human evaluator": "the course author acting as the designated human evaluator for the supplied evaluation cases",
+      "expected result provenance": "Module 04 theory Section 1.4, Evaluation Case B: the designated human evaluator has approved {F-A} under the declared relevance judging basis"
+    }
+  ]
+}

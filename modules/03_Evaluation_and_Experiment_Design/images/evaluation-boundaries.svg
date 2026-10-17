@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+<title id="title">Evaluation boundaries and separate authorization</title>
+<desc id="desc">Task evidence flows to a model, candidate to validator, and valid candidate to human review. Dashed observation lines lead to an evaluator. Human authorization alone controls the authorized writer and accepted state.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker><marker id="obs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#9a3412"/></marker><marker id="control" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker></defs>
+<style>text{font-family:Arial,sans-serif;fill:#172554;font-size:21px} .small{font-size:16px;fill:#334155}.box{fill:#eff6ff;stroke:#2563eb;stroke-width:2}.judge{fill:#fff7ed;stroke:#9a3412;stroke-width:2}.human{fill:#f0fdf4;stroke:#15803d;stroke-width:2}.flow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#arrow)}.observe{fill:none;stroke:#9a3412;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#obs)}.control{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#control)}</style>
+<rect x="25" y="100" width="200" height="90" rx="9" class="box"/><text x="49" y="137">Task + source</text><text x="49" y="165" class="small">evidence</text>
+<rect x="318" y="100" width="195" height="90" rx="9" class="box"/><text x="353" y="151">Model</text>
+<rect x="610" y="100" width="200" height="90" rx="9" class="box"/><text x="642" y="151">Validator</text>
+<rect x="903" y="100" width="267" height="90" rx="9" class="human"/><text x="927" y="137">Authorized human</text><text x="927" y="165" class="small">semantic reviewer</text>
+<path d="M225 145H318" class="flow"/><text x="244" y="128" class="small">request</text><path d="M513 145H610" class="flow"/><text x="525" y="128" class="small">candidate</text><path d="M810 145H903" class="flow"/><text x="815" y="216" class="small">valid candidate</text>
+<rect x="500" y="320" width="220" height="90" rx="9" class="judge"/><text x="543" y="357">Evaluator</text><text x="517" y="385" class="small">scores, no authority</text>
+<path d="M422 190V260H545V320" class="observe"/><text x="339" y="248" class="small">raw response</text><path d="M704 190V320" class="observe"/><text x="711" y="265" class="small">check results</text><path d="M720 365H1035V190" class="observe"/><text x="814" y="343" class="small">assessment for review</text>
+<rect x="810" y="455" width="160" height="73" rx="9" class="human"/><text x="827" y="497">Writer</text><rect x="1015" y="455" width="155" height="73" rx="9" class="human"/><text x="1030" y="487">Accepted</text><text x="1041" y="510" class="small">state</text>
+<path d="M1080 190V430H890V455" class="control"/><text x="690" y="423" class="small">exact-candidate authorization</text><path d="M970 491H1015" class="control"/><text x="978" y="476" class="small">write</text>
+<text x="30" y="552" class="small">Solid blue: task information · Dashed orange: observations · Solid green: authorized control</text>
+</svg>

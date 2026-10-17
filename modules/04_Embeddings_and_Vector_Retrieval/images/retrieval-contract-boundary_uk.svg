@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Контракт інформаційного пошуку та шлях, призначений лише для оцінювача</title>
+  <desc id="desc">Текстовий запит, оголошена версія канонічної колекції знань і конфігурація інформаційного пошуку надходять до операції інформаційного пошуку. Операція інформаційного пошуку формує ранжований кандидатний вихід. Окремий шлях, призначений лише для оцінювача, передає підставу для судження про релевантність і очікуваний результат, призначений лише для оцінювача, оцінювачу-людині. Оцінювач-людина порівнює ранжований кандидатний вихід із цим матеріалом і записує судження про релевантність. Відібраний фрагмент джерела може перетнути межу модуля 05 і перейти до подальшої операції, але інформація, призначена лише для оцінювача, не входить до операції інформаційного пошуку.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="purple-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7e22ce"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+    .small{font-size:16px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .input{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .output{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .private{fill:#faf5ff;stroke:#7e22ce;stroke-width:2}
+    .boundary{fill:#f8fafc;stroke:#64748b;stroke-width:2;stroke-dasharray:8 6}
+    .info{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .evaluation{fill:none;stroke:#7e22ce;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#purple-arrow)}
+    .result{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .downstream{fill:none;stroke:#64748b;stroke-width:3;stroke-dasharray:5 6;marker-end:url(#gray-arrow)}
+  </style>
+
+  <rect x="25" y="65" width="945" height="315" rx="16" class="boundary"/>
+  <text x="50" y="98">Межа операції інформаційного пошуку</text>
+
+  <rect x="55" y="135" width="245" height="75" rx="9" class="input"/>
+  <text x="82" y="168">Текстовий запит</text>
+  <text x="82" y="193" class="small">інформаційна потреба</text>
+
+  <rect x="55" y="245" width="245" height="90" rx="9" class="input"/>
+  <text x="82" y="278">Канонічна колекція</text>
+  <text x="82" y="303">знань</text>
+  <text x="82" y="326" class="small">оголошена версія</text>
+
+  <rect x="375" y="105" width="250" height="72" rx="9" class="input"/>
+  <text x="402" y="129" class="small">Конфігурація</text>
+  <text x="402" y="150" class="small">інформаційного пошуку</text>
+  <text x="402" y="170" class="tiny">повний оголошений метод</text>
+
+  <rect x="375" y="220" width="250" height="92" rx="9" class="operation"/>
+  <text x="400" y="253" class="small">Операція інформаційного</text>
+  <text x="400" y="277" class="small">пошуку</text>
+  <text x="400" y="300" class="tiny">шукає; не записує</text>
+
+  <rect x="705" y="220" width="235" height="92" rx="9" class="output"/>
+  <text x="730" y="246" class="small">Ранжований</text>
+  <text x="730" y="266" class="small">кандидатний вихід</text>
+  <text x="730" y="287" class="tiny">упорядковані одиниці</text>
+  <text x="730" y="303" class="tiny">інформаційного пошуку</text>
+
+  <path d="M300 172H338V248H375" class="info"/>
+  <path d="M300 290H338V278H375" class="info"/>
+  <path d="M500 177V220" class="info"/>
+  <path d="M625 266H705" class="result"/>
+
+  <rect x="1025" y="177" width="330" height="178" rx="14" class="boundary"/>
+  <text x="1050" y="210">Межа модуля 05</text>
+  <rect x="1055" y="235" width="270" height="82" rx="9" class="input"/>
+  <text x="1080" y="260" class="small">Відібраний фрагмент</text>
+  <text x="1080" y="281" class="small">джерела</text>
+  <text x="1080" y="304" class="tiny">можливі надані джерельні свідчення</text>
+  <path d="M940 266H1055" class="downstream"/>
+  <text x="957" y="247" class="tiny">окремий відбір</text>
+
+  <rect x="25" y="425" width="1330" height="215" rx="16" class="boundary"/>
+  <text x="50" y="460">Межа інформації лише для оцінювача — захищено від операції інформаційного пошуку</text>
+
+  <rect x="70" y="500" width="270" height="90" rx="9" class="private"/>
+  <text x="95" y="526" class="small">Підстава для судження</text>
+  <text x="95" y="548" class="small">про релевантність</text>
+  <text x="95" y="570" class="tiny">потрібна інформація</text>
+  <text x="95" y="586" class="tiny">для запиту</text>
+
+  <rect x="405" y="500" width="300" height="90" rx="9" class="private"/>
+  <text x="430" y="527" class="small">Очікуваний результат,</text>
+  <text x="430" y="550" class="small">призначений лише для оцінювача</text>
+  <text x="430" y="576" class="tiny">розглянуті релевантні одиниці</text>
+
+  <rect x="760" y="500" width="235" height="90" rx="9" class="private"/>
+  <text x="792" y="537">Оцінювач-людина</text>
+  <text x="792" y="566" class="tiny">застосовує підставу</text>
+
+  <rect x="1070" y="500" width="235" height="90" rx="9" class="output"/>
+  <text x="1096" y="530" class="small">Записані судження</text>
+  <text x="1096" y="553" class="small">про релевантність</text>
+  <text x="1096" y="578" class="tiny">свідчення в межах випадку</text>
+
+  <path d="M205 500V480H730V525H760" class="evaluation"/>
+  <path d="M705 565H760" class="evaluation"/>
+  <path d="M822 312V405H878V500" class="result"/>
+  <text x="840" y="396" class="tiny">спостережений вихід</text>
+  <path d="M995 545H1070" class="result"/>
+
+  <text x="35" y="680" class="small">Суцільні сині: входи операції та конфігурація · Суцільні зелені: спостережений або записаний вихід</text>
+  <text x="35" y="705" class="small">Штрихові фіолетові: інформація лише для оцінювача · Штрихові сірі: пізніший відбір через межу модуля 05</text>
+</svg>

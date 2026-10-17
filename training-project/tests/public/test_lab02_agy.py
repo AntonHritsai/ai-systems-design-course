@@ -87,7 +87,10 @@ class Lab02AgyAdapterTests(unittest.TestCase):
             self.assertFalse((run_dir / "raw-response.txt").exists())
             self.assertFalse((run_dir / "run-metadata.json").exists())
 
-    def test_agy_profile_extracts_only_the_structured_response_and_records_metadata(self) -> None:
+    @patch("learning_project.agy_adapter.platform.system", return_value="Linux")
+    def test_agy_profile_extracts_only_the_structured_response_and_records_metadata(
+        self, _mocked_system
+    ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             report_dir = root / "reports/lab02"

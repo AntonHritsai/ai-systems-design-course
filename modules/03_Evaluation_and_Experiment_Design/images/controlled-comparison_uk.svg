@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+<title id="title">Контрольоване офлайн-порівняння із захищеними еталонами</title>
+<desc id="desc">Приклади для розроблення інформують зафіксовану групу конфігурацій, що містить варіанти інструкцій A і B на тому самому маршруті моделі. Однакові відкладені входи завдань надходять до обох варіантів. Обидва шляхи виходу надходять до фіксованого оцінювача. Окремий вигляд оцінювання постачає копію джерела та приховані очікувані відповіді лише оцінювачу. Оцінки надходять до парного запису. Жодна прихована відповідь не потрапляє в генерування.</desc>
+<defs>
+  <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+  <marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7e22ce"/></marker>
+</defs>
+<style>
+  text{font-family:Arial,sans-serif;fill:#172554;font-size:20px}
+  .small{font-size:15px;fill:#334155}
+  .medium{font-size:18px}
+  .compact{font-size:17px}
+  .xsmall{font-size:13px;fill:#334155}
+  .micro{font-size:12px;fill:#334155}
+  .box{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+  .group{fill:#f8fafc;stroke:#64748b;stroke-width:2}
+  .private{fill:#faf5ff;stroke:#7e22ce;stroke-width:2}
+  .line{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue)}
+  .ref{fill:none;stroke:#7e22ce;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#purple)}
+</style>
+<rect x="30" y="25" width="230" height="76" rx="9" class="box"/>
+<text x="48" y="57" class="medium">Випадки розроблення</text>
+<text x="42" y="82" class="small">промпт / рубрика оцінювання</text>
+<rect x="340" y="120" width="300" height="315" rx="12" class="group"/>
+<text x="365" y="150">Зафіксовані конфігурації</text>
+<text x="355" y="174" class="small">той самий маршрут і налаштування</text>
+<path id="freeze" d="M260 63H490V120" class="line"/>
+<text x="278" y="48" class="small">інформувати й зафіксувати A і B</text>
+<rect x="380" y="200" width="220" height="70" rx="9" class="box"/>
+<text x="410" y="230">Варіант A</text>
+<text x="395" y="254" class="small">зафіксована інструкція A</text>
+<rect x="380" y="325" width="220" height="70" rx="9" class="box"/>
+<text x="410" y="355">Варіант B</text>
+<text x="395" y="379" class="small">зафіксована інструкція B</text>
+<rect x="30" y="260" width="230" height="80" rx="9" class="box"/>
+<text x="42" y="293" class="medium">Відкладені входи завдань</text>
+<text x="42" y="318" class="micro">завдання + джерело, без відповідей</text>
+<path id="input-a" d="M260 300H300V235H380" class="line"/>
+<path id="input-b" d="M300 300V360H380" class="line"/>
+<circle cx="300" cy="300" r="4" fill="#2563eb"/>
+<text x="48" y="369" class="small">ті самі випадки для A і B</text>
+<rect id="evaluator" x="780" y="240" width="200" height="145" rx="9" class="private"/>
+<text x="792" y="302" class="medium">Фіксований оцінювач</text>
+<text x="800" y="330" class="small">рубрика + рецензент</text>
+<path id="output-a" d="M600 235H710V270H780" class="line"/>
+<text x="648" y="216" class="small">виходи A</text>
+<path id="output-b" d="M600 360H780" class="line"/>
+<text x="648" y="343" class="small">виходи B</text>
+<rect x="30" y="475" width="295" height="85" rx="9" class="private"/>
+<text x="50" y="507">Свідчення оцінювання</text>
+<text x="42" y="535" class="xsmall">копія завдання/джерела + приховані відповіді</text>
+<path id="references" d="M325 517H880V385" class="ref"/>
+<text x="390" y="501" class="small">очікувана поведінка і джерело для оцінювання</text>
+<rect x="1035" y="265" width="155" height="95" rx="9" class="box"/>
+<text x="1045" y="302" class="compact">Парний результат</text>
+<text x="1085" y="330" class="small">запис</text>
+<path id="assessment" d="M980 313H1035" class="line"/>
+<text x="968" y="250" class="small">оцінки + обґрунтування</text>
+
+<text x="30" y="601" class="small">Суцільні сині: потік конфігурації/входу/виходу · Пунктирні фіолетові: захищений потік свідчень оцінювання</text>
+</svg>
