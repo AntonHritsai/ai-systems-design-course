@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "selection_record_id": "SR-05-1",
+  "retrieval_unit_admission_criteria": {
+    "rule_id": "RUS-05-v1",
+    "criteria_order": [
+      "provenance-link resolution",
+      "context-budget fit"
+    ],
+    "context_budget_characters": 300
+  },
+  "required_text_query": "How can an auditor trace an excerpt to its origin and revision?",
+  "ranked_candidate_output": [
+    {
+      "rank": 1,
+      "retrieval_unit_id": "F-A",
+      "text": "A provenance link binds each evidence passage to its originating record identifier, record version, and exact sentence span. The link lets a reviewer locate the passage used to justify a proposed concept definition.",
+      "provenance_link": {
+        "record id": "R-A",
+        "version": 1,
+        "sentences": "1-2",
+        "resolves_to_registered_source_material": true
+      }
+    },
+    {
+      "rank": 2,
+      "retrieval_unit_id": "F-B",
+      "text": "A proposal-run receipt records the source and version of the model used to produce a concept proposal; it does not locate the evidence passage.",
+      "provenance_link": {
+        "record id": "R-B",
+        "version": 1,
+        "sentences": "1",
+        "resolves_to_registered_source_material": true
+      }
+    },
+    {
+      "rank": 3,
+      "retrieval_unit_id": "F-X",
+      "text": "A constructed retrieval unit whose provenance link does not resolve to registered sources.",
+      "provenance_link": {
+        "record id": null,
+        "version": null,
+        "sentences": null,
+        "resolves_to_registered_source_material": false
+      }
+    }
+  ]
+}

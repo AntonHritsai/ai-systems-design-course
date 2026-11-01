@@ -62,6 +62,12 @@ def _require(condition: bool, message: str) -> None:
 
 
 def _write_new_output(output: Path, content: str) -> None:
+    if os.name == "nt":
+        # Share Stage B's native Windows writer, including overwrite errors.
+        from .lab04 import _write_new_windows_output
+
+        _write_new_windows_output(output, content)
+        return
     output.parent.mkdir(parents=True, exist_ok=True)
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
     try:

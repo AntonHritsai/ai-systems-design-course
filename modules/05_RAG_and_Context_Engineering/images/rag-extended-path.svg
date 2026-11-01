@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="930" viewBox="0 0 1600 930" role="img" aria-labelledby="title desc">
+  <title id="title">Extended retrieval-augmented generation path</title>
+  <desc id="desc">The engineering path begins with an information need. Query rewriting produces a text query. The accepted retrieval operation produces a ranked candidate output. Retrieval-unit selection forms supplied source evidence. Context construction produces a bounded model request. The model-backed concept-proposal operation produces either a candidate concept definition or a refusal. A human evaluator separately evaluates that generated output using evaluator-only information. The end-to-end user-workflow outcome is a separate downstream observation. The diagram is illustrative rather than exhaustive.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#15803d"/></marker>
+    <marker id="purple-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7e22ce"/></marker>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#172554;font-size:19px}
+    .small{font-size:15px;fill:#334155}
+    .tiny{font-size:14px;fill:#475569}
+    .input{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+    .operation{fill:#ecfdf5;stroke:#15803d;stroke-width:2.5}
+    .output{fill:#f0fdf4;stroke:#15803d;stroke-width:2}
+    .evaluation{fill:#faf5ff;stroke:#7e22ce;stroke-width:2}
+    .observation{fill:#f8fafc;stroke:#64748b;stroke-width:2}
+    .boundary{fill:#ffffff;stroke:#94a3b8;stroke-width:2;stroke-dasharray:8 6}
+    .flow{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#blue-arrow)}
+    .result{fill:none;stroke:#15803d;stroke-width:3;marker-end:url(#green-arrow)}
+    .eval-flow{fill:none;stroke:#7e22ce;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#purple-arrow)}
+    .downstream{fill:none;stroke:#64748b;stroke-width:3;stroke-dasharray:6 6;marker-end:url(#gray-arrow)}
+  </style>
+
+  <rect x="25" y="35" width="1550" height="185" rx="16" class="boundary"/>
+  <text x="50" y="70">Before and through the accepted retrieval operation</text>
+
+  <rect x="60" y="105" width="215" height="72" rx="9" class="input"/>
+  <text x="88" y="137">Information need</text>
+  <text x="88" y="161" class="small">user question</text>
+
+  <rect x="345" y="105" width="215" height="72" rx="9" class="operation"/>
+  <text x="377" y="137">Query rewriting</text>
+  <text x="377" y="161" class="small">forms retrieval input</text>
+
+  <rect x="630" y="105" width="215" height="72" rx="9" class="input"/>
+  <text x="672" y="137">Text query</text>
+  <text x="672" y="161" class="small">retrieval input</text>
+
+  <rect x="915" y="95" width="255" height="92" rx="9" class="operation"/>
+  <text x="950" y="128">Retrieval operation</text>
+  <text x="950" y="153" class="small">accepted Module 04 component</text>
+  <text x="950" y="175" class="small">used, not redesigned</text>
+
+  <rect x="1240" y="95" width="275" height="92" rx="9" class="output"/>
+  <text x="1275" y="128">Ranked candidate output</text>
+  <text x="1275" y="153" class="small">ordered retrieval units</text>
+  <text x="1275" y="175" class="small">not generated answer</text>
+
+  <path d="M275 141H345" class="flow"/>
+  <path d="M560 141H630" class="result"/>
+  <path d="M845 141H915" class="flow"/>
+  <path d="M1170 141H1240" class="result"/>
+
+  <rect x="25" y="270" width="1550" height="205" rx="16" class="boundary"/>
+  <text x="50" y="305">Augmentation: selected retrieval units become bounded source evidence</text>
+
+  <rect x="140" y="345" width="270" height="82" rx="9" class="operation"/>
+  <text x="172" y="378">Retrieval-unit selection</text>
+  <text x="172" y="404" class="small">admits or excludes units</text>
+
+  <rect x="505" y="345" width="270" height="82" rx="9" class="output"/>
+  <text x="541" y="378">Supplied source evidence</text>
+  <text x="541" y="404" class="small">selected retrieval units</text>
+
+  <rect x="870" y="345" width="270" height="82" rx="9" class="operation"/>
+  <text x="907" y="378">Context construction</text>
+  <text x="907" y="404" class="small">assembles the model input</text>
+
+  <rect x="1235" y="345" width="270" height="82" rx="9" class="output"/>
+  <text x="1270" y="378">Bounded model request</text>
+  <text x="1270" y="404" class="small">complete operation input</text>
+
+  <path d="M1378 187V245H275V345" class="result"/>
+  <text x="1035" y="240" class="tiny">selection starts from the ranked candidate output</text>
+  <path d="M410 386H505" class="result"/>
+  <path d="M775 386H870" class="flow"/>
+  <path d="M1140 386H1235" class="result"/>
+
+  <rect x="25" y="525" width="1550" height="190" rx="16" class="boundary"/>
+  <text x="50" y="560">Generation and response-level evaluation</text>
+
+  <rect x="95" y="600" width="330" height="82" rx="9" class="operation"/>
+  <text x="132" y="633">Model-backed concept-proposal</text>
+  <text x="132" y="658">operation</text>
+
+  <rect x="515" y="590" width="300" height="102" rx="9" class="output"/>
+  <text x="550" y="623">Candidate concept definition</text>
+  <text x="550" y="648">or refusal</text>
+  <text x="550" y="674" class="small">generated output</text>
+
+  <rect x="920" y="590" width="275" height="102" rx="9" class="evaluation"/>
+  <text x="958" y="623">Human evaluation</text>
+  <text x="958" y="648" class="small">response-level judgment</text>
+  <text x="958" y="674" class="small">not retrieval rank</text>
+
+  <rect x="1285" y="590" width="245" height="102" rx="9" class="observation"/>
+  <text x="1318" y="623">End-to-end user-</text>
+  <text x="1318" y="648">workflow outcome</text>
+  <text x="1318" y="674" class="small">separate observation</text>
+
+  <path d="M1370 427V500H260V600" class="flow"/>
+  <path d="M425 641H515" class="result"/>
+  <path d="M815 641H920" class="result"/>
+  <path d="M815 612V575H1408V590" class="downstream"/>
+  <text x="970" y="568" class="tiny">separate downstream user workflow</text>
+
+  <rect x="820" y="755" width="385" height="82" rx="9" class="evaluation"/>
+  <text x="855" y="788">Evaluator-only information</text>
+  <text x="855" y="814" class="small">never enters the model-backed operation</text>
+  <path d="M1013 755V692" class="eval-flow"/>
+
+  <text x="45" y="875" class="small">Solid blue: operation input · Solid green: produced result · Dashed purple: evaluator-only path</text>
+  <text x="45" y="903" class="small">Dashed gray: downstream user-workflow path · The path is illustrative, not exhaustive, and grants no write authority.</text>
+</svg>

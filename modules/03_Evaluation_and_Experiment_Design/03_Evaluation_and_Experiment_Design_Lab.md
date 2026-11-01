@@ -475,7 +475,7 @@ Follow [`LABORATORY_STANDING_RULES.md`](../../LABORATORY_STANDING_RULES.md). Sub
 - `reports/lab03/verification-report.json`;
 - `reports/lab03/screenshots/07-final-verification.png`.
 
-Put the fork URL, personal branch, and exact final commit hash in the Teams cover message. Do not submit credentials, the external vault, unfiltered logs, a PDF duplicate, or unrelated workstation material.
+The attached `verification-report.json` identifies the exact final commit. Do not write a separate Teams cover message or text-field notification; attach only the three files listed above. Do not submit credentials, the external vault, unfiltered logs, a PDF duplicate, or unrelated workstation material.
 
 ## Control questions
 

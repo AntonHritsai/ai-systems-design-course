@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://course.example/schemas/lab05-generation-outcome.schema.json",
+  "title": "Laboratory 05 model-backed concept-proposal outcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "outcome type",
+    "candidate concept definition id",
+    "claims",
+    "refusal id",
+    "blocking condition",
+    "authority boundary"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "outcome type": {
+      "type": "string",
+      "enum": ["candidate concept definition", "refusal"]
+    },
+    "candidate concept definition id": {"type": "string"},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim id", "text", "claim citation"],
+        "properties": {
+          "claim id": {"type": "string", "minLength": 1},
+          "text": {"type": "string", "minLength": 1},
+          "claim citation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["claim id", "retrieval unit id"],
+            "properties": {
+              "claim id": {"type": "string", "minLength": 1},
+              "retrieval unit id": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "refusal id": {"type": "string"},
+    "blocking condition": {"type": "string"},
+    "authority boundary": {
+      "type": "string",
+      "const": "The generated outcome is not an authorization to change the canonical knowledge collection."
+    }
+  }
+}

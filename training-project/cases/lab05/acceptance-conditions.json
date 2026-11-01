@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "shared_experiment_protocol_id": "SEP-05-1",
+  "acceptance_conditions": {
+    "minimum_rubric_pass_rate": 1.0,
+    "maximum_latency_seconds_per_generated_output": 330.0,
+    "maximum_human_review_minutes_per_generated_output": 5,
+    "conflicting_instruction_case_id": "EC-05-3",
+    "token_usage_evidence": "not available from the AGY adapter"
+  },
+  "recorded_by": "course-author",
+  "authority_boundary": "The acceptance conditions are not an authorization to change the canonical knowledge collection."
+}

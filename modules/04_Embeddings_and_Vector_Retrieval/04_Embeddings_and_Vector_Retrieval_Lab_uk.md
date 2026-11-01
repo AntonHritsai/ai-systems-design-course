@@ -80,17 +80,45 @@
 - перевірку кожного явного чисельника та знаменника;
 - обмежене рішення щодо конфігурації.
 
-## Кроки
-
-### Крок студента 1 — Застосувати обидві надані конфігурації розбивки на фрагменти
-
-```bash
-uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
-```
+Створіть гілку лабораторної роботи 04 від завершеної гілки лабораторної роботи 03, а потім ініціалізуйте вихідний звіт і каталог знімків екрана до виконання будь-якої операції лабораторної роботи 04.
 
 Windows PowerShell:
 
 ```powershell
+git switch lab03/<student-id>
+git switch -c lab04/<student-id>
+cd .\training-project
+New-Item -ItemType Directory -Force .\reports\lab04\screenshots | Out-Null
+if (-not (Test-Path .\reports\lab04\REPORT.md)) {
+  Copy-Item .\fixtures\lab04\REPORT.md .\reports\lab04\REPORT.md
+}
+```
+
+Linux і macOS:
+
+```bash
+git switch lab03/<student-id>
+git switch -c lab04/<student-id>
+cd training-project
+mkdir -p reports/lab04/screenshots
+test -f reports/lab04/REPORT.md || cp fixtures/lab04/REPORT.md reports/lab04/REPORT.md
+```
+
+Укажіть URL форка, особисту гілку `lab04/<student-id>` і статус завершення в `reports/lab04/REPORT.md`. Збережіть точні відносні посилання, надані фікстурою. На кожному знімку екрана мають бути видимі обліковий запис операційної системи або GitHub і системна дата; не використовуйте зображень-заповнювачів.
+
+## Кроки
+
+### Крок студента 1 — Застосувати обидві надані конфігурації розбивки на фрагменти
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
+```
+
+Linux і macOS:
+
+```bash
 uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
 ```
 
@@ -102,14 +130,16 @@ uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
 
 ### Крок студента 2 — Оглянути контракт інформаційного пошуку, фрагменти джерела та зв’язки походження
 
-```bash
-python -m json.tool reports/lab04/stage-b/boundary-comparison.json
-```
-
 Windows PowerShell:
 
 ```powershell
 Get-Content reports/lab04/stage-b/boundary-comparison.json
+```
+
+Linux і macOS:
+
+```bash
+python -m json.tool reports/lab04/stage-b/boundary-comparison.json
 ```
 
 Перевірте, що:
@@ -127,14 +157,6 @@ Get-Content reports/lab04/stage-b/boundary-comparison.json
 
 Під час ухвалення рішення про межу студент діє як команда інженерів. Детермінована лабораторна команда фіксує надані студентом вибір та обґрунтування й не обирає конфігурацію розбивки на фрагменти самостійно.
 
-```bash
-uv run learning-project lab04 record-boundary-decision \
-  --report-dir reports/lab04 \
-  --chunking-configuration-id sentence-pair-v1 \
-  --rationale "The sentence-pair boundary rule preserves together the originating record identifier, record version, and exact supporting-passage location required by the relevance judging basis of Evaluation Case A and Evaluation Case B." \
-  --by "<student-id>"
-```
-
 Windows PowerShell:
 
 ```powershell
@@ -145,17 +167,31 @@ uv run learning-project lab04 record-boundary-decision `
   --by "<student-id>"
 ```
 
-Команда записує `reports/lab04/stage-b/boundary-decision.yaml`. Рішення про межу обирає `source fragment under sentence-pair-v1` як визначення одиниці інформаційного пошуку для оголошених випадків для оцінювання та не уповноважує внесення змін до канонічної колекції знань. Команда відмовляється перезаписувати наявний `boundary-decision.yaml`.
-
-### Крок студента 4 — Отримати оголошену локальну модель ембедингу один раз
+Linux і macOS:
 
 ```bash
-uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
+uv run learning-project lab04 record-boundary-decision \
+  --report-dir reports/lab04 \
+  --chunking-configuration-id sentence-pair-v1 \
+  --rationale "The sentence-pair boundary rule preserves together the originating record identifier, record version, and exact supporting-passage location required by the relevance judging basis of Evaluation Case A and Evaluation Case B." \
+  --by "<student-id>"
 ```
+
+Команда записує `reports/lab04/stage-b/boundary-decision.yaml`. Рішення про межу обирає `source fragment under sentence-pair-v1` як визначення одиниці інформаційного пошуку для оголошених випадків для оцінювання та не уповноважує внесення змін до канонічної колекції знань. Команда відмовляється перезаписувати наявний `boundary-decision.yaml`.
+
+Виконайте `uv run learning-project lab04 verify-stage-b --report-dir reports/lab04`. Після успішної перевірки збережіть `reports/lab04/screenshots/01-boundary-selection.png`. На зображенні мають бути видимі обрана межа, результат перевірки, обліковий запис операційної системи або GitHub і системна дата.
+
+### Крок студента 4 — Отримати оголошену локальну модель ембедингу один раз
 
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
+```
+
+Linux і macOS:
+
+```bash
 uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
 ```
 
@@ -169,13 +205,15 @@ uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-ba
 
 ### Крок студента 5 — Створити сумісні ембединги одиниць інформаційного пошуку
 
-```bash
-uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
+```
+
+Linux і macOS:
+
+```bash
 uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
 ```
 
@@ -191,13 +229,15 @@ uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
 
 ### Крок студента 6 — Підготувати векторний індекс
 
-```bash
-uv run learning-project lab04 prepare-index --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 prepare-index --report-dir reports/lab04
+```
+
+Linux і macOS:
+
+```bash
 uv run learning-project lab04 prepare-index --report-dir reports/lab04
 ```
 
@@ -225,14 +265,16 @@ uv run learning-project lab04 prepare-index --report-dir reports/lab04
 
 Виконайте перевірку прив’язок перед використанням для обох потрібних конфігурацій інформаційного пошуку:
 
-```bash
+Windows PowerShell:
+
+```powershell
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v1
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v2
 ```
 
-Windows PowerShell:
+Linux і macOS:
 
-```powershell
+```bash
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v1
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v2
 ```
@@ -244,32 +286,27 @@ uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --
 
 Перевірте свідчення Stage C1:
 
-```bash
-uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
 uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
 ```
 
+Linux і macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
+```
+
 **Очікуваний результат:** `Laboratory 04 Stage C1 verification passed for vector-index-course-seed-v1.`
+
+Після успішної перевірки збережіть `reports/lab04/screenshots/02-embedding-index.png`. На зображенні мають бути видимі ідентифікатор підготовленого індексу, результати придатної та застарілої перевірок прив’язок, результат перевірки, обліковий запис операційної системи або GitHub і системна дата.
 
 Якщо команда перевірки повертає ненульовий код виходу, зупиніться перед кроком студента 8. Збережіть ембединги одиниць інформаційного пошуку, маніфест індексу, записи перевірки прив’язок перед використанням і вивід помилки для діагностики.
 
 ### Крок студента 8 — Виконати обидва випадки для оцінювання за всіма чотирма конфігураціями інформаційного пошуку
 
 Виконайте обидва випадки для оцінювання за кожною з чотирьох порівнюваних конфігурацій інформаційного пошуку. Використовуйте новий вихідний каталог Stage C2; команда відмовляється перезаписувати наявний вихід. Зберігайте назви чотирьох конфігурацій дослівно.
-
-```bash
-set -e
-for case_id in 'Evaluation Case A' 'Evaluation Case B'; do
-  for configuration_id in 'lexical retrieval' 'embedding-based retrieval' 'hybrid retrieval' 'lexical retrieval followed by embedding-based reranking'; do
-    uv run learning-project lab04 execute-retrieval --report-dir reports/lab04 --model-dir models/potion-base-8M --case-id "$case_id" --configuration-id "$configuration_id"
-  done
-done
-```
 
 Windows PowerShell:
 
@@ -282,6 +319,17 @@ foreach ($case in $cases) {
         if ($LASTEXITCODE -ne 0) { throw "Retrieval stopped for $case / $configuration" }
     }
 }
+```
+
+Linux і macOS:
+
+```bash
+set -e
+for case_id in 'Evaluation Case A' 'Evaluation Case B'; do
+  for configuration_id in 'lexical retrieval' 'embedding-based retrieval' 'hybrid retrieval' 'lexical retrieval followed by embedding-based reranking'; do
+    uv run learning-project lab04 execute-retrieval --report-dir reports/lab04 --model-dir models/potion-base-8M --case-id "$case_id" --configuration-id "$configuration_id"
+  done
+done
 ```
 
 Кожна команда записує `reports/lab04/stage-c2/<evaluation-case>-<configuration>.json` із текстовим запитом, версією канонічної колекції знань, свідченнями для ранжування та ранжованим кандидатним виходом. Повернений кандидат фіксує ранг, стабільний ідентифікатор пошуку, зв’язок походження та бал. Порожній ранжований кандидатний вихід — це `[]`, а не судження про релевантність.
@@ -297,11 +345,6 @@ foreach ($case in $cases) {
 
 **Огляньте спостережені ранжовані кандидатні виходи:**
 
-```bash
-uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json
-uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json
-```
-
 Windows PowerShell:
 
 ```powershell
@@ -309,13 +352,16 @@ Get-Content reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json -Raw 
 Get-Content reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json -Raw | ConvertFrom-Json | ConvertTo-Json -Depth 12
 ```
 
+Linux і macOS:
+
+```bash
+uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json
+uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json
+```
+
 Спостережений ранжований кандидатний вихід повідомляє свідчення для ранжування для двох оголошених випадків, а не судження про релевантність і не свідчення загальної переваги будь-якого механізму інформаційного пошуку.
 
 Перевірте свідчення Stage C2:
-
-```bash
-uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
 
 Windows PowerShell:
 
@@ -323,7 +369,15 @@ Windows PowerShell:
 uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
+Linux і macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
 **Очікуваний результат:** `Laboratory 04 Stage C2 verification passed for 8 outputs.`
+
+Після успішної перевірки збережіть `reports/lab04/screenshots/03-retrieval-comparison.png`. На зображенні мають бути видимі оглянуті виходи обох випадків для оцінювання, результат перевірки восьми виходів, обліковий запис операційної системи або GitHub і системна дата.
 
 Якщо будь-яка команда повертає ненульовий код виходу, зупиніться перед кроком студента 9. Збережіть згенеровані файли Stage C2, попередні свідчення Stage B та Stage C1 і вивід помилки для діагностики. Не перезаписуйте наявний ранжований кандидатний вихід і не продовжуйте роботу за невдалої перевірки прив’язок перед використанням.
 
@@ -336,6 +390,14 @@ uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model
 Зафіксуйте одне судження про релевантність для кожної поверненої одиниці інформаційного пошуку й випадку для оцінювання. Зафіксована множина має охоплювати точно ті одиниці інформаційного пошуку, які повернули порівнювані конфігурації для цього випадку: як пропущена повернена одиниця інформаційного пошуку, так і зайвий ідентифікатор зупиняють команду. Кожне судження містить обґрунтування.
 
 Запишіть судження в локальний JSON-файл і виконайте команду:
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
+Linux і macOS:
 
 ```bash
 cat > judgments.json << 'JSON'
@@ -382,12 +444,6 @@ uv run learning-project lab04 record-relevance-judgments --report-dir reports/la
 uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
-Windows PowerShell:
-
-```powershell
-uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
-
 Команда повторно перевіряє вісім ранжованих кандидатних виходів перед обчисленням. Змінений вихід Stage C2 зупиняє крок. Команда записує `reports/lab04/stage-c3/retrieval-metrics.json` із записами для окремих випадків та агрегованими записами. Кожен запис містить ранжований кандидатний вихід, оцінені повернені одиниці інформаційного пошуку та обидві метрики з явним чисельником і знаменником. Порожній ранжований кандидатний вихід фіксує `precision@1` як `undefined` із зазначенням причини, а `recall@1` — як `0 of 1`.
 
 **Визначення метрик:**
@@ -408,15 +464,19 @@ uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab
 
 В архівованому виконанні Evaluation Case A створив порожній ранжований кандидатний вихід для лексичної конфігурації та конфігурації з переранжуванням, тому їхній `precision@1` для цього випадку є `undefined`, а не `0.00`. Повідомте значення з вашого власного запуску; вони залежать від ранжованих кандидатних виходів і зафіксованих вами суджень про релевантність.
 
-### Крок студента 11 — Виміряти операційні свідчення
+Після огляду суджень і метрик збережіть `reports/lab04/screenshots/04-relevance-metrics.png`. На зображенні мають бути видимі зафіксовані судження, явні чисельники й знаменники метрик, включно із застосовним значенням `undefined`, обліковий запис операційної системи або GitHub і системна дата.
 
-```bash
-uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
-```
+### Крок студента 11 — Виміряти операційні свідчення
 
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
+```
+
+Linux і macOS:
+
+```bash
 uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
 ```
 
@@ -434,17 +494,19 @@ uv run learning-project lab04 measure-operational-evidence --report-dir reports/
 
 Сформулюйте рішення з обґрунтуванням, аргументованим за зафіксованими метриками та виміряними операційними свідченнями.
 
-```bash
-uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 \
-  --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" \
-  --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
-```
-
 Windows PowerShell:
 
 ```powershell
 uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 `
   --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" `
+  --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
+```
+
+Linux і macOS:
+
+```bash
+uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 \
+  --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" \
   --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
 ```
 
@@ -464,11 +526,9 @@ uv run learning-project lab04 record-configuration-decision --report-dir reports
 
 Обрана конфігурація у вашому запуску випливає з ваших власних зафіксованих метрик та операційних свідчень. Якщо ваші ранжовані кандидатні виходи та судження про релевантність відрізняються від архівованого орієнтира, укажіть конфігурацію та обґрунтування, які підтверджуються свідченнями.
 
-### Крок студента 13 — Перевірити та зупинитися
+Після фіксування рішення збережіть `reports/lab04/screenshots/05-operational-decision.png`. На зображенні мають бути видимі виміряні операційні свідчення, обрана конфігурація та обмежене обґрунтування, обліковий запис операційної системи або GitHub і системна дата.
 
-```bash
-uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
+### Крок студента 13 — Завершити звіт, створити коміт і перевірити точний HEAD гілки
 
 Windows PowerShell:
 
@@ -476,44 +536,85 @@ Windows PowerShell:
 uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
+Linux і macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
 **Очікуваний результат:** `Laboratory 04 Stage C3 verification passed for 8 metric entries.` Верифікатор незалежно переобчислює арифметику метрик із зафіксованих суджень про релевантність та перевірених восьми ранжованих кандидатних виходів і порівнює результат із зафіксованими метриками інформаційного пошуку. Верифікатор не фіксує жодного власного судження про релевантність.
 
-Якщо команда повертає ненульовий код виходу, зупиніться перед поданням.
+Якщо команда повертає ненульовий код виходу, зупиніться перед створенням коміту. Збережіть усі згенеровані свідчення й вивід помилки для діагностики; не перезаписуйте суджень чи метрик, не видаляйте свідчень мовчки для повторного запуску та не інтерпретуйте метрику інформаційного пошуку за межами оголошеної межі.
 
-Збережіть:
+Заповніть українською мовою кожний розділ `reports/lab04/REPORT.md`. Збережіть обов’язкові заголовки `## Ідентифікація`, `## Мета роботи`, `## Хід виконання` і `## Висновки`; збережіть усі шість точних відносних посилань на знімки екрана; замініть або вилучіть кожну підказку у квадратних дужках. Для кожної контрольної точки зафіксуйте виконану дію, спостережений результат, підставу, за якою результат дозволив продовження, та узгодженість із названими машинними свідченнями. Підтвердьте, що звіт ідентифікує форк, гілку й статус завершення `complete` та не містить позначень етапів розроблення матеріалів курсу.
 
-- згенеровані файли Stage C3;
-- ранжовані кандидатні виходи Stage C2;
-- свідчення Stage B та Stage C1;
-- вивід помилки для діагностики.
+Перевірте завершений вихідний звіт і закомітьте всі відстежувані свідчення лабораторної роботи 04 до остаточної перевірки.
 
-Не:
+Windows PowerShell:
 
-- перезаписуйте зафіксовані судження чи метрики;
-- видаляйте свідчення мовчки для повторного запуску;
-- інтерпретуйте метрику інформаційного пошуку за межами її оголошеного чисельника, знаменника, випадків для оцінювання та межі спостереження.
+```powershell
+uv run python -m unittest discover -s tests/public -v
+uv run learning-project lab04 validate-report --report-dir reports/lab04
+git status --short
+git diff --check
+git add reports/lab04
+git commit -m "feat(lab04): compare retrieval configurations"
+git push -u origin HEAD
+$finalCommit = git rev-parse HEAD
+uv run learning-project lab04 verify --report-dir reports/lab04 `
+  --final-commit "$finalCommit"
+```
+
+Linux і macOS:
+
+```bash
+uv run python -m unittest discover -s tests/public -v
+uv run learning-project lab04 validate-report --report-dir reports/lab04
+git status --short
+git diff --check
+git add reports/lab04
+git commit -m "feat(lab04): compare retrieval configurations"
+git push -u origin HEAD
+final_commit="$(git rev-parse HEAD)"
+uv run learning-project lab04 verify --report-dir reports/lab04 \
+  --final-commit "$final_commit"
+```
+
+Остаточний верифікатор записує `reports/lab04/verification-report.json` і прив’язує успішний результат до точного поточного HEAD гілки. Після успішної перевірки збережіть `reports/lab04/screenshots/06-final-verification.png`; на зображенні мають бути видимі точний коміт і успішний результат, обліковий запис операційної системи або GitHub і системна дата.
+
+Згенеруйте самодостатній звіт для Teams і перевірте решту файлів після коміту.
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project prepare-report .\reports\lab04\REPORT.md
+git status --short
+```
+
+Linux і macOS:
+
+```bash
+uv run learning-project prepare-report reports/lab04/REPORT.md
+git status --short
+```
+
+Не редагуйте й не доповнюйте закомічені свідчення після остаточної перевірки. Після остаточного коміту можуть бути згенеровані лише `reports/lab04/verification-report.json`, `reports/lab04/screenshots/06-final-verification.png` і `reports/lab04/submission/REPORT.md`.
 
 ## Фінальна перевірка
 
-Виконайте `verify-stage-c3`, як описано в кроці студента 13. Лабораторна робота вважається завершеною, коли команда виводить `Laboratory 04 Stage C3 verification passed for 8 metric entries.`
+Завершена робота готова до демонстрації лише тоді, коли публічні тести й доменна перевірка успішні, завершений вихідний звіт містить усі шість посилань на контрольні точки, точний HEAD гілки успішно проходить остаточну перевірку, а три файли для подання після коміту існують без зміни закомічених свідчень.
 
 ## Артефакти для подання
 
 Див. [LABORATORY_STANDING_RULES.md](../../LABORATORY_STANDING_RULES.md) щодо постійних правил подання робіт.
 
-Артефакти, специфічні для лабораторної роботи:
+Подайте як окремі вкладення Microsoft Teams рівно ці три файли:
 
-- `reports/lab04/stage-b/boundary-comparison.json`
-- `reports/lab04/stage-b/boundary-decision.yaml`
-- `reports/lab04/stage-c1/retrieval-unit-embeddings.json`
-- `reports/lab04/stage-c1/index-manifest.json`
-- Два записи перевірки прив’язок перед використанням у `reports/lab04/stage-c1/`
-- Вісім файлів ранжованого кандидатного виходу в `reports/lab04/stage-c2/`
-- `reports/lab04/stage-c3/relevance-judgments.json`
-- `reports/lab04/stage-c3/retrieval-metrics.json`
-- `reports/lab04/stage-c3/operational-evidence.json`
-- `reports/lab04/stage-c3/configuration-decision.json`
-- `reports/lab04/REPORT.md` (заповнений за наданим шаблоном)
+- `reports/lab04/submission/REPORT.md`;
+- `reports/lab04/verification-report.json`;
+- `reports/lab04/screenshots/06-final-verification.png`.
+
+Згенерований звіт для подання містить шість вбудованих зображень контрольних точок. Машинні свідчення та вихідний `reports/lab04/REPORT.md` залишаються в перевіреному коміті Git і не є додатковими вкладеннями Teams. Не пишіть окремого супровідного повідомлення Microsoft Teams і не заповнюйте текстове поле завдання.
 
 ## Контрольні запитання
 

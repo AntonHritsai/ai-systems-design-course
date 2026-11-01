@@ -80,17 +80,45 @@ The student performs:
 - verification of every explicit numerator and denominator;
 - the bounded configuration decision.
 
-## Steps
-
-### Student Step 1 — Apply both supplied chunking configurations
-
-```bash
-uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
-```
+Create the Laboratory 04 branch from the completed Laboratory 03 branch, then initialize the source report and screenshot directory before running any Laboratory 04 operation.
 
 Windows PowerShell:
 
 ```powershell
+git switch lab03/<student-id>
+git switch -c lab04/<student-id>
+cd .\training-project
+New-Item -ItemType Directory -Force .\reports\lab04\screenshots | Out-Null
+if (-not (Test-Path .\reports\lab04\REPORT.md)) {
+  Copy-Item .\fixtures\lab04\REPORT.md .\reports\lab04\REPORT.md
+}
+```
+
+Linux and macOS:
+
+```bash
+git switch lab03/<student-id>
+git switch -c lab04/<student-id>
+cd training-project
+mkdir -p reports/lab04/screenshots
+test -f reports/lab04/REPORT.md || cp fixtures/lab04/REPORT.md reports/lab04/REPORT.md
+```
+
+Record the fork URL, personal branch `lab04/<student-id>`, and completion state in `reports/lab04/REPORT.md`. Keep the exact relative links supplied by the fixture. Every screenshot must show the operating-system or GitHub account and the system date; do not use placeholders.
+
+## Steps
+
+### Student Step 1 — Apply both supplied chunking configurations
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
+```
+
+Linux and macOS:
+
+```bash
 uv run learning-project lab04 prepare-boundaries --report-dir reports/lab04
 ```
 
@@ -102,14 +130,16 @@ The command refuses to replace an existing `boundary-comparison.json`. If `bound
 
 ### Student Step 2 — Inspect the retrieval contract, source fragments, and provenance links
 
-```bash
-python -m json.tool reports/lab04/stage-b/boundary-comparison.json
-```
-
 Windows PowerShell:
 
 ```powershell
 Get-Content reports/lab04/stage-b/boundary-comparison.json
+```
+
+Linux and macOS:
+
+```bash
+python -m json.tool reports/lab04/stage-b/boundary-comparison.json
 ```
 
 Verify that:
@@ -127,14 +157,6 @@ Compare the source fragments derived from `R-A` against the relevance judging ba
 
 The student acts as the engineering team for the boundary decision. The deterministic laboratory command records the student-supplied selection and rationale and does not select a chunking configuration.
 
-```bash
-uv run learning-project lab04 record-boundary-decision \
-  --report-dir reports/lab04 \
-  --chunking-configuration-id sentence-pair-v1 \
-  --rationale "The sentence-pair boundary rule preserves together the originating record identifier, record version, and exact supporting-passage location required by the relevance judging basis of Evaluation Case A and Evaluation Case B." \
-  --by "<student-id>"
-```
-
 Windows PowerShell:
 
 ```powershell
@@ -145,17 +167,31 @@ uv run learning-project lab04 record-boundary-decision `
   --by "<student-id>"
 ```
 
-The command writes `reports/lab04/stage-b/boundary-decision.yaml`. The boundary decision selects `source fragment under sentence-pair-v1` as the retrieval-unit definition for the declared evaluation cases and does not authorize a change to the canonical knowledge collection. The command refuses to replace an existing `boundary-decision.yaml`.
-
-### Student Step 4 — Acquire the declared local embedding model once
+Linux and macOS:
 
 ```bash
-uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
+uv run learning-project lab04 record-boundary-decision \
+  --report-dir reports/lab04 \
+  --chunking-configuration-id sentence-pair-v1 \
+  --rationale "The sentence-pair boundary rule preserves together the originating record identifier, record version, and exact supporting-passage location required by the relevance judging basis of Evaluation Case A and Evaluation Case B." \
+  --by "<student-id>"
 ```
+
+The command writes `reports/lab04/stage-b/boundary-decision.yaml`. The boundary decision selects `source fragment under sentence-pair-v1` as the retrieval-unit definition for the declared evaluation cases and does not authorize a change to the canonical knowledge collection. The command refuses to replace an existing `boundary-decision.yaml`.
+
+Run `uv run learning-project lab04 verify-stage-b --report-dir reports/lab04`. After it passes, capture `reports/lab04/screenshots/01-boundary-selection.png`. The image must show the selected boundary, the verification result, the operating-system or GitHub account, and the system date.
+
+### Student Step 4 — Acquire the declared local embedding model once
 
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
+```
+
+Linux and macOS:
+
+```bash
 uv run learning-project lab04 fetch-embedding-model --model-dir models/potion-base-8M
 ```
 
@@ -169,13 +205,15 @@ If the local model directory records another model revision, the command stops i
 
 ### Student Step 5 — Produce compatible retrieval-unit embeddings
 
-```bash
-uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
+```
+
+Linux and macOS:
+
+```bash
 uv run learning-project lab04 prepare-embeddings --report-dir reports/lab04
 ```
 
@@ -191,13 +229,15 @@ The command stops without writing an artifact when the mandatory local embedding
 
 ### Student Step 6 — Prepare the vector index
 
-```bash
-uv run learning-project lab04 prepare-index --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 prepare-index --report-dir reports/lab04
+```
+
+Linux and macOS:
+
+```bash
 uv run learning-project lab04 prepare-index --report-dir reports/lab04
 ```
 
@@ -225,14 +265,16 @@ The command refuses to replace an existing `index-manifest.json` and refuses to 
 
 Run the pre-use binding check for both required retrieval configurations:
 
-```bash
+Windows PowerShell:
+
+```powershell
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v1
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v2
 ```
 
-Windows PowerShell:
+Linux and macOS:
 
-```powershell
+```bash
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v1
 uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --required-retrieval-configuration-id required-course-seed-v2
 ```
@@ -244,32 +286,27 @@ uv run learning-project lab04 check-index-bindings --report-dir reports/lab04 --
 
 Verify the Stage C1 evidence:
 
-```bash
-uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
-```
-
 Windows PowerShell:
 
 ```powershell
 uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
 ```
 
+Linux and macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c1 --report-dir reports/lab04
+```
+
 **Expected result:** `Laboratory 04 Stage C1 verification passed for vector-index-course-seed-v1.`
+
+After the verification passes, capture `reports/lab04/screenshots/02-embedding-index.png`. The image must show the prepared index identity, the admissible and stale binding-check outcomes, the verification result, the operating-system or GitHub account, and the system date.
 
 If the verification command returns a nonzero exit code, stop before Student Step 8. Preserve the retrieval-unit embeddings, the index manifest, the pre-use binding check records, and the error output for diagnosis.
 
 ### Student Step 8 — Execute both evaluation cases under all four retrieval configurations
 
 Execute both evaluation cases under each of the four compared retrieval configurations. Use a fresh Stage C2 output directory; the command refuses to overwrite an existing output. Keep the four configuration names verbatim.
-
-```bash
-set -e
-for case_id in 'Evaluation Case A' 'Evaluation Case B'; do
-  for configuration_id in 'lexical retrieval' 'embedding-based retrieval' 'hybrid retrieval' 'lexical retrieval followed by embedding-based reranking'; do
-    uv run learning-project lab04 execute-retrieval --report-dir reports/lab04 --model-dir models/potion-base-8M --case-id "$case_id" --configuration-id "$configuration_id"
-  done
-done
-```
 
 Windows PowerShell:
 
@@ -282,6 +319,17 @@ foreach ($case in $cases) {
         if ($LASTEXITCODE -ne 0) { throw "Retrieval stopped for $case / $configuration" }
     }
 }
+```
+
+Linux and macOS:
+
+```bash
+set -e
+for case_id in 'Evaluation Case A' 'Evaluation Case B'; do
+  for configuration_id in 'lexical retrieval' 'embedding-based retrieval' 'hybrid retrieval' 'lexical retrieval followed by embedding-based reranking'; do
+    uv run learning-project lab04 execute-retrieval --report-dir reports/lab04 --model-dir models/potion-base-8M --case-id "$case_id" --configuration-id "$configuration_id"
+  done
+done
 ```
 
 Each command writes `reports/lab04/stage-c2/<evaluation-case>-<configuration>.json` with the text query, canonical knowledge collection version, ranking evidence, and ranked candidate output. A returned candidate records rank, stable retrieval identifier, provenance link, and score. An empty ranked candidate output is `[]`, not a relevance judgment.
@@ -297,11 +345,6 @@ Each command writes `reports/lab04/stage-c2/<evaluation-case>-<configuration>.js
 
 **Inspect the observed ranked candidate outputs:**
 
-```bash
-uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json
-uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json
-```
-
 Windows PowerShell:
 
 ```powershell
@@ -309,13 +352,16 @@ Get-Content reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json -Raw 
 Get-Content reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json -Raw | ConvertFrom-Json | ConvertTo-Json -Depth 12
 ```
 
+Linux and macOS:
+
+```bash
+uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-a-hybrid-retrieval.json
+uv run python -m json.tool reports/lab04/stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json
+```
+
 The observed ranked candidate output reports ranking evidence for the two declared cases, not relevance judgments and not evidence of general superiority of any retrieval mechanism.
 
 Verify the Stage C2 evidence:
-
-```bash
-uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
 
 Windows PowerShell:
 
@@ -323,7 +369,15 @@ Windows PowerShell:
 uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
+Linux and macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c2 --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
 **Expected result:** `Laboratory 04 Stage C2 verification passed for 8 outputs.`
+
+After the verification passes, capture `reports/lab04/screenshots/03-retrieval-comparison.png`. The image must show inspected outputs from both evaluation cases, the eight-output verification result, the operating-system or GitHub account, and the system date.
 
 If any command returns a nonzero exit code, stop before Student Step 9. Preserve the generated Stage C2 files, the preceding Stage B and Stage C1 evidence, and the error output for diagnosis. Do not overwrite an existing ranked candidate output or continue with a failed pre-use binding check.
 
@@ -336,6 +390,14 @@ The relevance judging basis for both evaluation cases reads: a retrieval unit mu
 Record one relevance judgment per returned retrieval unit and evaluation case. The recorded set must cover exactly the retrieval units returned by the compared configurations for that case: a missing returned retrieval unit and an extra identifier both stop the command. Each judgment carries a rationale.
 
 Write the judgments to a local JSON file and run the command:
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
+Linux and macOS:
 
 ```bash
 cat > judgments.json << 'JSON'
@@ -382,12 +444,6 @@ The reference above reflects the archived real-model execution, where the only r
 uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
-Windows PowerShell:
-
-```powershell
-uv run learning-project lab04 compute-retrieval-metrics --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
-
 The command re-verifies the eight ranked candidate outputs before computing. A tampered Stage C2 output stops the step. The command writes `reports/lab04/stage-c3/retrieval-metrics.json` with per-case and aggregate entries. Each entry states the ranked candidate output, the judged returned retrieval units, and both metrics with an explicit numerator and denominator. An empty ranked candidate output records `precision@1` as `undefined` with its reason and `recall@1` as `0 of 1`.
 
 **Metric definitions:**
@@ -408,15 +464,19 @@ The command re-verifies the eight ranked candidate outputs before computing. A t
 
 In the archived execution, Evaluation Case A produced an empty ranked candidate output under the lexical and reranked configurations, so their `precision@1` is `undefined` rather than `0.00` for that case. Report the values from your own run; they depend on the ranked candidate outputs and the relevance judgments you recorded.
 
-### Student Step 11 — Measure the operational evidence
+After inspecting the judgments and metrics, capture `reports/lab04/screenshots/04-relevance-metrics.png`. The image must show the recorded judgments, explicit metric numerators and denominators including an applicable `undefined` value, the operating-system or GitHub account, and the system date.
 
-```bash
-uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
-```
+### Student Step 11 — Measure the operational evidence
 
 Windows PowerShell:
 
 ```powershell
+uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
+```
+
+Linux and macOS:
+
+```bash
 uv run learning-project lab04 measure-operational-evidence --report-dir reports/lab04 --model-dir models/potion-base-8M --runs 3
 ```
 
@@ -434,17 +494,19 @@ Each item records its own measurement boundary. No measurement from this list en
 
 State the decision with a rationale argued from the recorded metrics and the measured operational evidence.
 
-```bash
-uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 \
-  --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" \
-  --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
-```
-
 Windows PowerShell:
 
 ```powershell
 uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 `
   --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" `
+  --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
+```
+
+Linux and macOS:
+
+```bash
+uv run learning-project lab04 record-configuration-decision --report-dir reports/lab04 \
+  --selected-configuration "lexical retrieval" --decided-by "your name, engineering team" \
   --rationale "Under the two declared development evaluation cases at configured result count k=1 and the executed model, no compared configuration returned the reviewed relevant retrieval unit: aggregate recall@1 is 0 of 2 for every configuration ... the evidence does not support adopting the embedding-based candidate configuration in place of the lexical experiment baseline, so the bounded decision retains the experiment-baseline lexical retrieval configuration for these declared cases only."
 ```
 
@@ -464,11 +526,9 @@ The decision does not:
 
 The selected configuration in your run follows from your own recorded metrics and operational evidence. If your ranked candidate outputs and relevance judgments differ from the archived reference, supply the configuration and rationale that the evidence supports.
 
-### Student Step 13 — Verify and stop
+After recording the decision, capture `reports/lab04/screenshots/05-operational-decision.png`. The image must show the measured operational evidence, selected configuration and bounded rationale, the operating-system or GitHub account, and the system date.
 
-```bash
-uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
-```
+### Student Step 13 — Complete the report, commit, and verify the exact branch head
 
 Windows PowerShell:
 
@@ -476,44 +536,85 @@ Windows PowerShell:
 uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
 ```
 
+Linux and macOS:
+
+```bash
+uv run learning-project lab04 verify-stage-c3 --report-dir reports/lab04 --model-dir models/potion-base-8M
+```
+
 **Expected result:** `Laboratory 04 Stage C3 verification passed for 8 metric entries.` The verifier independently recomputes the metric arithmetic from the recorded relevance judgments and the verified eight ranked candidate outputs and compares the result with the recorded retrieval metrics. The verifier records no relevance judgment of its own.
 
-If the command returns a nonzero exit code, stop before submitting.
+If the command returns a nonzero exit code, stop before committing. Preserve all generated evidence and the error output for diagnosis; do not overwrite judgments or metrics, silently delete evidence to force a rerun, or interpret a retrieval metric beyond its declared boundary.
 
-Preserve:
+Complete every section of `reports/lab04/REPORT.md` in Ukrainian. Preserve the mandatory headings `## Ідентифікація`, `## Мета роботи`, `## Хід виконання`, and `## Висновки`; preserve all six exact relative screenshot links; replace or remove every bracketed prompt. For each checkpoint, record the performed action, observed result, reason that the result permitted continuation, and consistency with the named machine-readable evidence. Confirm that the report identifies the fork, branch, and `complete` completion state and contains no course-authoring stage labels.
 
-- the generated Stage C3 files;
-- the Stage C2 ranked candidate outputs;
-- the Stage B and Stage C1 evidence;
-- the error output for diagnosis.
+Validate the completed source report and commit all tracked Laboratory 04 evidence before final verification.
 
-Do not:
+Windows PowerShell:
 
-- overwrite recorded judgments or metrics;
-- silently delete evidence to force a rerun;
-- interpret a retrieval metric beyond its declared numerator, denominator, evaluation cases, and observation boundary.
+```powershell
+uv run python -m unittest discover -s tests/public -v
+uv run learning-project lab04 validate-report --report-dir reports/lab04
+git status --short
+git diff --check
+git add reports/lab04
+git commit -m "feat(lab04): compare retrieval configurations"
+git push -u origin HEAD
+$finalCommit = git rev-parse HEAD
+uv run learning-project lab04 verify --report-dir reports/lab04 `
+  --final-commit "$finalCommit"
+```
+
+Linux and macOS:
+
+```bash
+uv run python -m unittest discover -s tests/public -v
+uv run learning-project lab04 validate-report --report-dir reports/lab04
+git status --short
+git diff --check
+git add reports/lab04
+git commit -m "feat(lab04): compare retrieval configurations"
+git push -u origin HEAD
+final_commit="$(git rev-parse HEAD)"
+uv run learning-project lab04 verify --report-dir reports/lab04 \
+  --final-commit "$final_commit"
+```
+
+The final verifier writes `reports/lab04/verification-report.json` and binds the pass result to the exact current branch head. After it passes, capture `reports/lab04/screenshots/06-final-verification.png`; the image must show the exact commit and pass result, the operating-system or GitHub account, and the system date.
+
+Generate the self-contained Teams report and inspect the remaining post-commit files.
+
+Windows PowerShell:
+
+```powershell
+uv run learning-project prepare-report .\reports\lab04\REPORT.md
+git status --short
+```
+
+Linux and macOS:
+
+```bash
+uv run learning-project prepare-report reports/lab04/REPORT.md
+git status --short
+```
+
+Do not edit or amend committed evidence after final verification. Only `reports/lab04/verification-report.json`, `reports/lab04/screenshots/06-final-verification.png`, and `reports/lab04/submission/REPORT.md` may be generated after the final commit.
 
 ## Final verification
 
-Run `verify-stage-c3` as described in Student Step 13. The laboratory is complete when the command prints `Laboratory 04 Stage C3 verification passed for 8 metric entries.`
+The complete work is ready for demonstration only when the public tests and domain verification pass, the completed source report contains all six checkpoint links, the exact branch head passes final verification, and the three post-commit submission files exist without changing committed evidence.
 
 ## Submission artifacts
 
 See [LABORATORY_STANDING_RULES.md](../../LABORATORY_STANDING_RULES.md) for the standing submission rules.
 
-Laboratory-specific artifacts:
+Submit exactly these three files as separate Microsoft Teams attachments:
 
-- `reports/lab04/stage-b/boundary-comparison.json`
-- `reports/lab04/stage-b/boundary-decision.yaml`
-- `reports/lab04/stage-c1/retrieval-unit-embeddings.json`
-- `reports/lab04/stage-c1/index-manifest.json`
-- Two pre-use binding check records under `reports/lab04/stage-c1/`
-- Eight ranked candidate output files under `reports/lab04/stage-c2/`
-- `reports/lab04/stage-c3/relevance-judgments.json`
-- `reports/lab04/stage-c3/retrieval-metrics.json`
-- `reports/lab04/stage-c3/operational-evidence.json`
-- `reports/lab04/stage-c3/configuration-decision.json`
-- `reports/lab04/REPORT.md` (completed from the supplied template)
+- `reports/lab04/submission/REPORT.md`;
+- `reports/lab04/verification-report.json`;
+- `reports/lab04/screenshots/06-final-verification.png`.
+
+The generated submission report contains the six embedded checkpoint images. The machine-readable evidence and source `reports/lab04/REPORT.md` remain in the verified Git commit and are not additional Teams attachments. Do not write a separate Microsoft Teams cover message or fill the assignment text field.
 
 ## Control questions
 
