@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "designated human evaluator": "Anton Hritsai, designated human evaluator (judgments drafted with AI assistance and reviewed by student)",
+  "judged evaluation cases": [
+    {
+      "evaluation case": "Evaluation Case A",
+      "relevance judging basis": "A retrieval unit must explain which data identify the originating record, the originating record version, and the exact location of the supporting passage.",
+      "returned retrieval units judged": [
+        "F-B"
+      ],
+      "relevance judgments": [
+        {
+          "stable retrieval identifier": "F-B",
+          "relevance judgment": "not relevant",
+          "rationale": "F-B describes a proposal-run receipt identifying the source and version of the model used for generation and explicitly states that it does not locate the evidence passage. The auditor cannot trace an excerpt to its originating record and revision using a model receipt. It does not explain the originating record identifier, originating record version, and exact supporting-passage location together; therefore the declared relevance judging basis is not satisfied."
+        }
+      ]
+    },
+    {
+      "evaluation case": "Evaluation Case B",
+      "relevance judging basis": "A retrieval unit must explain which data identify the originating record, the originating record version, and the exact location of the supporting passage.",
+      "returned retrieval units judged": [
+        "F-B"
+      ],
+      "relevance judgments": [
+        {
+          "stable retrieval identifier": "F-B",
+          "relevance judgment": "not relevant",
+          "rationale": "F-B describes a proposal-run receipt identifying the source and version of the model used for generation and explicitly states that it does not locate the evidence passage. The shared words source and version refer to the model, whereas the question requires the supporting passage. It does not explain the originating record identifier, originating record version, and exact supporting-passage location together; therefore the declared relevance judging basis is not satisfied."
+        }
+      ]
+    }
+  ],
+  "observation boundary": "relevance judgments over returned retrieval units; no retrieval metric"
+}

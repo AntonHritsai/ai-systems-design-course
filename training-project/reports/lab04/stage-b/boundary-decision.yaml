@@ -1,0 +1,12 @@
+schema version: '1.0'
+selected chunking configuration: sentence-pair-v1
+selected retrieval-unit definition: source fragment under sentence-pair-v1
+decision actor: the student acting as the engineering team
+decision boundary: meaning preservation required by the declared evaluation cases
+rationale: Sentence-pair-v1 keeps the originating record identifier, its version,
+  and the exact supporting-passage location together in F-A. Fixed-72-v1 splits these
+  required elements across fragments, so no individual fixed-72 fragment satisfies
+  the judging basis of both declared evaluation cases. This selection changes derived
+  retrieval units only and does not authorize canonical collection changes.
+recorded by: anton-hritsai (AI-assisted preparation)
+authority boundary: does not authorize a change to the canonical knowledge collection
