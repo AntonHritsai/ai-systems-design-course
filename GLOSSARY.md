@@ -34,9 +34,11 @@
 | Binary source-support screening | Бінарний скринінг підкріплення джерелом |
 | Boundary rule | Правило межі |
 | Bounded configuration decision | Обмежене рішення щодо конфігурації |
+| Bounded model request | Обмежений запит до моделі |
 | Branch | Гілка |
 | Brief | Бриф |
 | Byte-identical | Побітово тотожний |
+| Candidate concept definition | Кандидатне визначення поняття |
 | Candidate configuration | Кандидатна конфігурація |
 | Candidate output | Кандидатний вихід |
 | Candidate proposal | Кандидатна пропозиція |
@@ -46,6 +48,7 @@
 | Chunk size | Розмір фрагмента |
 | Chunking | Розбивка на фрагменти |
 | Chunking configuration | Конфігурація розбивки на фрагменти |
+| Claim citation | Цитування твердження |
 | Clone | Клон |
 | Commit | Коміт |
 | Confidence interval | Довірчий інтервал |
@@ -53,6 +56,8 @@
 | Configuration comparison | Порівняння конфігурацій |
 | Constrained sampling | Обмежена вибірка |
 | Content digest | Дайджест вмісту |
+| Context budget | Бюджет контексту |
+| Context construction | Побудова контексту |
 | Context window | Вікно контексту |
 | Continuity | Спадкоємність |
 | Controllability | Керованість |
@@ -103,7 +108,9 @@
 | Hybrid retrieval | Гібридний пошук |
 | Index preparation | Підготовка індексу |
 | Index version | Версія індексу |
+| Indirect prompt injection | Непряма ін’єкція промпту |
 | Inference | Виведення |
+| Information need | Інформаційна потреба |
 | Iterative AI-system lifecycle | Ітеративний життєвий цикл системи ШІ |
 | Knowledge owner | Власник знань |
 | Latency | Затримка |
@@ -130,6 +137,7 @@
 | Open-weight model | Модель з відкритими вагами |
 | Operational evidence | Операційні свідчення |
 | Operator | Оператор |
+| Output contract | Контракт виходу |
 | Overlap | Перекриття |
 | Pairwise comparison | Парне порівняння |
 | Ports and adapters | Порти та адаптери |
@@ -146,6 +154,8 @@
 | Provider-neutral | Нейтральний щодо постачальника |
 | Provisioning log | Журнал налаштування |
 | Query embedding | Ембединг запиту |
+| Query rewriting | Переписування запиту |
+| Query-rewriting rule | Правило переписування запиту |
 | Querying | Виконання запиту |
 | Quota | Квота |
 | Ranked candidate output | Ранжований кандидатний вихід |
@@ -154,6 +164,7 @@
 | Recall at k | Повнота на k |
 | Reference | Еталон |
 | Reference architecture | Еталонна архітектура |
+| Refusal | Відмова |
 | Regression case | Випадок для регресійної перевірки |
 | Regression check | Регресійна перевірка |
 | Relevance | Релевантність |
@@ -171,8 +182,11 @@
 | Retrieval operation | Операція інформаційного пошуку |
 | Retrieval unit | Одиниця інформаційного пошуку |
 | Retrieval-augmented generation | Генерування, доповнене пошуком |
+| Retrieval-unit admission criteria | Критерії допуску одиниць інформаційного пошуку |
+| Retrieval-unit selection | Відбір одиниць інформаційного пошуку |
 | Rollback | Відкат |
 | Rubric | Рубрика оцінювання |
+| Rubric pass rate | Частка проходження рубрики оцінювання |
 | Same-model variability | Мінливість між запусками тієї самої моделі |
 | Sampling | Вибірка |
 | Sampling uncertainty | Вибіркова невизначеність |
@@ -180,6 +194,7 @@
 | Scalability | Масштабованість |
 | Screening | Попереднє оцінювання |
 | Screenshot | Знімок екрана |
+| Selection record | Запис відбору |
 | Semantic acceptance gate | Шлюз семантичного приймання |
 | Semantic review | Семантичний розгляд |
 | Semantic similarity | Семантична подібність |
@@ -201,8 +216,10 @@
 | Stress-test | Стрес-тест |
 | Structural validation | Структурна перевірка |
 | Structured output | Структурований вихід |
+| Supplied source evidence | Надані джерельні свідчення |
 | Syntactic gate | Синтаксичний шлюз |
 | System boundary | Межа системи |
+| Task instruction | Інструкція завдання |
 | Telemetry | Телеметрія |
 | Tenant | Орендар |
 | Text query | Текстовий запит |
@@ -213,6 +230,8 @@
 | Trade-off | Компроміс |
 | Trade-off analysis | Аналіз компромісів |
 | Transcript | Транскрипт |
+| Unsolvable rewrite | Нерозв’язне переписування запиту |
+| Unsupported generation | Непідкріплене генерування |
 | Use case | Сценарій використання |
 | Usefulness threshold | Поріг корисності |
 | Vector index | Векторний індекс |

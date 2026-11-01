@@ -10,6 +10,7 @@ from typing import Any, cast
 
 import yaml
 
+from . import report_contract
 from .workflow import WorkflowError
 
 
@@ -29,12 +30,59 @@ RETRIEVAL_CONTRACT_FIELDS = {
     "observation boundary",
 }
 
+LAB04_REPORT_HEADINGS = ("Ідентифікація", "Мета роботи", "Хід виконання", "Висновки")
+LAB04_REPORT_SCREENSHOTS = (
+    "01-boundary-selection.png",
+    "02-embedding-index.png",
+    "03-retrieval-comparison.png",
+    "04-relevance-metrics.png",
+    "05-operational-decision.png",
+    "06-final-verification.png",
+)
+LAB04_REQUIRED_EVIDENCE = (
+    "stage-b/boundary-comparison.json",
+    "stage-b/boundary-decision.yaml",
+    "stage-c1/retrieval-unit-embeddings.json",
+    "stage-c1/index-manifest.json",
+    "stage-c1/binding-check-required-course-seed-v1.json",
+    "stage-c1/binding-check-required-course-seed-v2.json",
+    "stage-c2/evaluation-case-a-lexical-retrieval.json",
+    "stage-c2/evaluation-case-a-embedding-based-retrieval.json",
+    "stage-c2/evaluation-case-a-hybrid-retrieval.json",
+    "stage-c2/evaluation-case-a-lexical-retrieval-followed-by-embedding-based-reranking.json",
+    "stage-c2/evaluation-case-b-lexical-retrieval.json",
+    "stage-c2/evaluation-case-b-embedding-based-retrieval.json",
+    "stage-c2/evaluation-case-b-hybrid-retrieval.json",
+    "stage-c2/evaluation-case-b-lexical-retrieval-followed-by-embedding-based-reranking.json",
+    "stage-c3/relevance-judgments.json",
+    "stage-c3/retrieval-metrics.json",
+    "stage-c3/operational-evidence.json",
+    "stage-c3/configuration-decision.json",
+)
+
 
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise WorkflowError(message)
 
+def _write_new_windows_output(output: Path, content: str) -> None:
+    # Import lazily: retrieval reads the Stage B and C1 definitions.
+    from .lab04_retrieval import write_secure_stage_output
+
+    output.parent.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        write_secure_stage_output(output, content, output.parent.parent, output.parent.name)
+    except WorkflowError as exc:
+        cause = exc.__cause__
+        if isinstance(cause, FileExistsError) or getattr(cause, "winerror", None) in (80, 183):
+            raise WorkflowError(f"Output already exists at {output}.") from exc
+        raise
+
+
 def _write_new_output(output: Path, content: str) -> None:
+    if os.name == "nt":
+        _write_new_windows_output(output, content)
+        return
     output.parent.mkdir(parents=True, exist_ok=True)
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
     try:
@@ -278,3 +326,29 @@ def verify_stage_b(*, report_dir: Path, fixture_path: Path = DEFAULT_STAGE_B_FIX
         "selected chunking configuration": selected,
         "verification boundary": "structural consistency; no human boundary decision",
     }
+
+
+def validate_lab04_report(*, report_dir: Path) -> dict:
+    """Validate the public Laboratory 04 report and evidence inventory."""
+    return report_contract.validate_report_contract(
+        report_dir=report_dir,
+        lab_id="lab04",
+        lab_label="Laboratory 04",
+        headings=LAB04_REPORT_HEADINGS,
+        screenshots=LAB04_REPORT_SCREENSHOTS,
+        required_evidence=LAB04_REQUIRED_EVIDENCE,
+        internal_stage_pattern=r"(?<![\w-])(?:Authoring\s+)?Stage\s+(?:B|C1|C2|C3)\b",
+        evidence_present_message="all required workflow evidence and the final configuration decision are present",
+    )
+
+
+def verify_lab04(*, report_dir: Path, final_commit: str) -> dict:
+    """Bind complete Laboratory 04 evidence to an exact current branch head."""
+    return report_contract.verify_report_contract(
+        report_dir=report_dir,
+        final_commit=final_commit,
+        lab_id="lab04",
+        lab_label="Laboratory 04",
+        screenshots=LAB04_REPORT_SCREENSHOTS,
+        validation=validate_lab04_report(report_dir=report_dir),
+    )

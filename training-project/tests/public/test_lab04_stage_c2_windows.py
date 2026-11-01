@@ -1,8 +1,11 @@
 """Windows handle-anchored output tests, runnable without a Windows host."""
 import unittest
-from pathlib import PureWindowsPath
+import tempfile
+from pathlib import Path, PureWindowsPath
+from types import SimpleNamespace
 from unittest.mock import patch
 
+from learning_project import lab04, lab04_index
 from learning_project import lab04_retrieval as c2
 from learning_project.workflow import WorkflowError
 
@@ -54,6 +57,41 @@ class FakeWindowsFiles:
 
 
 class WindowsCreation(unittest.TestCase):
+    def test_earlier_stage_writers_propagate_native_windows_refusal(self):
+        for module, stage, filename in (
+            (lab04, 'stage-b', 'boundary-comparison.json'),
+            (lab04_index, 'stage-c1', 'index-manifest.json'),
+        ):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as temp:
+                report = Path(temp)
+                output = report / stage / filename
+                # Exercise Windows dispatch on any host. The native writer's
+                # refusal is injected; its handle behavior is tested below.
+                windows_os = SimpleNamespace(**{**vars(module.os), 'name': 'nt'})
+                with patch.object(module, 'os', windows_os), patch.object(
+                    c2, 'write_secure_stage_output', side_effect=WorkflowError('reparse point refused')
+                ) as secure_write:
+                    with self.assertRaisesRegex(WorkflowError, 'reparse point refused'):
+                        module._write_new_output(output, 'unsafe')
+                secure_write.assert_called_once_with(output, 'unsafe', report, stage)
+                self.assertFalse(output.exists())
+
+    def test_earlier_stage_windows_overwrite_keeps_workflow_error_message(self):
+        for module, stage in ((lab04, 'stage-b'), (lab04_index, 'stage-c1')):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as temp:
+                output = Path(temp) / stage / 'existing.json'
+                output.parent.mkdir()
+                output.write_text('original', encoding='utf-8')
+                refusal = WorkflowError('native create refused')
+                refusal.__cause__ = FileExistsError(str(output))
+                windows_os = SimpleNamespace(**{**vars(module.os), 'name': 'nt'})
+                with patch.object(module, 'os', windows_os), patch.object(
+                    c2, 'write_secure_stage_output', side_effect=refusal
+                ):
+                    with self.assertRaisesRegex(WorkflowError, 'already exists'):
+                        module._write_new_output(output, 'replacement')
+                self.assertEqual(output.read_text(encoding='utf-8'), 'original')
+
     def setUp(self):
         self.api = FakeWindowsFiles()
         self.report = PureWindowsPath('C:\\reports')

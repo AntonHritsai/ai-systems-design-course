@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "query_rewriting_rule": {
+    "rule_id": "QR-05-v1",
+    "permitted transformations": [
+      "remove conversational framing",
+      "restate an explicit request as a standalone query"
+    ],
+    "required preservation": [
+      "requested concept",
+      "requested relation",
+      "scope restriction"
+    ],
+    "prohibited transformations": [
+      "invent a missing identity",
+      "redesign retrieval"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "solvable-rewrite",
+      "information_need": "How does a provenance link let an auditor trace an excerpt back to where it came from and which revision it belongs to?",
+      "requested_meaning": {
+        "requested concept": "provenance link",
+        "requested relation": "trace an excerpt to its origin and revision",
+        "scope restriction": null
+      },
+      "identity_available_inside_information_need": true,
+      "course_stipulated_rewritten_retrieval_input": "How can an auditor trace an excerpt to its origin and revision?",
+      "rewritten_meaning": {
+        "requested concept": "provenance link",
+        "requested relation": "trace an excerpt to its origin and revision",
+        "scope restriction": null
+      }
+    },
+    {
+      "case_id": "unsolvable-rewrite",
+      "information_need": "Define it.",
+      "requested_meaning": {
+        "requested concept": null,
+        "requested relation": "define the requested concept",
+        "scope restriction": null
+      },
+      "identity_available_inside_information_need": false
+    }
+  ]
+}
