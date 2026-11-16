@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1510" viewBox="0 0 1120 1510" role="img" aria-labelledby="title description">
+  <title id="title">Обраний шлях підготовки свідчень «фрагмент спочатку» з підтримкою графа</title>
+  <desc id="description">Початковий ранжований кандидатний вихід забезпечує пошук вхідного вузла за прийнятими асоціаціями фрагмент–запис. Рівно одна ціль дозволяє обмежене розширення вибірки вузлів графа та пошук підтверджувальних фрагментів. Нуль або кілька цілей пропускають ці операції й зберігають початкові кандидати. Формування набору кандидатів, відбір одиниць інформаційного пошуку та побудова контексту формують обмежений запит до моделі. Операція моделі повертає згенероване пояснення передумов або відмову. Пунктирний потік трасування зберігає шляхи у графі поза запитом. Підготовку графа та поля лише для оцінювача опущено.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74" />
+    </marker>
+    <marker id="trace" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b" />
+    </marker>
+  </defs>
+  <rect width="1120" height="1510" fill="#ffffff" />
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" font-size="21" text-anchor="middle">Зв’язки графа виявляють джерельний текст; допуск контролює запит</text>
+    <rect x="36" y="75" width="724" height="95" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="105" font-size="18" font-weight="bold" text-anchor="middle">Початковий ранжований кандидатний вихід</text>
+    <text x="398.0" y="137" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Фрагменти джерел</tspan>, повернені <tspan font-weight="bold">пошуком на основі ембедингів</tspan>
+    </text>
+    <rect x="36" y="230" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="260" font-size="18" font-weight="bold" text-anchor="middle">Пошук вхідного вузла</text>
+    <text x="398.0" y="292" font-size="17" text-anchor="middle">Прийняті асоціації фрагмент–запис;</text>
+    <text x="398.0" y="317" font-size="17" text-anchor="middle">точна прийнята основна назва цільового поняття</text>
+    <rect x="36" y="410" width="724" height="100" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="440" font-size="18" font-weight="bold" text-anchor="middle">Розширення вибірки вузлів графа</text>
+    <text x="398.0" y="472" font-size="17" text-anchor="middle">Вузли й перевірені <tspan font-weight="bold">шляхи у графі</tspan> в оголошених межах</text>
+    <rect x="36" y="570" width="724" height="100" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="600" font-size="18" font-weight="bold" text-anchor="middle">Пошук підтверджувальних фрагментів</text>
+    <text x="398.0" y="632" font-size="17" text-anchor="middle">Перевірене ребро → прийнятий запис відношення → <tspan font-weight="bold">фрагмент джерела</tspan>
+    </text>
+    <rect x="36" y="735" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="765" font-size="18" font-weight="bold" text-anchor="middle">Формування набору кандидатів</text>
+    <text x="398.0" y="797" font-size="17" text-anchor="middle">Початкові кандидати + додаткові кандидатні <tspan font-weight="bold">фрагменти джерел</tspan>;</text>
+    <text x="398.0" y="822" font-size="17" text-anchor="middle">вилучити дублікати; зберегти початковий порядок, потім додати нових</text>
+    <rect x="36" y="910" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="940" font-size="18" font-weight="bold" text-anchor="middle">Відбір одиниць інформаційного пошуку</text>
+    <text x="398.0" y="972" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Розв’язання зв’язку походження</tspan>, потім <tspan font-weight="bold">відповідність бюджету контексту</tspan>;</text>
+    <text x="398.0" y="991" font-size="17" text-anchor="middle">лише допущені <tspan font-weight="bold">одиниці інформаційного пошуку</tspan> стають</text>
+    <text x="398.0" y="1010" font-size="17" text-anchor="middle"><tspan font-weight="bold">наданими джерельними свідченнями</tspan>
+    </text>
+    <rect x="36" y="1085" width="724" height="120" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1115" font-size="18" font-weight="bold" text-anchor="middle">Побудова контексту</text>
+    <text x="398.0" y="1147" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Інструкція завдання</tspan> + <tspan font-weight="bold">надані джерельні свідчення</tspan> + <tspan font-weight="bold">контракт виходу</tspan>
+    </text>
+    <text x="398.0" y="1172" font-size="17" text-anchor="middle">формують один <tspan font-weight="bold">обмежений запит до моделі</tspan>
+    </text>
+    <rect x="36" y="1270" width="724" height="90" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1300" font-size="18" font-weight="bold" text-anchor="middle">Операція пояснення передумов із використанням моделі</text>
+    <text x="398.0" y="1332" font-size="17" text-anchor="middle">Читає <tspan font-weight="bold">обмежений запит до моделі</tspan>
+    </text>
+    <rect x="36" y="1420" width="724" height="65" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1450" font-size="18" font-weight="bold" text-anchor="middle">Згенероване пояснення передумов АБО Відмова</text>
+    <path d="M 398 171 V 222" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 341 V 402" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 511 V 562" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 671 V 727" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 846 V 902" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1021 V 1077" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1206 V 1262" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1361 V 1412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="419" y="200" font-size="15">Знайдені фрагменти</text>
+    <text x="419" y="380" font-size="15">Рівно один початковий вузол</text>
+    <text x="419" y="545" font-size="15">Перевірені ребра з ідентифікаторами записів відношень</text>
+    <text x="419" y="710" font-size="15">Додаткові кандидатні <tspan font-weight="bold">фрагменти джерел</tspan>
+    </text>
+    <text x="419" y="880" font-size="15">Об’єднаний упорядкований список кандидатів</text>
+    <text x="419" y="1055" font-size="15">Допущені <tspan font-weight="bold">надані джерельні свідчення</tspan>
+    </text>
+    <text x="419" y="1240" font-size="15">
+      <tspan font-weight="bold">Обмежений запит до моделі</tspan>
+    </text>
+    <text x="419" y="1395" font-size="15">Вихід операції</text>
+    <path d="M 761 285 H 1090 V 790 H 768" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <rect x="805" y="610" width="270" height="132" fill="#ffffff" />
+    <text x="814" y="630" font-size="15">Нуль або кілька цільових вузлів:</text>
+    <text x="814" y="654" font-size="15">пропустити <tspan font-weight="bold">розширення вибірки</tspan></text>
+    <text x="814" y="678" font-size="15"><tspan font-weight="bold">вузлів графа</tspan> й пошук</text>
+    <text x="814" y="702" font-size="15">підтверджувальних фрагментів;</text>
+    <text x="814" y="726" font-size="15">зберегти початкові кандидати.</text>
+    <rect x="817" y="410" width="243" height="135" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="938.5" y="435" font-size="18" font-weight="bold" text-anchor="middle">Зовнішній діагностичний</text>
+    <text x="938.5" y="457" font-size="18" font-weight="bold" text-anchor="middle">запис опрацювання</text>
+    <text x="938.5" y="483" font-size="17" text-anchor="middle">Перевірені <tspan font-weight="bold">шляхи у графі</tspan>;</text>
+    <text x="938.5" y="507" font-size="17" text-anchor="middle">не джерельні свідчення в</text>
+    <text x="938.5" y="531" font-size="17" text-anchor="middle">запиті до моделі</text>
+    <path d="M 761 459 H 808" fill="none" stroke="#607b8b" stroke-width="2" marker-end="url(#trace)" stroke-dasharray="7 5" />
+    <text x="817" y="570" font-size="15">Пунктир: запис трасування,</text>
+    <text x="817" y="590" font-size="15">не запис у канон.</text>
+  </g>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1030" viewBox="0 0 1440 1030" role="img" aria-labelledby="title description">
+<title id="title">Окремі межі оцінювання для маршруту з підтримкою графа</title>
+<desc id="description">Три входи-артефакти перевіряються окремо: пропозиції графа, надані джерельні свідчення та згенеровані виходи. Суцільні стрілки ідентифікують входи перевірок. Пунктирні стрілки передають свідчення оцінювання до обмеженого рішення щодо конфігурації команди інженерів разом з операційними свідченнями й умовами прийняття. Подання ілюстративне, опускає етапи виконання та не надає повноважень канонічного запису.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#235b74" /></marker><marker id="evidence" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#607b8b" /></marker></defs>
+<rect width="1440" height="1030" fill="white" />
+<g font-family="sans-serif" fill="#152e3b" text-anchor="middle">
+<text x="720" y="35" font-size="23">Різні об’єкти потребують різних суджень</text>
+<g fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#arrow)">
+<path d="M590 163H650" /><path d="M590 373H650" /><path d="M590 583H650" /><path d="M590 895H650" />
+</g>
+<g fill="none" stroke="#607b8b" stroke-width="2" stroke-dasharray="7 5">
+<path d="M1370 163H1400V895H1370" marker-end="url(#evidence)" />
+<path d="M1370 373H1400" /><path d="M1370 583H1400" />
+</g>
+<g stroke="#235b74" stroke-width="2" fill="#edf4f7">
+<rect x="30" y="90" width="560" height="145" rx="8" /><rect x="650" y="90" width="720" height="145" rx="8" />
+<rect x="30" y="300" width="560" height="145" rx="8" /><rect x="650" y="300" width="720" height="145" rx="8" />
+<rect x="30" y="510" width="560" height="145" rx="8" /><rect x="650" y="510" width="720" height="145" rx="8" />
+<rect x="30" y="820" width="560" height="150" rx="8" /><rect x="650" y="820" width="720" height="160" rx="8" fill="#e8f3ec" />
+</g>
+<g font-size="18">
+<text x="310" y="121">Підготовка графа</text>
+<text x="310" y="155">Пропозиції створити <tspan font-weight="bold">записи понять</tspan></text>
+<text x="310" y="185">і запропоновані <tspan font-weight="bold">типізовані відношення</tspan></text>
+<text x="310" y="215">із підтверджувальними <tspan font-weight="bold">фрагментами джерел</tspan></text>
+<text x="1010" y="121" font-weight="bold">Структурна перевірка</text>
+<text x="1010" y="151">Поля, типи й посилання за <tspan font-weight="bold">схемою графа</tspan></text>
+<text x="1010" y="183" font-weight="bold">Семантичний розгляд</text>
+<text x="1010" y="213"><tspan font-weight="bold">Уповноважений рецензент</tspan>: підтвердженість джерелом</text>
+<text x="310" y="333">Свідчення під час відповіді на запитання</text>
+<text x="310" y="371" font-weight="bold">Надані джерельні свідчення</text>
+<text x="310" y="405">Лише текст, допущений до цього запиту</text>
+<text x="1010" y="333" font-weight="bold">Оцінювач-людина</text>
+<text x="1010" y="369">Допущений текст і зафіксовані обов’язкові</text>
+<text x="1010" y="401">поняття-передумови та зв’язки</text>
+<text x="310" y="543">Фактичний результат операції</text>
+<text x="310" y="579" font-weight="bold">Згенероване пояснення передумов</text>
+<text x="310" y="611">або <tspan font-weight="bold">відмова</tspan>, із його фактичним запитом</text>
+<text x="1010" y="543" font-weight="bold">Оцінювач-людина</text>
+<text x="1010" y="575" font-weight="bold">Перевірка пояснення передумов</text>
+<text x="1010" y="605">або <tspan font-weight="bold">Перевірка відмови</tspan></text>
+<text x="1010" y="633">Одне застосовне судження на вихід</text>
+<text x="310" y="855" font-weight="bold">Операційні свідчення</text>
+<text x="310" y="890">Оголошені спостереження затримки,</text>
+<text x="310" y="922">трудовитрат розгляду й використання токенів</text>
+<text x="310" y="952">Трудовитрати підготовки графа записуються окремо</text>
+<text x="1010" y="852" font-weight="bold">Команда інженерів</text>
+<text x="1010" y="884"><tspan font-weight="bold">Частка проходження рубрики оцінювання</tspan> + <tspan font-weight="bold">умови прийняття</tspan></text>
+<text x="1010" y="920" font-weight="bold">Обмежене рішення щодо конфігурації</text>
+<text x="1010" y="944">Зберегти <tspan font-weight="bold">базову конфігурацію експерименту</tspan></text>
+<text x="1010" y="968">Прийняти <tspan font-weight="bold">кандидатну конфігурацію</tspan> / не приймати жодної</text>
+</g>
+<text x="720" y="732" font-size="18">Суцільні стрілки: вхід перевірки або рішення.</text>
+<text x="720" y="764" font-size="18">Пунктирні стрілки: свідчення оцінювання, а не дозвіл канонічного запису.</text>
+<text x="720" y="1007" font-size="17">Ілюстративне подання оцінювання; етапи виконання й дії канонічного прийняття опущено.</text>
+</g>
+</svg>

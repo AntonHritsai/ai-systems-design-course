@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="910" viewBox="0 0 1120 910" role="img" aria-labelledby="title description">
+  <title id="title">Graph-assisted retrieval patterns and the selected course route</title>
+  <desc id="description">Four overlapping patterns: fixed graph queries; fragment-first vector-seeded graph expansion in the course; Text-to-Cypher; and community-summary approaches. Solid arrows represent illustrative data transformations. The course supplies selected source fragments to generation; evidence representation is a separate choice. These rows are not an exhaustive taxonomy.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74" />
+    </marker>
+    <marker id="trace" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b" />
+    </marker>
+  </defs>
+  <rect width="1120" height="910" fill="#ffffff" />
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" font-size="21" text-anchor="middle">Different retrieval patterns can supply different context representations</text>
+    <text x="36" y="69" font-size="17" font-weight="bold">Pattern / starting point</text>
+    <text x="450" y="69" font-size="17" font-weight="bold">Retrieval mechanism</text>
+    <text x="840" y="69" font-size="17" font-weight="bold">Discovered material</text>
+    <rect x="36" y="95" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="125" font-size="18" font-weight="bold" text-anchor="middle">Fixed graph queries</text>
+    <text x="196.0" y="157" font-size="17" text-anchor="middle">Known target and</text>
+    <text x="196.0" y="182" font-size="17" text-anchor="middle">declared question form</text>
+    <rect x="422" y="95" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="125" font-size="18" font-weight="bold" text-anchor="middle">Execute a fixed</text>
+    <text x="575.0" y="150" font-size="18" font-weight="bold" text-anchor="middle">graph query</text>
+    <text x="805" y="145" font-size="16">Nodes, edges, <tspan font-weight="bold">graph paths</tspan>
+    </text>
+    <text x="805" y="171" font-size="16">or linked source text</text>
+    <path d="M 357 165 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 165 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="152" font-size="14" text-anchor="middle">input</text>
+    <text x="752" y="152" font-size="14" text-anchor="middle">result</text>
+    <rect x="36" y="270" width="320" height="140" rx="8" fill="#e7f3f7" stroke="#235b74" stroke-width="3" />
+    <text x="196.0" y="300" font-size="18" font-weight="bold" text-anchor="middle">Selected course route</text>
+    <text x="196.0" y="332" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Embedding-based retrieval</tspan>
+    </text>
+    <text x="196.0" y="357" font-size="17" text-anchor="middle">returns <tspan font-weight="bold">source fragments</tspan>
+    </text>
+    <rect x="422" y="270" width="306" height="140" rx="8" fill="#e7f3f7" stroke="#235b74" stroke-width="3" />
+    <text x="575.0" y="300" font-size="18" font-weight="bold" text-anchor="middle">Entry-node lookup</text>
+    <text x="575.0" y="325" font-size="18" font-weight="bold" text-anchor="middle">and bounded graph expansion</text>
+    <text x="805" y="320" font-size="16">Support-fragment lookup:</text>
+    <text x="805" y="346" font-size="16">candidate <tspan font-weight="bold">source fragments</tspan>
+    </text>
+    <path d="M 357 340 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 340 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="327" font-size="14" text-anchor="middle">input</text>
+    <text x="752" y="327" font-size="14" text-anchor="middle">result</text>
+    <rect x="36" y="445" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="475" font-size="18" font-weight="bold" text-anchor="middle">Text-to-Cypher</text>
+    <text x="196.0" y="507" font-size="17" text-anchor="middle">Natural-language question</text>
+    <text x="196.0" y="532" font-size="17" text-anchor="middle">and <tspan font-weight="bold">graph schema</tspan>
+    </text>
+    <rect x="422" y="445" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="475" font-size="18" font-weight="bold" text-anchor="middle">Generate query code;</text>
+    <text x="575.0" y="500" font-size="18" font-weight="bold" text-anchor="middle">validate, then execute</text>
+    <text x="805" y="495" font-size="16">Graph-query results;</text>
+    <text x="805" y="521" font-size="16">declared evidence form</text>
+    <path d="M 357 515 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 515 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="502" font-size="14" text-anchor="middle">input</text>
+    <text x="752" y="502" font-size="14" text-anchor="middle">result</text>
+    <rect x="36" y="620" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="650" font-size="18" font-weight="bold" text-anchor="middle">Community-based approaches</text>
+    <text x="196.0" y="682" font-size="17" text-anchor="middle">Question + prepared graph</text>
+    <text x="196.0" y="707" font-size="17" text-anchor="middle">and <tspan font-weight="bold">community summaries</tspan>
+    </text>
+    <rect x="422" y="620" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="650" font-size="18" font-weight="bold" text-anchor="middle">Global search or</text>
+    <text x="575.0" y="675" font-size="18" font-weight="bold" text-anchor="middle">entity-focused Local search</text>
+    <text x="805" y="670" font-size="16">Derived descriptions,</text>
+    <text x="805" y="696" font-size="16">graph data and/or</text>
+    <text x="805" y="722" font-size="16">source text</text>
+    <path d="M 357 690 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 690 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="677" font-size="14" text-anchor="middle">input</text>
+    <text x="752" y="677" font-size="14" text-anchor="middle">result</text>
+    <text x="36" y="805" font-size="17">Context choice: original source text / graph data / mixed evidence.</text>
+    <text x="36" y="835" font-size="17">Course choice: selected <tspan font-weight="bold">source fragments</tspan>; inspected <tspan font-weight="bold">graph paths</tspan> stay outside the model request.</text>
+    <text x="36" y="865" font-size="17">Solid arrows: illustrative data progression, not API calls. Patterns may overlap.</text>
+  </g>
+</svg>

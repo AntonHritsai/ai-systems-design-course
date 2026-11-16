@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+<title id="title">Обмежені шляхи передумов у G-TEACH/v1</title>
+<desc id="desc">Ті самі три вузли й два вихідні ребра requires показано двічі. За максимальної довжини шляху одне ребро R-1 розглянуто, а R-2 залишається за межами розгляду. За максимальної довжини два ребра розглянуто обидва ребра. Безпосереднього ребра від C-RET до C-MODEL не збережено.</desc>
+<defs><marker id="blue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/></marker><marker id="gray" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/></marker></defs>
+<rect width="1120" height="520" fill="#fff"/>
+<g font-family="Arial, sans-serif" fill="#172033" font-size="17">
+<text x="30" y="35" font-size="23" font-weight="bold">Той самий збережений граф, різні межі розгляду</text>
+<text x="30" y="73" font-weight="bold">G-TEACH/v1 · максимальна довжина шляху: 1 ребро</text>
+<g fill="#eff6ff" stroke="#2563eb" stroke-width="2"><rect x="30" y="110" width="260" height="80" rx="10"/><rect x="430" y="110" width="260" height="80" rx="10"/></g>
+<rect x="830" y="110" width="260" height="80" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="160" y="142" text-anchor="middle" font-weight="bold">C-RET</text><text x="160" y="170" text-anchor="middle" font-size="16" font-weight="bold">Пошук на основі ембедингів</text>
+<text x="560" y="142" text-anchor="middle" font-weight="bold">C-QUERY</text><text x="560" y="170" text-anchor="middle" font-weight="bold">Ембединг запиту</text>
+<text x="960" y="142" text-anchor="middle" font-weight="bold">C-MODEL</text><text x="960" y="170" text-anchor="middle" font-weight="bold">Модель ембедингу</text>
+<path d="M290,155 H430" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/>
+<path d="M690,155 H830" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#gray)"/>
+<text x="360" y="137" text-anchor="middle" font-size="15">requires · R-1</text><text x="760" y="137" text-anchor="middle" font-size="15">requires · R-2</text>
+<path d="M705,92 V204" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="430" y="224" font-size="16">Зупинка в C-QUERY: межа глибини, а не відсутність R-2.</text>
+<text x="30" y="274" font-weight="bold">G-TEACH/v1 · максимальна довжина шляху: 2 ребра</text>
+<g fill="#eff6ff" stroke="#2563eb" stroke-width="2"><rect x="30" y="310" width="260" height="80" rx="10"/><rect x="430" y="310" width="260" height="80" rx="10"/><rect x="830" y="310" width="260" height="80" rx="10"/></g>
+<text x="160" y="342" text-anchor="middle" font-weight="bold">C-RET</text><text x="160" y="370" text-anchor="middle" font-size="16" font-weight="bold">Пошук на основі ембедингів</text>
+<text x="560" y="342" text-anchor="middle" font-weight="bold">C-QUERY</text><text x="560" y="370" text-anchor="middle" font-weight="bold">Ембединг запиту</text>
+<text x="960" y="342" text-anchor="middle" font-weight="bold">C-MODEL</text><text x="960" y="370" text-anchor="middle" font-weight="bold">Модель ембедингу</text>
+<path d="M290,355 H430" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/><path d="M690,355 H830" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/>
+<text x="360" y="337" text-anchor="middle" font-size="15">requires · R-1</text><text x="760" y="337" text-anchor="middle" font-size="15">requires · R-2</text>
+<text x="30" y="428" font-size="16">Повернуті шляхи: C-RET → C-QUERY; C-RET → C-QUERY → C-MODEL.</text>
+<text x="30" y="465" font-size="16">Синє: розглянуте ребро. Сіре: збережене ребро за межами розгляду. Пунктир: межа глибини.</text>
+<text x="30" y="494" font-size="16">Безпосереднього ребра C-RET → C-MODEL у цій версії немає; непрямий шлях залишається.</text>
+</g></svg>

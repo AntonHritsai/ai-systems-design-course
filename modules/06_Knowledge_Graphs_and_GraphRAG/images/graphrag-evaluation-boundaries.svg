@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1030" viewBox="0 0 1120 1030" role="img" aria-labelledby="title description">
+<title id="title">Separate evaluation boundaries for the graph-assisted route</title>
+<desc id="description">Three artifact inputs are checked separately: graph proposals, supplied source evidence and generated outputs. Solid arrows identify inputs to checks. Dashed arrows carry evaluation evidence into the engineering team's bounded configuration decision, together with operational evidence and acceptance conditions. The view is illustrative, omits runtime stages and grants no canonical-write authority.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#235b74"/></marker><marker id="evidence" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#607b8b"/></marker></defs>
+<rect width="1120" height="1030" fill="white"/>
+<g font-family="sans-serif" fill="#152e3b" text-anchor="middle">
+<text x="560" y="35" font-size="23">Different objects require different judgments</text>
+<g fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#arrow)">
+<path d="M470 163H520"/><path d="M470 373H520"/><path d="M470 583H520"/><path d="M470 895H520"/>
+</g>
+<g fill="none" stroke="#607b8b" stroke-width="2" stroke-dasharray="7 5">
+<path d="M1020 163H1080V895H1020" marker-end="url(#evidence)"/>
+<path d="M1020 373H1080"/><path d="M1020 583H1080"/>
+</g>
+<g stroke="#235b74" stroke-width="2" fill="#edf4f7">
+<rect x="30" y="90" width="440" height="145" rx="8"/><rect x="520" y="90" width="500" height="145" rx="8"/>
+<rect x="30" y="300" width="440" height="145" rx="8"/><rect x="520" y="300" width="500" height="145" rx="8"/>
+<rect x="30" y="510" width="440" height="145" rx="8"/><rect x="520" y="510" width="500" height="145" rx="8"/>
+<rect x="30" y="820" width="440" height="150" rx="8"/><rect x="520" y="820" width="500" height="160" rx="8" fill="#e8f3ec"/>
+</g>
+<g font-size="18">
+<text x="250" y="121">Graph preparation</text>
+<text x="250" y="155">Proposals to create <tspan font-weight="bold">concept records</tspan></text>
+<text x="250" y="185">and proposed <tspan font-weight="bold">typed relations</tspan></text>
+<text x="250" y="215">with supporting <tspan font-weight="bold">source fragments</tspan></text>
+<text x="770" y="121" font-weight="bold">Structural validation</text>
+<text x="770" y="151">Fields, types and references vs <tspan font-weight="bold">graph schema</tspan></text>
+<text x="770" y="183" font-weight="bold">Semantic review</text>
+<text x="770" y="213"><tspan font-weight="bold">Authorized human reviewer</tspan>: source support</text>
+<text x="250" y="333">Question-time evidence</text>
+<text x="250" y="371" font-weight="bold">Supplied source evidence</text>
+<text x="250" y="405">Only the text admitted into this request</text>
+<text x="770" y="333" font-weight="bold">Human evaluator</text>
+<text x="770" y="369">Admitted text vs frozen required</text>
+<text x="770" y="401">prerequisite concepts and connections</text>
+<text x="250" y="543">Actual operation outcome</text>
+<text x="250" y="579" font-weight="bold">Generated prerequisite explanation</text>
+<text x="250" y="611">or <tspan font-weight="bold">refusal</tspan>, with its actual request</text>
+<text x="770" y="543" font-weight="bold">Human evaluator</text>
+<text x="770" y="575" font-weight="bold">Prerequisite explanation check</text>
+<text x="770" y="605">or <tspan font-weight="bold">Refusal check</tspan></text>
+<text x="770" y="633">One applicable judgment per output</text>
+<text x="250" y="855" font-weight="bold">Operational evidence</text>
+<text x="250" y="890">Declared latency, review-effort</text>
+<text x="250" y="922">and token-usage observations</text>
+<text x="250" y="952">Graph-preparation effort recorded separately</text>
+<text x="770" y="852" font-weight="bold">Engineering team</text>
+<text x="770" y="884"><tspan font-weight="bold">Rubric pass rate</tspan> + <tspan font-weight="bold">acceptance conditions</tspan></text>
+<text x="770" y="920" font-weight="bold">Bounded configuration decision</text>
+<text x="770" y="944">Retain <tspan font-weight="bold">experiment baseline</tspan></text>
+<text x="770" y="968">Adopt <tspan font-weight="bold">candidate configuration</tspan> / accept neither</text>
+</g>
+<text x="560" y="732" font-size="18">Solid arrows: input to a check or decision.</text>
+<text x="560" y="764" font-size="18">Dashed arrows: evaluation evidence, not canonical-write permission.</text>
+<text x="560" y="1007" font-size="17">Illustrative evaluation view; runtime stages and canonical acceptance actions are omitted.</text>
+</g>
+</svg>

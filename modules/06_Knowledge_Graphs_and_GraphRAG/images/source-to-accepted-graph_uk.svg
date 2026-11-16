@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="930" viewBox="0 0 1120 930" role="img" aria-labelledby="title description">
+  <title id="title">Пропозиції з джерел, прийняті канонічні записи й похідний граф знань</title>
+  <desc id="description">Суцільні стрілки вниз показують шлях прийнятих змін від фрагментів джерел через видобування знань та Entity resolution, структурну перевірку й семантичний розгляд людиною, уповноважене збереження та детерміновану компіляцію графа. Пунктирна стрілка посилання вгору дає змогу знайти підтверджувальні фрагменти джерел із записів прийнятих відношень. Відхилені й нерозв’язані гілки та зв’язки походження фрагментів не показано.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74"/></marker>
+    <marker id="ref" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b"/></marker>
+  </defs>
+  <rect width="1120" height="930" fill="#ffffff"/>
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" text-anchor="middle" font-size="21">Лише прийняті канонічні записи надають скомпільований граф</text>
+    <g fill="#edf4f7" stroke="#235b74" stroke-width="2">
+      <rect x="36" y="65" width="710" height="95" rx="8"/>
+      <rect x="36" y="220" width="710" height="120" rx="8"/>
+      <rect x="36" y="400" width="710" height="120" rx="8"/>
+      <rect x="36" y="605" width="710" height="105" rx="8"/>
+      <rect x="36" y="775" width="710" height="95" rx="8"/>
+    </g>
+    <g text-anchor="middle" font-size="18">
+      <text x="391" y="99" font-weight="bold">Фрагменти джерел</text>
+      <text x="391" y="130" font-size="17">Початкове формулювання й місця в джерелах</text>
+      <text x="391" y="251" font-weight="bold">Видобування знань і Entity resolution</text>
+      <text x="391" y="283" font-size="17"><tspan font-weight="bold">Згадки понять</tspan>; запропоновані <tspan font-weight="bold">типізовані відношення</tspan></text>
+      <text x="391" y="315" font-size="16">Запропоновані відповідності не є рішеннями про прийняття</text>
+      <text x="391" y="431" font-weight="bold">Структурна перевірка й семантичний розгляд</text>
+      <text x="391" y="463" font-size="17">Механічні перевірки та <tspan font-weight="bold">уповноважений рецензент</tspan></text>
+      <text x="391" y="487" font-size="16"><tspan x="391">Підтвердженість джерелом і прийняття</tspan><tspan x="391" y="510">конкретної пропозиції залишаються окремими</tspan></text>
+      <text x="391" y="639" font-weight="bold">Канонічна колекція знань</text>
+      <text x="391" y="675" font-size="17">Прийняті <tspan font-weight="bold">записи понять</tspan> і записи відношень</text>
+      <text x="391" y="809" font-weight="bold">Похідний граф знань</text>
+      <text x="391" y="841" font-size="17">Вузли понять і спрямовані ребра requires</text>
+    </g>
+    <g fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)">
+      <path d="M 391 161 V 212"/>
+      <path d="M 391 341 V 392"/>
+      <path d="M 391 521 V 597"/>
+      <path d="M 391 711 V 767"/>
+    </g>
+    <g font-size="16">
+      <text x="411" y="193">Вхідний текст</text>
+      <text x="411" y="374">Пропозиції для перевірки й розгляду</text>
+      <text x="411" y="551"><tspan font-weight="bold">Уповноважений засіб запису</tspan> застосовує</text>
+      <text x="411" y="576">лише прийняті зміни</text>
+      <text x="411" y="748">Детермінована <tspan font-weight="bold">компіляція графа</tspan></text>
+    </g>
+    <path d="M 747 658 H 1094 V 112 H 754" fill="none" stroke="#607b8b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ref)"/>
+    <rect x="775" y="340" width="300" height="160" fill="#ffffff"/>
+    <g x="0" font-size="17">
+      <text x="781" y="370">Доступ за підтверджувальними</text><text x="781" y="395">посиланнями</text>
+      <text x="781" y="427">Від запису прийнятого відношення</text>
+      <text x="781" y="456">до підтверджувальних</text>
+      <text x="781" y="486" font-weight="bold">фрагментів джерел</text>
+    </g>
+    <text x="36" y="907" font-size="16">Суцільні: послідовність прийнятих змін. Пунктир: доступ за посиланням, а не запис чи доказ підтвердженості.</text>
+  </g>
+</svg>

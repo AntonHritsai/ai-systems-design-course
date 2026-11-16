@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="910" viewBox="0 0 1120 910" role="img" aria-labelledby="title description">
+  <title id="title">Шаблони інформаційного пошуку з підтримкою графа та обраний маршрут курсу</title>
+  <desc id="description">Чотири шаблони, що перекриваються: фіксовані запити до графа; розширення вибірки вузлів графа «фрагмент спочатку», започатковане вектором, у курсі; Text-to-Cypher; підходи на основі підсумків спільнот. Суцільні стрілки — ілюстративні перетворення даних. Курс подає відібрані фрагменти джерел для генерування; представлення свідчень — окремий вибір. Рядки не є вичерпною таксономією.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74" />
+    </marker>
+    <marker id="trace" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b" />
+    </marker>
+  </defs>
+  <rect width="1120" height="910" fill="#ffffff" />
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" font-size="21" text-anchor="middle">Різні шаблони пошуку можуть подавати різні представлення контексту</text>
+    <text x="36" y="69" font-size="17" font-weight="bold">Шаблон / початкова точка</text>
+    <text x="450" y="69" font-size="17" font-weight="bold">Механізм пошуку</text>
+    <text x="840" y="69" font-size="17" font-weight="bold">Виявлений матеріал</text>
+    <rect x="36" y="95" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="125" font-size="18" font-weight="bold" text-anchor="middle">Фіксовані запити до графа</text>
+    <text x="196.0" y="157" font-size="17" text-anchor="middle">Відома ціль і</text>
+    <text x="196.0" y="182" font-size="17" text-anchor="middle">оголошена форма запитання</text>
+    <rect x="422" y="95" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="125" font-size="18" font-weight="bold" text-anchor="middle">Виконати фіксований</text>
+    <text x="575.0" y="150" font-size="18" font-weight="bold" text-anchor="middle">запит до графа</text>
+    <text x="805" y="145" font-size="16">Вузли, ребра, <tspan font-weight="bold">шляхи у графі</tspan>
+    </text>
+    <text x="805" y="171" font-size="16">або пов’язаний джерельний текст</text>
+    <path d="M 357 165 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 165 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="152" font-size="14" text-anchor="middle">вхід</text>
+    <text x="752" y="152" font-size="14" text-anchor="middle">результат</text>
+    <rect x="36" y="270" width="320" height="140" rx="8" fill="#e7f3f7" stroke="#235b74" stroke-width="3" />
+    <text x="196.0" y="300" font-size="18" font-weight="bold" text-anchor="middle">Обраний маршрут курсу</text>
+    <text x="196.0" y="332" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Пошук на основі ембедингів</tspan>
+    </text>
+    <text x="196.0" y="357" font-size="17" text-anchor="middle">повертає <tspan font-weight="bold">фрагменти джерел</tspan>
+    </text>
+    <rect x="422" y="270" width="306" height="140" rx="8" fill="#e7f3f7" stroke="#235b74" stroke-width="3" />
+    <text x="575.0" y="300" font-size="18" font-weight="bold" text-anchor="middle">Пошук вхідного вузла</text>
+    <text x="575.0" y="325" font-size="18" font-weight="bold" text-anchor="middle">і обмежене розширення</text>
+    <text x="575.0" y="350" font-size="18" font-weight="bold" text-anchor="middle">вибірки вузлів графа</text>
+    <text x="805" y="320" font-size="16">Пошук підтверджувальних фрагментів:</text>
+    <text x="805" y="346" font-size="16">кандидатні <tspan font-weight="bold">фрагменти джерел</tspan>
+    </text>
+    <path d="M 357 340 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 340 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="327" font-size="14" text-anchor="middle">вхід</text>
+    <text x="752" y="327" font-size="14" text-anchor="middle">результат</text>
+    <rect x="36" y="445" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="475" font-size="18" font-weight="bold" text-anchor="middle">Text-to-Cypher</text>
+    <text x="196.0" y="507" font-size="17" text-anchor="middle">Запитання природною мовою</text>
+    <text x="196.0" y="532" font-size="17" text-anchor="middle">і <tspan font-weight="bold">схема графа</tspan>
+    </text>
+    <rect x="422" y="445" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="475" font-size="18" font-weight="bold" text-anchor="middle">Згенерувати код запиту;</text>
+    <text x="575.0" y="500" font-size="18" font-weight="bold" text-anchor="middle">перевірити, потім виконати</text>
+    <text x="805" y="495" font-size="16">Результати запиту до графа;</text>
+    <text x="805" y="521" font-size="16">оголошена форма свідчень</text>
+    <path d="M 357 515 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 515 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="502" font-size="14" text-anchor="middle">вхід</text>
+    <text x="752" y="502" font-size="14" text-anchor="middle">результат</text>
+    <rect x="36" y="620" width="320" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="196.0" y="650" font-size="18" font-weight="bold" text-anchor="middle">Підходи на основі спільнот</text>
+    <text x="196.0" y="682" font-size="17" text-anchor="middle">Запитання + підготовлений граф</text>
+    <text x="196.0" y="707" font-size="17" text-anchor="middle">і <tspan font-weight="bold">підсумки спільнот</tspan>
+    </text>
+    <rect x="422" y="620" width="306" height="140" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="575.0" y="650" font-size="18" font-weight="bold" text-anchor="middle">Глобальний пошук або</text>
+    <text x="575.0" y="675" font-size="18" font-weight="bold" text-anchor="middle">локальний пошук за сутностями</text>
+    <text x="805" y="670" font-size="16">Похідні описи,</text>
+    <text x="805" y="696" font-size="16">дані графа та/або</text>
+    <text x="805" y="722" font-size="16">джерельний текст</text>
+    <path d="M 357 690 H 412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 729 690 H 777" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="385" y="677" font-size="14" text-anchor="middle">вхід</text>
+    <text x="752" y="677" font-size="14" text-anchor="middle">результат</text>
+    <text x="36" y="805" font-size="17">Вибір контексту: оригінальний джерельний текст / дані графа / змішані свідчення.</text>
+    <text x="36" y="835" font-size="17">Вибір курсу: відібрані <tspan font-weight="bold">фрагменти джерел</tspan>; перевірені <tspan font-weight="bold">шляхи у графі</tspan> залишаються поза запитом до моделі.</text>
+    <text x="36" y="865" font-size="17">Суцільні стрілки: ілюстративна послідовність даних, не API-виклики. Шаблони можуть перекриватися.</text>
+  </g>
+</svg>

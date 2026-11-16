@@ -114,7 +114,8 @@ def validate_report_contract(
         actual = {path.name for path in screenshot_dir.glob("*.png")} if screenshot_dir.is_dir() else set()
         unexpected = sorted(actual - set(screenshots))
         _require(not unexpected, "Unexpected screenshot files are present: " + ", ".join(unexpected))
-        return "six exact relative links and five pre-verification screenshot files are present"
+        return (f"{len(screenshots)} exact relative links and "
+                f"{len(screenshots) - 1} pre-verification screenshot files are present")
 
     def check_evidence() -> str:
         missing = [relative for relative in required_evidence if not (report_dir / relative).is_file()]
@@ -144,8 +145,13 @@ def verify_report_contract(
     lab_label: str,
     screenshots: tuple[str, ...],
     validation: dict,
+    write_report=None,
 ) -> dict:
-    """Bind complete laboratory evidence to an exact current branch head."""
+    """Bind complete laboratory evidence to an exact current branch head.
+
+    A laboratory may supply its existing protected writer for create-only output.
+    Legacy report regeneration retains the default behavior.
+    """
     checks = list(validation["checks"])
 
     def check_final_commit() -> str:
@@ -207,6 +213,9 @@ def verify_report_contract(
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
     output = report_dir / "verification-report.json"
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(verification, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if write_report is None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(verification, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    else:
+        write_report(output, verification)
     return verification

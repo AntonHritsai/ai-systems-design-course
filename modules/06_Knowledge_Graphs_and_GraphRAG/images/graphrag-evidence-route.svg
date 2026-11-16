@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1510" viewBox="0 0 1120 1510" role="img" aria-labelledby="title description">
+  <title id="title">Selected fragment-first graph-assisted evidence path</title>
+  <desc id="description">The original ranked candidate output supplies accepted fragment-to-record entry lookup. Exactly one target permits bounded graph expansion and support-fragment lookup. Zero or several targets skip these operations and preserve original candidates. Candidate assembly, retrieval-unit selection and context construction produce the bounded model request. The model operation returns a generated prerequisite explanation or refusal. Dashed trace flow keeps graph paths outside the request. Graph preparation and evaluator-only fields are omitted.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74" />
+    </marker>
+    <marker id="trace" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b" />
+    </marker>
+  </defs>
+  <rect width="1120" height="1510" fill="#ffffff" />
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" font-size="21" text-anchor="middle">Graph connections discover source text; admission controls the request</text>
+    <rect x="36" y="75" width="724" height="95" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="105" font-size="18" font-weight="bold" text-anchor="middle">Original ranked candidate output</text>
+    <text x="398.0" y="137" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Source fragments</tspan> returned by <tspan font-weight="bold">embedding-based retrieval</tspan>
+    </text>
+    <rect x="36" y="230" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="260" font-size="18" font-weight="bold" text-anchor="middle">Entry-node lookup</text>
+    <text x="398.0" y="292" font-size="17" text-anchor="middle">Accepted fragment-to-record associations;</text>
+    <text x="398.0" y="317" font-size="17" text-anchor="middle">exact accepted primary label for the target concept</text>
+    <rect x="36" y="410" width="724" height="100" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="440" font-size="18" font-weight="bold" text-anchor="middle">Graph expansion</text>
+    <text x="398.0" y="472" font-size="17" text-anchor="middle">Nodes and inspected <tspan font-weight="bold">graph paths</tspan> under declared limits</text>
+    <rect x="36" y="570" width="724" height="100" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="600" font-size="18" font-weight="bold" text-anchor="middle">Support-fragment lookup</text>
+    <text x="398.0" y="632" font-size="17" text-anchor="middle">Inspected edge → accepted relation record → <tspan font-weight="bold">source fragment</tspan>
+    </text>
+    <rect x="36" y="735" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="765" font-size="18" font-weight="bold" text-anchor="middle">Candidate assembly</text>
+    <text x="398.0" y="797" font-size="17" text-anchor="middle">Original candidates + additional candidate <tspan font-weight="bold">source fragments</tspan>;</text>
+    <text x="398.0" y="822" font-size="17" text-anchor="middle">deduplicate; preserve original order, then append new candidates</text>
+    <rect x="36" y="910" width="724" height="110" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="940" font-size="18" font-weight="bold" text-anchor="middle">Retrieval-unit selection</text>
+    <text x="398.0" y="972" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Provenance-link resolution</tspan>, then <tspan font-weight="bold">context-budget fit</tspan>;</text>
+    <text x="398.0" y="997" font-size="17" text-anchor="middle">only admitted <tspan font-weight="bold">retrieval units</tspan> become <tspan font-weight="bold">supplied source evidence</tspan>
+    </text>
+    <rect x="36" y="1085" width="724" height="120" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1115" font-size="18" font-weight="bold" text-anchor="middle">Context construction</text>
+    <text x="398.0" y="1147" font-size="17" text-anchor="middle">
+      <tspan font-weight="bold">Task instruction</tspan> + <tspan font-weight="bold">supplied source evidence</tspan> + <tspan font-weight="bold">output contract</tspan>
+    </text>
+    <text x="398.0" y="1172" font-size="17" text-anchor="middle">produce one <tspan font-weight="bold">bounded model request</tspan>
+    </text>
+    <rect x="36" y="1270" width="724" height="90" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1300" font-size="18" font-weight="bold" text-anchor="middle">Model-backed prerequisite-explanation operation</text>
+    <text x="398.0" y="1332" font-size="17" text-anchor="middle">Reads the <tspan font-weight="bold">bounded model request</tspan>
+    </text>
+    <rect x="36" y="1420" width="724" height="65" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="398.0" y="1450" font-size="18" font-weight="bold" text-anchor="middle">Generated prerequisite explanation OR Refusal</text>
+    <path d="M 398 171 V 222" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 341 V 402" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 511 V 562" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 671 V 727" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 846 V 902" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1021 V 1077" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1206 V 1262" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <path d="M 398 1361 V 1412" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <text x="419" y="200" font-size="15">Retrieved fragments</text>
+    <text x="419" y="380" font-size="15">Exactly one initial node</text>
+    <text x="419" y="545" font-size="15">Inspected edges with relation-record identifiers</text>
+    <text x="419" y="710" font-size="15">Additional candidate <tspan font-weight="bold">source fragments</tspan>
+    </text>
+    <text x="419" y="880" font-size="15">Combined ordered candidate list</text>
+    <text x="419" y="1055" font-size="15">Admitted <tspan font-weight="bold">supplied source evidence</tspan>
+    </text>
+    <text x="419" y="1240" font-size="15">
+      <tspan font-weight="bold">Bounded model request</tspan>
+    </text>
+    <text x="419" y="1395" font-size="15">Operation output</text>
+    <path d="M 761 285 H 1090 V 790 H 768" fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)" />
+    <rect x="805" y="610" width="270" height="110" fill="#ffffff" />
+    <text x="814" y="636" font-size="15">Zero or several target nodes:</text>
+    <text x="814" y="661" font-size="15">skip expansion and support lookup;</text>
+    <text x="814" y="686" font-size="15">retain original candidates.</text>
+    <rect x="817" y="410" width="243" height="135" rx="8" fill="#edf4f7" stroke="#235b74" stroke-width="2" />
+    <text x="938.5" y="440" font-size="18" font-weight="bold" text-anchor="middle">External processing trace</text>
+    <text x="938.5" y="472" font-size="17" text-anchor="middle">Inspected <tspan font-weight="bold">graph paths</tspan>;</text>
+    <text x="938.5" y="497" font-size="17" text-anchor="middle">not source evidence in</text>
+    <text x="938.5" y="522" font-size="17" text-anchor="middle">the model request</text>
+    <path d="M 761 459 H 808" fill="none" stroke="#607b8b" stroke-width="2" marker-end="url(#trace)" stroke-dasharray="7 5" />
+    <text x="817" y="575" font-size="15">Dashed: record trace, not a write.</text>
+  </g>
+</svg>
