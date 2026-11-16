@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="930" viewBox="0 0 1120 930" role="img" aria-labelledby="title description">
+  <title id="title">Source proposals, accepted canonical records, and a derived knowledge graph</title>
+  <desc id="description">Solid downward arrows show the accepted-change path from source fragments through extraction and entity resolution, validation and human semantic review, authorized storage, and deterministic compilation. A dashed upward reference arrow locates supporting source fragments from accepted relation records. Rejected and unresolved branches and fragment provenance links are omitted.</desc>
+  <defs>
+    <marker id="flow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74"/></marker>
+    <marker id="ref" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#607b8b"/></marker>
+  </defs>
+  <rect width="1120" height="930" fill="#ffffff"/>
+  <g font-family="sans-serif" fill="#152e3b">
+    <text x="560" y="32" text-anchor="middle" font-size="21">Only accepted canonical records supply the compiled graph</text>
+    <g fill="#edf4f7" stroke="#235b74" stroke-width="2">
+      <rect x="36" y="65" width="710" height="95" rx="8"/>
+      <rect x="36" y="220" width="710" height="120" rx="8"/>
+      <rect x="36" y="400" width="710" height="120" rx="8"/>
+      <rect x="36" y="605" width="710" height="105" rx="8"/>
+      <rect x="36" y="775" width="710" height="95" rx="8"/>
+    </g>
+    <g text-anchor="middle" font-size="18">
+      <text x="391" y="99" font-weight="bold">Source fragments</text>
+      <text x="391" y="130" font-size="17">Original wording and source locations</text>
+      <text x="391" y="251" font-weight="bold">Knowledge extraction and Entity resolution</text>
+      <text x="391" y="283" font-size="17"><tspan font-weight="bold">Concept mentions</tspan>; proposed <tspan font-weight="bold">typed relations</tspan></text>
+      <text x="391" y="315" font-size="16">Proposed matches are not acceptance decisions</text>
+      <text x="391" y="431" font-weight="bold">Structural validation and Semantic review</text>
+      <text x="391" y="463" font-size="17">Mechanical checks and the <tspan font-weight="bold">authorized human reviewer</tspan></text>
+      <text x="391" y="495" font-size="16">Source support and exact-proposal acceptance remain separate</text>
+      <text x="391" y="639" font-weight="bold">Canonical knowledge collection</text>
+      <text x="391" y="675" font-size="17">Accepted <tspan font-weight="bold">concept records</tspan> and relation records</text>
+      <text x="391" y="809" font-weight="bold">Derived knowledge graph</text>
+      <text x="391" y="841" font-size="17">Concept nodes and directed requires edges</text>
+    </g>
+    <g fill="none" stroke="#235b74" stroke-width="2" marker-end="url(#flow)">
+      <path d="M 391 161 V 212"/>
+      <path d="M 391 341 V 392"/>
+      <path d="M 391 521 V 597"/>
+      <path d="M 391 711 V 767"/>
+    </g>
+    <g font-size="16">
+      <text x="411" y="193">Input text</text>
+      <text x="411" y="374">Proposals for checking and review</text>
+      <text x="411" y="551"><tspan font-weight="bold">Authorized writer</tspan> applies</text>
+      <text x="411" y="576">only accepted changes</text>
+      <text x="411" y="748">Deterministic <tspan font-weight="bold">graph compilation</tspan></text>
+    </g>
+    <path d="M 747 658 H 1094 V 112 H 754" fill="none" stroke="#607b8b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ref)"/>
+    <rect x="775" y="340" width="300" height="160" fill="#ffffff"/>
+    <g x="0" font-size="17">
+      <text x="781" y="370">Support-reference access</text>
+      <text x="781" y="404">Accepted relation record</text>
+      <text x="781" y="435">to supporting</text>
+      <text x="781" y="466" font-weight="bold">source fragments</text>
+    </g>
+    <text x="36" y="907" font-size="16">Solid: accepted-change progression. Dashed: reference access, not a write or proof of support.</text>
+  </g>
+</svg>

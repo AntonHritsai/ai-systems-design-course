@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+<title id="title">Bounded prerequisite paths in G-TEACH/v1</title>
+<desc id="desc">The same three nodes and two outgoing requires edges appear twice. With maximum path length one, R-1 is inspected and R-2 remains outside inspection. With maximum path length two, both edges are inspected. No direct C-RET to C-MODEL edge is stored.</desc>
+<defs><marker id="blue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/></marker><marker id="gray" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/></marker></defs>
+<rect width="1120" height="520" fill="#fff"/>
+<g font-family="Arial, sans-serif" fill="#172033" font-size="17">
+<text x="30" y="35" font-size="23" font-weight="bold">Same stored graph, different inspection limits</text>
+<text x="30" y="73" font-weight="bold">G-TEACH/v1 · maximum path length: 1 edge</text>
+<g fill="#eff6ff" stroke="#2563eb" stroke-width="2"><rect x="30" y="110" width="260" height="80" rx="10"/><rect x="430" y="110" width="260" height="80" rx="10"/></g>
+<rect x="830" y="110" width="260" height="80" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="160" y="142" text-anchor="middle" font-weight="bold">C-RET</text><text x="160" y="170" text-anchor="middle" font-size="18" font-weight="bold">Embedding-based retrieval</text>
+<text x="560" y="142" text-anchor="middle" font-weight="bold">C-QUERY</text><text x="560" y="170" text-anchor="middle" font-weight="bold">Query embedding</text>
+<text x="960" y="142" text-anchor="middle" font-weight="bold">C-MODEL</text><text x="960" y="170" text-anchor="middle" font-weight="bold">Embedding model</text>
+<path d="M290,155 H430" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/>
+<path d="M690,155 H830" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#gray)"/>
+<text x="360" y="137" text-anchor="middle" font-size="15">requires · R-1</text><text x="760" y="137" text-anchor="middle" font-size="15">requires · R-2</text>
+<path d="M705,92 V204" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="430" y="224" font-size="16">Stop at C-QUERY: depth limit, not an absent R-2.</text>
+<text x="30" y="274" font-weight="bold">G-TEACH/v1 · maximum path length: 2 edges</text>
+<g fill="#eff6ff" stroke="#2563eb" stroke-width="2"><rect x="30" y="310" width="260" height="80" rx="10"/><rect x="430" y="310" width="260" height="80" rx="10"/><rect x="830" y="310" width="260" height="80" rx="10"/></g>
+<text x="160" y="342" text-anchor="middle" font-weight="bold">C-RET</text><text x="160" y="370" text-anchor="middle" font-size="18" font-weight="bold">Embedding-based retrieval</text>
+<text x="560" y="342" text-anchor="middle" font-weight="bold">C-QUERY</text><text x="560" y="370" text-anchor="middle" font-weight="bold">Query embedding</text>
+<text x="960" y="342" text-anchor="middle" font-weight="bold">C-MODEL</text><text x="960" y="370" text-anchor="middle" font-weight="bold">Embedding model</text>
+<path d="M290,355 H430" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/><path d="M690,355 H830" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#blue)"/>
+<text x="360" y="337" text-anchor="middle" font-size="15">requires · R-1</text><text x="760" y="337" text-anchor="middle" font-size="15">requires · R-2</text>
+<text x="30" y="428" font-size="16">Returned paths: C-RET → C-QUERY; C-RET → C-QUERY → C-MODEL.</text>
+<text x="30" y="465" font-size="16">Blue: inspected edge. Gray: stored edge outside inspection. Dashed line: depth boundary.</text>
+<text x="30" y="494" font-size="16">No direct C-RET → C-MODEL edge in this version; the indirect path remains present.</text>
+</g></svg>

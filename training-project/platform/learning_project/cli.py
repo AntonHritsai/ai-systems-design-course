@@ -662,6 +662,78 @@ def _build_parser() -> argparse.ArgumentParser:
     lab05_verify.add_argument("--report-dir", type=Path, required=True)
     lab05_verify.add_argument("--final-commit", required=True)
 
+    lab06 = commands.add_parser("lab06", help="Prepare a reviewed prerequisite graph.")
+    lab06_commands = lab06.add_subparsers(dest="lab06_command", required=True)
+    prepare_graph_review = lab06_commands.add_parser("prepare-graph-review")
+    prepare_graph_review.add_argument("--output", type=Path, required=True)
+    apply_graph_review = lab06_commands.add_parser("apply-graph-review")
+    apply_graph_review.add_argument("--review", type=Path, required=True)
+    apply_graph_review.add_argument("--collection", type=Path, required=True)
+    compile_graph = lab06_commands.add_parser("compile-graph")
+    compile_graph.add_argument("--collection", type=Path, required=True)
+    compile_graph.add_argument("--output", type=Path, required=True)
+    verify_graph = lab06_commands.add_parser("verify-graph")
+    verify_graph.add_argument("--collection", type=Path, required=True)
+    verify_graph.add_argument("--graph", type=Path, required=True)
+    query_paths = lab06_commands.add_parser("query-paths")
+    query_paths.add_argument("--collection", type=Path, required=True)
+    query_paths.add_argument("--graph", type=Path, required=True)
+    query_paths.add_argument("--start", required=True)
+    query_paths.add_argument("--max-edges", type=int, choices=(1, 2), required=True)
+    query_paths.add_argument("--output", type=Path, required=True)
+    direct_edge = lab06_commands.add_parser("inspect-direct-edge")
+    direct_edge.add_argument("--collection", type=Path, required=True)
+    direct_edge.add_argument("--graph", type=Path, required=True)
+    direct_edge.add_argument("--start", required=True)
+    direct_edge.add_argument("--target", required=True)
+    direct_edge.add_argument("--output", type=Path, required=True)
+
+    prepare_evidence = lab06_commands.add_parser("prepare-evidence")
+    prepare_evidence.add_argument("--collection", type=Path, required=True)
+    prepare_evidence.add_argument("--graph", type=Path, required=True)
+    prepare_evidence.add_argument("--fixture", type=Path, default=Path(__file__).resolve().parents[2] / "cases" / "lab06" / "evidence-preparation.json")
+    prepare_evidence.add_argument("--output", type=Path, required=True)
+
+    verify_evidence = lab06_commands.add_parser("verify-evidence")
+    verify_evidence.add_argument("--collection", type=Path, required=True)
+    verify_evidence.add_argument("--graph", type=Path, required=True)
+    verify_evidence.add_argument("--fixture", type=Path, default=Path(__file__).resolve().parents[2] / "cases" / "lab06" / "evidence-preparation.json")
+    verify_evidence.add_argument("--evidence", type=Path, required=True)
+
+    for name in ('validate-report', 'verify'):
+        reporting = lab06_commands.add_parser(name)
+        reporting.add_argument('--report-dir', type=Path, required=True)
+        if name == 'verify':
+            reporting.add_argument('--collection', type=Path, required=True)
+            reporting.add_argument('--final-commit', required=True)
+
+    for name in ('prepare-judgments', 'assess-comparison', 'record-decision'):
+        evaluation = lab06_commands.add_parser(name)
+        for flag in ('collection', 'graph', 'protocol', 'runs-dir', 'output'):
+            evaluation.add_argument('--' + flag, type=Path, required=True)
+        if name != 'prepare-judgments':
+            evaluation.add_argument('--judgments', type=Path, required=True)
+        if name == 'record-decision':
+            evaluation.add_argument('--assessment', type=Path, required=True)
+            evaluation.add_argument('--decision-input', type=Path, required=True)
+
+    for name in ('prepare-generation', 'run-generation', 'verify-generation'):
+        generation = lab06_commands.add_parser(name)
+        generation.add_argument('--collection', type=Path, required=True)
+        generation.add_argument('--graph', type=Path, required=True)
+        if name == 'prepare-generation':
+            generation.add_argument('--model', required=True)
+            generation.add_argument('--output', type=Path, required=True)
+        else:
+            generation.add_argument('--protocol', type=Path, required=True)
+            if name == 'run-generation':
+                generation.add_argument('--case', required=True)
+                generation.add_argument('--configuration', choices=['without graph expansion', 'with graph expansion'], required=True)
+                generation.add_argument('--output-dir', type=Path, required=True)
+                generation.add_argument('--recorded-response', type=Path)
+            else:
+                generation.add_argument('--runs-dir', type=Path, required=True)
+
     return parser
 
 
@@ -1405,6 +1477,88 @@ def _run_lab05(args: argparse.Namespace) -> int:
     raise WorkflowError(f"Unknown Laboratory 05 command: {command}")
 
 
+def _run_lab06(args: argparse.Namespace) -> int:
+    from . import lab06
+
+    if args.lab06_command == "prepare-graph-review":
+        path = lab06.prepare_graph_review(output=args.output)
+        print(f"Prepared graph review at {path}.")
+        return 0
+    if args.lab06_command == "apply-graph-review":
+        path = lab06.apply_graph_review(review_path=args.review, collection=args.collection)
+        print(f"Stored accepted graph records at {path}.")
+        return 0
+    if args.lab06_command == "compile-graph":
+        path = lab06.compile_graph(collection=args.collection, output=args.output)
+        print(f"Compiled prerequisite graph at {path}.")
+        return 0
+    if args.lab06_command == "verify-graph":
+        result = lab06.verify_graph(collection=args.collection, graph_path=args.graph)
+        print(f"Graph verification passed for {result['nodes']} nodes and {result['edges']} edges; source support remains a human judgment.")
+        return 0
+    if args.lab06_command == "query-paths":
+        path = lab06.query_paths(collection=args.collection, graph_path=args.graph, start=args.start,
+                                 max_edges=args.max_edges, output=args.output)
+        print(f"Wrote bounded graph paths at {path}; graph and collection unchanged.")
+        return 0
+    if args.lab06_command == "inspect-direct-edge":
+        path = lab06.inspect_direct_edge(collection=args.collection, graph_path=args.graph, start=args.start,
+                                         target=args.target, output=args.output)
+        print(f"Wrote complete outgoing-edge inspection at {path}; no domain-level absence inferred.")
+        return 0
+    if args.lab06_command == "prepare-evidence":
+        path = lab06.prepare_evidence(collection=args.collection, graph_path=args.graph,
+                                      fixture_path=args.fixture, output=args.output)
+        print(f"Wrote paired evidence preparation at {path}; no model call or accepted-state write.")
+        return 0
+    if args.lab06_command == "verify-evidence":
+        result = lab06.verify_evidence(collection=args.collection, graph_path=args.graph,
+                                       fixture_path=args.fixture, evidence_path=args.evidence)
+        print(f"Evidence preparation verification passed for {result['inputs']} teaching inputs and {result['requests']} requests; no model output or support judgment verified.")
+        return 0
+    if args.lab06_command in {'prepare-generation', 'run-generation', 'verify-generation'}:
+        from . import lab06_generation as generation
+        common = {'collection': args.collection, 'graph_path': args.graph}
+        if args.lab06_command == 'prepare-generation':
+            generation.prepare_generation(**common, model_id=args.model, output=args.output)
+            print('Prepared two development cases and four bounded model requests; no model call.')
+        elif args.lab06_command == 'run-generation':
+            generation.run_generation(**common, protocol_path=args.protocol, case_id=args.case,
+                                      role=args.configuration, output_dir=args.output_dir, recorded_response=args.recorded_response)
+            print('Preserved provider response and extracted outcome; no semantic judgment.')
+        else:
+            result = generation.verify_generation(**common, protocol_path=args.protocol, runs_dir=args.runs_dir)
+            print(json.dumps(result, ensure_ascii=False))
+        return 0
+    if args.lab06_command in {'prepare-judgments', 'assess-comparison', 'record-decision'}:
+        from . import lab06_evaluation as evaluation
+        common = dict(collection=args.collection, graph_path=args.graph,
+                      protocol_path=args.protocol, runs_dir=args.runs_dir)
+        if args.lab06_command == 'prepare-judgments':
+            evaluation.prepare_judgments(**common, output=args.output)
+            print('Prepared four bound positions; human judgments remain blank.')
+        elif args.lab06_command == 'assess-comparison':
+            result = evaluation.assess_comparison(**common, judgments_path=args.judgments, output=args.output)
+            print(json.dumps(result, ensure_ascii=False))
+        else:
+            evaluation.record_decision(**common, judgments_path=args.judgments,
+                assessment_path=args.assessment, decision_path=args.decision_input, output=args.output)
+            print('Recorded engineering team decision for development cases; no accepted-state write.')
+        return 0
+    if args.lab06_command in {'validate-report', 'verify'}:
+        from . import lab06_reporting as reporting
+        if args.lab06_command == 'validate-report':
+            result = reporting.validate_report(report_dir=args.report_dir)
+            key = 'status'
+        else:
+            result = reporting.verify(report_dir=args.report_dir, collection=args.collection,
+                                      final_commit=args.final_commit)
+            key = 'outcome'
+        print(json.dumps(result, ensure_ascii=False))
+        return 0 if result[key] == 'passed' else 1
+    raise WorkflowError(f"Unknown Laboratory 06 command: {args.lab06_command}")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     handlers = {
@@ -1417,6 +1571,7 @@ def main(argv: list[str] | None = None) -> int:
         "lab03": _run_lab03,
         "lab04": _run_lab04,
         "lab05": _run_lab05,
+        "lab06": _run_lab06,
     }
     try:
         return handlers[args.command](args)

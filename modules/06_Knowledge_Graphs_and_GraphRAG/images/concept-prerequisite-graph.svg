@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="260" viewBox="0 0 1120 260" role="img" aria-labelledby="title description">
+  <title id="title">Concept prerequisites in the constructed teaching example</title>
+  <desc id="description">C-RET, Embedding-based retrieval, requires C-QUERY, Query embedding, through accepted relation record R-1. C-QUERY requires C-MODEL, Embedding model, through accepted relation record R-2. Arrows point from the dependent concept to its prerequisite.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#235b74"/>
+    </marker>
+  </defs>
+  <rect width="1120" height="260" fill="#ffffff"/>
+  <g font-family="sans-serif" text-anchor="middle" fill="#152e3b">
+    <text x="560" y="31" font-size="19" font-weight="bold">One declared teaching route, two stored prerequisite connections</text>
+    <g fill="#edf4f7" stroke="#235b74" stroke-width="2">
+      <rect x="20" y="85" width="280" height="106" rx="8"/>
+      <rect x="425" y="85" width="260" height="106" rx="8"/>
+      <rect x="810" y="85" width="290" height="106" rx="8"/>
+    </g>
+    <g font-size="17">
+      <text x="160" y="112" font-family="monospace">C-RET</text>
+      <text x="160" y="143" font-weight="bold">Embedding-based retrieval</text>
+      <text x="160" y="172" font-size="14">Type: Concept</text>
+      <text x="555" y="112" font-family="monospace">C-QUERY</text>
+      <text x="555" y="143" font-weight="bold">Query embedding</text>
+      <text x="555" y="172" font-size="14">Type: Concept</text>
+      <text x="955" y="112" font-family="monospace">C-MODEL</text>
+      <text x="955" y="143" font-weight="bold">Embedding model</text>
+      <text x="955" y="172" font-size="14">Type: Concept</text>
+    </g>
+    <g stroke="#235b74" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M 301 138 H 417"/>
+      <path d="M 686 138 H 802"/>
+    </g>
+    <g font-size="15" font-family="monospace">
+      <text x="362" y="106">requires</text>
+      <text x="362" y="176">R-1</text>
+      <text x="747" y="106">requires</text>
+      <text x="747" y="176">R-2</text>
+    </g>
+    <text x="560" y="224" font-size="16">Solid arrows: dependent concept to prerequisite concept.</text>
+    <text x="560" y="248" font-size="15">R-1 and R-2 identify accepted relation records; evidence references are not shown.</text>
+  </g>
+</svg>
