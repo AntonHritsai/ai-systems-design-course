@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "configuration role": "experiment baseline",
+  "evaluation case id": "EC-05-2",
+  "evidence kind": "live",
+  "adapter": "agy",
+  "model id": "gemini-3.8-flash-medium",
+  "instruction profile": "request-only",
+  "recorded by": "anton-hritsai",
+  "elapsed seconds": 72.155173
+}

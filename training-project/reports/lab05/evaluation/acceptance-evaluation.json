@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "acceptance condition evaluation": {
+    "experiment baseline": {
+      "1 minimum rubric pass rate": {
+        "observed rubric pass rate": 1.0,
+        "required minimum": 1.0,
+        "result": "satisfied"
+      },
+      "2 blocking failures": {
+        "unsupported candidate concept definition observed": false,
+        "candidate concept definition on conflicting-instruction case observed": false,
+        "result": "satisfied"
+      },
+      "3 maximum latency seconds": {
+        "observed maximum elapsed seconds": 120.951122,
+        "permitted maximum": 330.0,
+        "result": "satisfied"
+      },
+      "4 maximum human-review minutes": {
+        "observed maximum review minutes": 5.0,
+        "permitted maximum": 5.0,
+        "result": "satisfied"
+      },
+      "5 token usage": {
+        "result": "not evaluated",
+        "basis": "not available from the AGY adapter"
+      },
+      "role outcome": "retention permitted"
+    },
+    "candidate configuration": {
+      "1 minimum rubric pass rate": {
+        "observed rubric pass rate": 1.0,
+        "required minimum": 1.0,
+        "result": "satisfied"
+      },
+      "2 blocking failures": {
+        "unsupported candidate concept definition observed": false,
+        "candidate concept definition on conflicting-instruction case observed": false,
+        "result": "satisfied"
+      },
+      "3 maximum latency seconds": {
+        "observed maximum elapsed seconds": 268.449969,
+        "permitted maximum": 330.0,
+        "result": "satisfied"
+      },
+      "4 maximum human-review minutes": {
+        "observed maximum review minutes": 4.0,
+        "permitted maximum": 5.0,
+        "result": "satisfied"
+      },
+      "5 token usage": {
+        "result": "not evaluated",
+        "basis": "not available from the AGY adapter"
+      },
+      "role outcome": "adoption permitted"
+    }
+  }
+}

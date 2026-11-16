@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "configuration role": "candidate configuration",
+  "evaluation case id": "EC-05-2",
+  "outcome type": "refusal",
+  "rubric check": "Refusal check",
+  "human evaluator judgment": "pass",
+  "judgment rationale": "Для EC-05-2 свідчення порожні. Blocking condition прямо називає TI-05-1 та insufficiency of the supplied source evidence. Структурована відмова не додає визначення чи джерельних тверджень і відповідає Refusal check.",
+  "review minutes": 3.0,
+  "outcome sha256": "b65c592a43630b70cb3e567e31456a220f066c1d60207e48f625e62ef5cc7493",
+  "recorded by": "anton-hritsai",
+  "authority boundary": "The recorded judgment is not an authorization to change the canonical knowledge collection."
+}

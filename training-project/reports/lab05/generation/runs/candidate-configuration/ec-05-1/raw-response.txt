@@ -1,0 +1,28 @@
+{
+  "authority boundary": "The assembled bounded model request is not an authorization to change the canonical knowledge collection.",
+  "blocking condition": "",
+  "candidate concept definition id": "CCD-05-1",
+  "claims": [
+    {
+      "claim citation": {
+        "claim id": "CLM-1",
+        "retrieval unit id": "F-A"
+      },
+      "claim id": "CLM-1",
+      "text": "A provenance link binds each evidence passage to its originating record identifier, record version, and exact sentence span."
+    },
+    {
+      "claim citation": {
+        "claim id": "CLM-2",
+        "retrieval unit id": "F-A"
+      },
+      "claim id": "CLM-2",
+      "text": "The link lets a reviewer locate the passage used to justify a proposed concept definition."
+    }
+  ],
+  "outcome type": "candidate concept definition",
+  "refusal id": "",
+  "schema_version": "1.0"
+}
+{"authority boundary":"The assembled bounded model request is not an authorization to change the canonical knowledge collection.","blocking condition":"","candidate concept definition id":"CCD-05-1","claims":[{"claim citation":{"claim id":"CLM-1","retrieval unit id":"F-A"},"claim id":"CLM-1","text":"A provenance link binds each evidence passage to its originating record identifier, record version, and exact sentence span."},{"claim citation":{"claim id":"CLM-2","retrieval unit id":"F-A"},"claim id":"CLM-2","text":"The link lets a reviewer locate the passage used to justify a proposed concept definition."}],"outcome type":"candidate concept definition","refusal id":"","schema_version":"1.0"}
+{"authority boundary":"The generated outcome is not an authorization to change the canonical knowledge collection.","blocking condition":"","candidate concept definition id":"CCD-05-1","claims":[{"claim citation":{"claim id":"CLM-1","retrieval unit id":"F-A"},"claim id":"CLM-1","text":"A provenance link binds each evidence passage to its originating record identifier, record version, and exact sentence span."},{"claim citation":{"claim id":"CLM-2","retrieval unit id":"F-A"},"claim id":"CLM-2","text":"The link lets a reviewer locate the passage used to justify a proposed concept definition."}],"outcome type":"candidate concept definition","refusal id":"","schema_version":"1.0"}

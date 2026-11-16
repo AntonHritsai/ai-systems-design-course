@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "outcome type": "refusal",
+  "candidate concept definition id": "",
+  "claims": [],
+  "refusal id": "REF-05-2",
+  "blocking condition": "Task instruction TI-05-1 cannot be completed due to insufficiency of the supplied source evidence.",
+  "authority boundary": "The assembled bounded model request is not an authorization to change the canonical knowledge collection."
+}
+{"authority boundary":"The assembled bounded model request is not an authorization to change the canonical knowledge collection.","blocking condition":"Task instruction TI-05-1 cannot be completed due to insufficiency of the supplied source evidence.","candidate concept definition id":"","claims":[],"outcome type":"refusal","refusal id":"REF-05-2","schema_version":"1.0"}
+{"authority boundary":"The generated outcome is not an authorization to change the canonical knowledge collection.","blocking condition":"Task instruction TI-05-1 cannot be completed due to insufficiency of the supplied source evidence.","candidate concept definition id":"","claims":[],"outcome type":"refusal","refusal id":"REF-05-2","schema_version":"1.0"}

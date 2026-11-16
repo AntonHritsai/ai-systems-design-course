@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "configuration role": "experiment baseline",
+  "evaluation case id": "EC-05-1",
+  "outcome type": "candidate concept definition",
+  "rubric check": "Candidate concept definition check",
+  "human evaluator judgment": "pass",
+  "judgment rationale": "CLM-05-1 відтворює зв’язування уривка з ідентифікатором запису, версією та межами речень із першого речення F-A. CLM-05-2 відтворює можливість знайти використаний уривок із другого речення F-A. Обидва цитування вказують F-A й повторюють ID відповідного твердження; нових фактів не додано.",
+  "review minutes": 3.0,
+  "outcome sha256": "e283ea225e6eff46990ba9b62afca6e9c023f5ab04b07456f437069d0ba5c6bd",
+  "recorded by": "anton-hritsai",
+  "authority boundary": "The recorded judgment is not an authorization to change the canonical knowledge collection."
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "rubric pass rates": {
+    "experiment baseline": {
+      "candidate concept definition passes": 1,
+      "refusal passes": 2,
+      "judged outputs": 3,
+      "rubric pass rate": 1.0
+    },
+    "candidate configuration": {
+      "candidate concept definition passes": 1,
+      "refusal passes": 2,
+      "judged outputs": 3,
+      "rubric pass rate": 1.0
+    }
+  }
+}

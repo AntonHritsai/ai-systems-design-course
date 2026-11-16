@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "bounded configuration decision": "do not adopt the candidate configuration",
+  "decision rationale": "На трьох оголошених development-випадках обидві ролі мають 3/3 = 1.00: одне підкріплене визначення та дві коректні відмови. Умови дозволяють як прийняття кандидата, так і збереження базової конфігурації. Максимальне особисте рецензування становило 5 хв для baseline та 4 хв для candidate, тобто обидві ролі вкладаються в межу 5 хв. Додаткового виграшу кандидата за рубрикою не спостерігалося, а його максимальний час 268.449969 с перевищив 120.951122 с базової ролі в цьому наборі. Тому кандидатну конфігурацію не прийнято, базову збережено. Це рішення обмежене трьома development-випадками; воно не обирає конфігурацію пошуку, не уповноважує запис до канонічної колекції та не надає held-out evidence.",
+  "rubric pass rates": {
+    "experiment baseline": 1.0,
+    "candidate configuration": 1.0
+  },
+  "candidate configuration role outcome": "adoption permitted",
+  "experiment baseline role outcome": "retention permitted",
+  "scope": "The bounded configuration decision rests on the declared development evaluation cases and supplies no held-out evidence.",
+  "authority boundary": "The bounded configuration decision does not select a retrieval configuration and authorizes no write to the canonical knowledge collection.",
+  "recorded by": "anton-hritsai"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "shared experiment protocol id": "SEP-05-1",
+  "configuration role": "candidate configuration",
+  "evaluation case id": "EC-05-1",
+  "outcome type": "candidate concept definition",
+  "rubric check": "Candidate concept definition check",
+  "human evaluator judgment": "pass",
+  "judgment rationale": "CLM-1 дослівно відповідає першому реченню F-A про record identifier, record version та exact sentence span; CLM-2 відповідає другому реченню про знаходження уривка. Цитування мають правильні ID тверджень і F-A; додаткових джерельних фактів немає.",
+  "review minutes": 2.0,
+  "outcome sha256": "eb13a035eeb747f3eb2b38e80224da496f53749be6f712d4318b83f8d3fddc43",
+  "recorded by": "anton-hritsai",
+  "authority boundary": "The recorded judgment is not an authorization to change the canonical knowledge collection."
+}
